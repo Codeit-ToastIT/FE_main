@@ -22,19 +22,8 @@ font-weight: 800;
 line-height: 1.5rem;
 `;
 
-const Container = styled.div`
-display: flex;
-width: 23.4375rem;
-min-width: 20.5rem;
-padding: 0rem 1.5rem 0rem 1.4375rem;
-flex-direction: column;
-align-items: center;
-`;
-
 const Input = styled.input`
 height: 2.5rem;
-min-width: 20.5rem;
-align-self: stretch;
 border-radius: 2.5rem;
 background: rgba(255, 255, 255, 0.2);
 border: none;
@@ -44,17 +33,14 @@ padding-left: 1rem;
 font-weight: 600;
 `;
 
-const Submit = styled.input<{ isActive: boolean }>`
-  display: flex;
+const Submit = styled.input.withConfig({
+  shouldForwardProp: (prop) => !['isActive'].includes(prop)
+})<{ isActive: boolean }>`
   height: 2.5rem;
   min-width: 20.5rem;
-  padding: 0.5rem 1.25rem;
-  justify-content: center;
-  align-items: center;
-  align-self: stretch;
   border-radius: 2.5rem;
   border: 1px solid var(--ivory, #E5DCCA);
-  background-color: ${({ isActive }) => (isActive ? '#E5DCCA' : 'transparent')}; /* 색상 변경 */
+  background-color: ${({ isActive }) => (isActive ? '#E5DCCA' : 'transparent')};
   color: ${({ isActive }) => (isActive ? '#171612' : '#E5DCCA')};
   opacity: ${({ isActive }) => (isActive ? '1' : '0.2')};
   font-weight: 800;
@@ -64,7 +50,6 @@ const ErrorMessage = styled.div`
 color: #FF5151;
 font-family: SUIT;
 font-size: 0.75rem;
-font-style: normal;
 font-weight: 400;
 line-height: 0.875rem;
 padding-left: 1rem;
@@ -121,7 +106,6 @@ const EmailInput = () => {
   return (
     <Whole onMouseDown={handleMouseDown}>
       <Title>어서오세요.</Title>
-      <Container>
         <Form onSubmit={handleSubmit} noValidate>
           <Input
             type="email"
@@ -136,7 +120,6 @@ const EmailInput = () => {
           {error && <ErrorMessage>{error}</ErrorMessage>} {/* 오류 메시지 표시 */}
           <Submit type="submit" value="계속하기"  isActive={isEmailNotEmpty} disabled={!isEmailNotEmpty}/>
         </Form>
-      </Container>
     </Whole>
   );
 };
