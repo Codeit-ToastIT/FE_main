@@ -89,8 +89,8 @@ const BackIcon = styled.svg`
 const LoginPage = () => {
 
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [password, setPassword] = useState(""); // 이메일 상태
-  const isPasswordNotEmpty = password.length > 0; // 이메일 입력 여부
+  const [pw, setPw] = useState(""); 
+  const isPwNotEmpty = pw.length > 0; 
   
     // 입력 필드 포커싱 
     useEffect(() => {
@@ -108,9 +108,9 @@ const LoginPage = () => {
       inputRef.current?.focus(); // 입력 필드에 포커스
     };
 
-      // 이메일 입력 시 상태 업데이트
-      const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setPassword(e.target.value); // 이메일 상태 업데이트
+      // 비밀번호 입력 시 상태 업데이트
+      const handlePwChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setPw(e.target.value); 
       };
 
 
@@ -129,13 +129,13 @@ const LoginPage = () => {
           name="password"
           placeholder="비밀번호를 입력해주세요."
           ref={inputRef}
-          value={password}
-          onChange={handlePasswordChange} // 이메일 상태 업데이트
+          value={pw}
+          onChange={handlePwChange} // 비밀번호 상태 업데이트
           // onInvalid={() => setError("비밀번호를 확인해주세요.")}
           autoComplete="off"
         />
         {/* {error && <ErrorMessage>{error}</ErrorMessage>}  */}
-        <Submit type="submit" value="계속하기"  isActive={isPasswordNotEmpty} disabled={!isPasswordNotEmpty}/>
+        <Submit type="submit" value="계속하기"  isActive={isPwNotEmpty} disabled={!isPwNotEmpty}/>
         </Form>
         <Link>비밀번호를 잊어버렸나요?</Link>
       </Container>
