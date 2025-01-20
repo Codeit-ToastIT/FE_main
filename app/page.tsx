@@ -4,7 +4,7 @@ import styled from "styled-components";
 import Splash from './components/ui/splash';
 import {useState} from 'react';
 import {motion} from 'framer-motion'
-
+import { useRouter } from 'next/navigation';
 
 const Whole = styled.div`
   display: flex;
@@ -75,11 +75,14 @@ const KakaoIcon = styled.img`
 `
 
 export default function Home() {
+  // Toast 로고 애니메이션 종료 후 컴포넌트 생성
   const [show, setShow] = useState(false);
 
   const handleAnimationComplete = () => {
     setShow(true);
   }
+
+  const router = useRouter();
 
   return (
     <Whole>
@@ -91,7 +94,7 @@ export default function Home() {
           transition={{ duration: 0.5, delay:0.5, ease: 'easeOut' }} // 100ms Ease out
         >
           <Discription>가입과 함께 약관에 동의합니다.</Discription>
-          <Button>
+          <Button onClick={() => {router.push('/pages/loginPage')}}>
             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
               <path d="M4.1999 6.5998L11.3169 11.5269C11.7278 11.8114 12.272 11.8114 12.683 11.5269L19.7999 6.5998M4.7999 19.1998H19.1999C20.5254 19.1998 21.5999 18.1253 21.5999 16.7998V7.1998C21.5999 5.87432 20.5254 4.7998 19.1999 4.7998H4.7999C3.47442 4.7998 2.3999 5.87432 2.3999 7.19981V16.7998C2.3999 18.1253 3.47442 19.1998 4.7999 19.1998Z" stroke="#171612" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
