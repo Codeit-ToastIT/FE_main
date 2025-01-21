@@ -2,6 +2,7 @@
 
 import { styled } from "styled-components";
 import React, { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const Whole = styled.div`
   display: inline-flex;
@@ -91,6 +92,7 @@ const LoginPage = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [pw, setPw] = useState(""); 
   const isPwNotEmpty = pw.length > 0; 
+  const router = useRouter();
   
     // 입력 필드 포커싱 
     useEffect(() => {
@@ -114,10 +116,17 @@ const LoginPage = () => {
       };
 
 
+      // BackIcon 클릭 시 이전 화면으로 이동
+      const handleBackClick = () => {
+        router.back(); // 이전 페이지로 이동
+      };
+
+
   return (
     <Whole onMouseDown={handleMouseDown}>
       <Header>
-        <BackIcon xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
+        
+        <BackIcon onClick={handleBackClick} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
         <path d="M14.4 16.7998L9.59998 11.9998L14.4 7.19981" stroke="#E5DCCA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         </BackIcon>
         <Title>로그인</Title>
