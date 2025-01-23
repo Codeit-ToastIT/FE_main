@@ -9,12 +9,23 @@ import BreadBox from '../../../public/Group 7.svg';
 import Image from 'next/image.js';
 import { LuChevronsUpDown } from 'react-icons/lu';
 
+interface ToastType {
+  title: string;
+  content: string;
+  date: Date;
+}
+
 const UserToasts = {
   Category: '브랜딩 수집',
   Toasts: [
-    { title: '어쩌구', content: '내용' },
-    { title: '어쩌구', content: '내용' },
-  ],
+    // {
+    //   title: '제목',
+    //   content:
+    //     '이제 filterToast를 <TextBody>로 감싸서 렌더링할 수 있습니다. TextBody 컴포넌트는 flex 레이아웃을 사용하여 자식 요소들을 세로로 나열하고, 각 요소 간의 간격을 설정합니다.',
+    //   date: new Date('2025-01-01'),
+    // },
+    // { title: '제목', content: '어쩌구', date: new Date('2025-01-01') },
+  ] as ToastType[],
 };
 
 const LoadToastPage = () => {
@@ -45,27 +56,36 @@ const LoadToastPage = () => {
       <Title>{UserToasts.Category}</Title>
       <Body>
         {filterToast.length > 0 ? (
-          filterToast.map((toast, index) => (
-            <TextBody key={index}>
+          <TextBody>
+            {filterToast.map((toast, index) => (
               <Toast
+                key={index}
                 index={index}
                 title={toast.title}
                 content={toast.content}
               />
-            </TextBody>
-          ))
+            ))}
+          </TextBody>
         ) : (
           <div
             style={{
               display: 'flex',
-              flexDirection: 'column',
               justifyContent: 'center',
               alignItems: 'center',
-              gap: '10px',
             }}
           >
-            <Image src={BreadBox} alt="bread box" />
-            <NoneText>브레드 박스가 비었어요.</NoneText>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                alignItems: 'center',
+                gap: '10px',
+              }}
+            >
+              <Image src={BreadBox} alt="bread box" />
+              <NoneText>브레드 박스가 비었어요.</NoneText>
+            </div>
           </div>
         )}
         <ScrollComponent>
@@ -114,11 +134,9 @@ const Body = styled.div`
   left: 0px;
   right: 0px;
   height: calc(100vh - 200px); /* 화면 전체 높이에서 상단 요소의 높이를 뺀 값 */
-  overflow-y: auto; /* 스크롤 가능하도록 설정 */
-  grid-template-columns: 50% 50%;
-  place-items: center;
-  display: grid;
   gap: 30px 0px;
+  display: grid;
+
   padding: 30px 10px 110px 10px;
   ::-webkit-scrollbar {
     display: none; /* 크롬, 사파리, 엣지 */
@@ -129,7 +147,10 @@ const Body = styled.div`
 `;
 
 const TextBody = styled.div`
-  display: flex;
+  grid-template-columns: 50% 50%;
+  display: grid;
+  place-items: center;
+  overflow-y: auto; /* 스크롤 가능하도록 설정 */
 `;
 
 const BackGround = styled.div`
@@ -171,7 +192,7 @@ const ScrollComponent = styled.div`
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  
+
   position: absolute;
   right: 7em;
   /* black */
