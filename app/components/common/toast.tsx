@@ -15,23 +15,69 @@ import Toast3 from '../../assets/toasts/toast3.png';
 import Toast4 from '../../assets/toasts/toast4.png';
 import Toast5 from '../../assets/toasts/toast5.png';
 
-const Toasts = styled(Image)`
-  display: block;
-  cursor: pointer; /* 클릭 가능하게 설정 */
-`;
-
-const toastImages = [Toast1, Toast2, Toast3, Toast4, Toast5]; // 이미지 배열
+const toastImages = [Toast1, Toast2, Toast3, Toast4, Toast5];
 
 const Toast: React.FC = () => {
   const [toastNumber, setToastNumber] = useState<string>(toastImages[0].src);
+  const [memo, setMemo] = useState<string>(() => {
+    // 컴포넌트가 처음 로드될 때 저장된 메모 불러오기
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('userMemo') || '';
+    }
+    return '';
+  });
 
   useEffect(() => {
-    // 랜덤으로 이미지 선택
     const randomToast = toastImages[Math.floor(Math.random() * toastImages.length)];
     setToastNumber(randomToast.src);
-  }, []); // 컴포넌트가 처음 렌더링될 때 실행
+  }, []);
 
-  return <Toasts src={toastNumber} alt="RandomToast" width={296} height={320} />;
+  const handleMemoChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setMemo(e.target.value);
+  };
+
+  return (
+    <ToastContainer>
+      <StyledToastImage src={toastNumber} alt="RandomToast" width={296} height={320} priority />
+      <MemoInput placeholder="메모를 입력하세요..." value={memo} onChange={handleMemoChange} />
+    </ToastContainer>
+  );
 };
 
 export default Toast;
+
+const ToastContainer = styled.div`
+  position: relative;
+  width: 296px;
+  height: 320px;
+`;
+
+const StyledToastImage = styled(Image)`
+  display: block;
+  border-radius: 10px;
+`;
+
+const MemoInput = styled.textarea`
+  position: absolute;
+  top: 20%; /* 이미지 내 적절한 위치로 조정 */
+  left: 45%;
+  transform: translateX(-50%);
+  width: 208px;
+  height: 240px;
+  background: transparent;
+  border: none;
+  font-size: 12px;
+  font-family: 'SUIT', sans-serif;
+  font-weight: 600;
+  line-height: 15px;
+  color: #974b00;
+  text-align: left;
+  resize: none;
+  outline: none;
+  padding: 8px;
+  box-sizing: border-box;
+
+  &::placeholder {
+    color: #974b00;
+  }
+`;

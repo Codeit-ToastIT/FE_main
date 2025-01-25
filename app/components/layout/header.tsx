@@ -17,12 +17,14 @@ const HeaderContainer = styled.header`
   align-items: center;
   background-color: #171612;
   color: #e5dcca;
-  padding: 10px 20px;
-  font-size: 1.5rem;
+  padding: 16px 24px;
 `;
 
 const Logo = styled.div`
-  font-weight: bold;
+  font-weight: 800;
+  font-size: 24px;
+  line-height: 24px;
+  font-family: 'SUIT', sans-serif;
 `;
 
 const IconWrapper = styled.div`
@@ -36,14 +38,15 @@ const Icons = styled(Image)`
 
 interface HeaderProps {
   title: string;
+  onHelpClick: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ title }) => {
+const Header: React.FC<HeaderProps> = ({ title, onHelpClick }) => {
   return (
     <HeaderContainer>
       <Logo>{title}</Logo>
       <IconWrapper>
-        <Icons src={helpIcon} alt="Help" width={24} height={24} />
+        <Icons src={helpIcon} alt="Help" width={24} height={24} onClick={onHelpClick} />
         <Icons src={userIcon} alt="User" width={24} height={24} />
       </IconWrapper>
     </HeaderContainer>
