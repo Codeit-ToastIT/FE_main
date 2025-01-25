@@ -15,7 +15,7 @@ import { EffectCoverflow } from 'swiper/modules';
 import Image from 'next/image';
 
 import deleteIcon from '../../assets/icons/delete_button_icon.png';
-import ToastFrame from './toast';
+import ToastFrame from './BasicToast';
 
 const Body: React.FC = () => {
   const slides = [1, 2, 3];

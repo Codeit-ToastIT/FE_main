@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { FiSearch } from 'react-icons/fi';
 import { IoIosArrowBack } from 'react-icons/io';
-import Toast from '@/app/components/common/Toast';
+import Toast from '@/app/components/common/BasicToast';
 import BreadBox from '../../../public/Group 7.svg';
 import Image from 'next/image.js';
 import { LuChevronsUpDown } from 'react-icons/lu';
@@ -51,11 +51,7 @@ const LoadToastPage = () => {
         <BackButton>
           <IoIosArrowBack className="back" />
         </BackButton>
-        <SearchBar
-          placeholder="검색어를 입력해주세요"
-          onChange={onChange}
-          value={searchToast}
-        />
+        <SearchBar placeholder="검색어를 입력해주세요" onChange={onChange} value={searchToast} />
         <FiSearch className="glasses" size={22} />
       </SearchComponent>
       <Title>{UserToasts.Category}</Title>
@@ -63,12 +59,7 @@ const LoadToastPage = () => {
         {filterToast.length > 0 ? (
           <TextBody>
             {filterToast.map((toast, index) => (
-              <Toast
-                key={index}
-                index={index}
-                title={toast.title}
-                content={toast.content}
-              />
+              <Toast key={index} index={index} title={toast.title} content={toast.content} />
             ))}
           </TextBody>
         ) : (
@@ -104,8 +95,7 @@ const LoadToastPage = () => {
 export default LoadToastPage;
 
 const SearchBar = styled.input`
-  background: linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)),
-    #171612;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), #171612;
   border-radius: 40px;
   border-width: 0;
   padding: 13px;
