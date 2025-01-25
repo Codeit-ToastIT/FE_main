@@ -2,17 +2,30 @@
  * 파일명: createToastPage/page.tsx
  * 작성일: 2025-01-25
  * 작성자: 이서연
- * 설명: PR 최종 
+ * 설명: PR 최종
  */
 
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import SaveToast from '../../components/SaveToast';
+
 import Home from './home';
+import Help from './help';
 
 export default function CreateToastPage() {
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  useEffect(() => {
+    // 최초 방문 여부 확인 후 온보딩 표시
+    const onboardingViewed = localStorage.getItem('onboardingViewed');
+    if (!onboardingViewed) {
+      setShowOnboarding(true);
+      localStorage.setItem('onboardingViewed', 'true'); // 최초 방문 시 저장
+    }
+  }, []);
+
   const [isLongPress, setIsLongPress] = useState(false);
   const [pressTimeout, setPressTimeout] = useState<NodeJS.Timeout | null>(null);
   const [showSaveMessage, setShowSaveMessage] = useState<string | null>(null); // 저장 메시지 상태
@@ -44,7 +57,8 @@ export default function CreateToastPage() {
 
   return (
     <div>
-      <Home />
+      <Home onHelpClick={() => setShowOnboarding(true)} />
+      {showOnboarding && <Help onClose={() => setShowOnboarding(false)} />}
       <Container
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
@@ -71,12 +85,11 @@ export default function CreateToastPage() {
         )}
         {showSaveMessage && (
           <SaveMessage>
-            <SaveBold>{showSaveMessage.split('에 저장되었어요.')[0]}</SaveBold>에
-            저장되었어요.
+            <SaveBold>{showSaveMessage.split('에 저장되었어요.')[0]}</SaveBold>에 저장되었어요.
           </SaveMessage>
         )}
       </Container>
-     </div>
+    </div>
   );
 }
 
