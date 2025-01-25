@@ -25,6 +25,11 @@ const UserToasts = {
     //   date: new Date('2025-01-01'),
     // },
     // { title: '제목', content: '어쩌구', date: new Date('2025-01-01') },
+    // { title: '제목', content: '어쩌구', date: new Date('2025-01-01') },
+    // { title: '제목', content: '어쩌구', date: new Date('2025-01-01') },
+    // { title: '제목', content: '어쩌구', date: new Date('2025-01-01') },
+    // { title: '제목', content: '어쩌구', date: new Date('2025-01-01') },
+    // { title: '제목', content: '어쩌구', date: new Date('2025-01-01') },
   ] as ToastType[],
 };
 
