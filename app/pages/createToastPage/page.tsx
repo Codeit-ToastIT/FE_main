@@ -1,8 +1,8 @@
 /**
  * 파일명: createToastPage/page.tsx
- * 작성일: 2025-01-23
- * 작성자: 임사랑
- * 설명: 메모 저장 컴포넌트 호출, props 전달, 저장완료 문구 표시를 위한 home 코드 작성
+ * 작성일: 2025-01-25
+ * 작성자: 이서연
+ * 설명: PR 최종 
  */
 
 'use client';
@@ -10,6 +10,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import SaveToast from '../../components/SaveToast';
+import Home from './home';
 
 export default function CreateToastPage() {
   const [isLongPress, setIsLongPress] = useState(false);
@@ -42,37 +43,40 @@ export default function CreateToastPage() {
   };
 
   return (
-    <Container
-      onMouseDown={handleMouseDown}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
-    >
-      <TitleInput
-        placeholder="제목을 입력하세요"
-        value={title || ''}
-        onChange={(e) => setTitle(e.target.value || null)}
-      />
-      <ContentInput
-        placeholder="내용을 입력하세요"
-        value={content || ''}
-        onChange={(e) => setContent(e.target.value || null)}
-      />
-      {isLongPress && (
-        <SaveToast
-          onClose={handleCloseModal}
-          onSave={(category) => console.log(`Saved to category: ${category}`)}
-          memoId={memoId}
-          title={title}
-          content={content}
+    <div>
+      <Home />
+      <Container
+        onMouseDown={handleMouseDown}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+      >
+        <TitleInput
+          placeholder="제목을 입력하세요"
+          value={title || ''}
+          onChange={(e) => setTitle(e.target.value || null)}
         />
-      )}
-      {showSaveMessage && (
-        <SaveMessage>
-          <SaveBold>{showSaveMessage.split('에 저장되었어요.')[0]}</SaveBold>에
-          저장되었어요.
-        </SaveMessage>
-      )}
-    </Container>
+        <ContentInput
+          placeholder="내용을 입력하세요"
+          value={content || ''}
+          onChange={(e) => setContent(e.target.value || null)}
+        />
+        {isLongPress && (
+          <SaveToast
+            onClose={handleCloseModal}
+            onSave={(category) => console.log(`Saved to category: ${category}`)}
+            memoId={memoId}
+            title={title}
+            content={content}
+          />
+        )}
+        {showSaveMessage && (
+          <SaveMessage>
+            <SaveBold>{showSaveMessage.split('에 저장되었어요.')[0]}</SaveBold>에
+            저장되었어요.
+          </SaveMessage>
+        )}
+      </Container>
+     </div>
   );
 }
 
