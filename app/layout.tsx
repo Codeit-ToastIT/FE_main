@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import StyledComponentsRegistry from '@/registry';
-import localFont from 'next/font/local';
+// import localFont from 'next/font/local';
 
-const myFont = localFont({ src: './fonts/SUIT-Variable.woff2' });
+// const myFont = localFont({ src: './fonts/SUIT-Variable.woff2' });
 
 export const metadata: Metadata = {
   title: 'Toast-it',
@@ -22,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={myFont.className}>
+    <html lang="en" suppressHydrationWarning>
       <body>
         <StyledComponentsRegistry>
           <div

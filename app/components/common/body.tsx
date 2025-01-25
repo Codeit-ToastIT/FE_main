@@ -14,7 +14,7 @@ import 'swiper/css/effect-coverflow';
 import { EffectCoverflow } from 'swiper/modules';
 import Image from 'next/image';
 
-import deleteIcon from '../../assets/icons/delete_button_icon.png';
+import iconTrash from '../../assets/icons/icon_trash.svg';
 import ToastFrame from './BasicToast';
 
 const Body: React.FC = () => {
@@ -22,7 +22,7 @@ const Body: React.FC = () => {
 
   return (
     <HeaderContainer>
-      <DeleteIcon src={deleteIcon} alt="Delete" width={40} height={40} priority />
+      <DeleteIcon src={iconTrash} alt="Delete" width={40} height={40} priority />
       <Swiper
         effect="coverflow"
         grabCursor

@@ -2,8 +2,8 @@ import React from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
 
-import SaveGestureIcon from '../../assets/icons/save_gesture_icon.png';
-import OpenGestureIcon from '../../assets/icons/open_gesture_icon.png';
+import SaveGestureIcon from '../../assets/gestures/press_one.svg';
+import OpenGestureIcon from '../../assets/gestures/press_double.svg';
 
 interface HelpProps {
   onClose: () => void;

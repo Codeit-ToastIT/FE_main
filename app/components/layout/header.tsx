@@ -1,15 +1,35 @@
 /**
  * 파일명: header.tsx
- * 작성일: 2025-01-17
+ * 작성일: 2025-01-26
  * 작성자: 이서연
- * 설명: header 컴포넌트 구현.
+ * 설명: 코드 정리
  */
 
 import React from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
-import helpIcon from '../../assets/icons/help_icon.png';
-import userIcon from '../../assets/icons/user_icon.png';
+
+import iconHelp from '../../assets/icons/icon_help.svg';
+import iconUser from '../../assets/icons/icon_profile.svg';
+
+interface HeaderProps {
+  title: string;
+  onHelpClick: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ title, onHelpClick }) => {
+  return (
+    <HeaderContainer>
+      <Logo>{title}</Logo>
+      <IconWrapper>
+        <Icons src={iconHelp} alt="Help" width={24} height={24} onClick={onHelpClick} />
+        <Icons src={iconUser} alt="User" width={24} height={24} />
+      </IconWrapper>
+    </HeaderContainer>
+  );
+};
+
+export default Header;
 
 const HeaderContainer = styled.header`
   display: flex;
@@ -35,22 +55,3 @@ const IconWrapper = styled.div`
 const Icons = styled(Image)`
   cursor: pointer;
 `;
-
-interface HeaderProps {
-  title: string;
-  onHelpClick: () => void;
-}
-
-const Header: React.FC<HeaderProps> = ({ title, onHelpClick }) => {
-  return (
-    <HeaderContainer>
-      <Logo>{title}</Logo>
-      <IconWrapper>
-        <Icons src={helpIcon} alt="Help" width={24} height={24} onClick={onHelpClick} />
-        <Icons src={userIcon} alt="User" width={24} height={24} />
-      </IconWrapper>
-    </HeaderContainer>
-  );
-};
-
-export default Header;
