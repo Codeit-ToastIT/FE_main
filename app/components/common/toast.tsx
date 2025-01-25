@@ -12,7 +12,14 @@ interface ToastProps {
 const Toast: React.FC<ToastProps> = ({ index, title, content }) => {
   return (
     <ImageWrapper key={index}>
-      <Image src={burnt1} alt="burnt" layout="fixed" width={145} height={145} objectFit="cover" />
+      <Image
+        src={burnt1}
+        alt="burnt"
+        layout="fixed"
+        width={145}
+        height={145}
+        objectFit="cover"
+      />
       <TextOverlay>
         <ContentText>{content}</ContentText>
       </TextOverlay>
