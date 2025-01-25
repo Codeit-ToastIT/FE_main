@@ -8,7 +8,7 @@ body {
   overflow-x: hidden;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen,
     Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
-  background-color: #ffffff; /* 기본 배경색 */
+  background-color: #171612; /* 기본 배경색 */
 }
 
 #__next {
@@ -26,6 +26,6 @@ body {
 
 @media (width: 375px) and (height: 812px) {
   body {
-    background-color: #f5f5f5; /* 아이폰 13 미니 전용 배경 */
+    background-color: #171612; /* 아이폰 13 미니 전용 배경 */
   }
 }
