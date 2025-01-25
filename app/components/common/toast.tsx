@@ -1,6 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import Image from 'next/image.js';
+import { useState, useEffect } from 'react';
 
 import Toast1 from '../../assets/toasts/toast1.png';
 import Toast2 from '../../assets/toasts/toast2.png';
