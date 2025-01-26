@@ -15,14 +15,15 @@ import { EffectCoverflow } from 'swiper/modules';
 import Image from 'next/image';
 
 import iconTrash from '../../assets/icons/icon_trash.svg';
-import ToastFrame from './BasicToast';
+import BasicToast from './BasicToast';
+import Title from './Title';
 
-const Body: React.FC = () => {
+export default function Body() {
   const slides = [1, 2, 3];
 
   return (
     <HeaderContainer>
-      <DeleteIcon src={iconTrash} alt="Delete" width={40} height={40} priority />
+      <IconTrash src={iconTrash} alt="Trash" priority />
       <Swiper
         effect="coverflow"
         grabCursor
@@ -46,15 +47,14 @@ const Body: React.FC = () => {
       >
         {slides.map((_, index) => (
           <StyledSwiperSlide key={index}>
-            <Toast />
+            <StyledTitle />
+            <StyledBasicToast />
           </StyledSwiperSlide>
         ))}
       </Swiper>
     </HeaderContainer>
   );
-};
-
-export default React.memo(Body);
+}
 
 const HeaderContainer = styled.header`
   display: flex;
@@ -68,19 +68,50 @@ const HeaderContainer = styled.header`
   overflow: hidden;
 `;
 
-const DeleteIcon = styled(Image)`
+const IconTrash = styled(Image)`
   position: absolute;
   top: 16px;
   right: 16px;
   cursor: pointer;
-`;
-
-const Toast = styled(ToastFrame)`
-  cursor: pointer;
+  display: flex;
+  width: 40px;
+  height: 40px;
+  padding: 8px;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  border-radius: 40px;
+  background: var(
+    --black,
+    linear-gradient(0deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.2) 100%),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.2) 100%),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.2) 100%),
+    linear-gradient(0deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.2) 100%),
+    #171612
+  );
 `;
 
 const StyledSwiperSlide = styled(SwiperSlide)`
   display: flex;
   justify-content: center;
   align-items: center;
+  height: 360px;
+`;
+
+const StyledTitle = styled(Title)`
+  display: flex;
+  width: 280px;
+  height: 24px;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+  margin: 16px;
+`;
+
+const StyledBasicToast = styled(BasicToast)`
+  cursor: pointer;
+  box-sizing: border-box
+  width: 296px;
+  height: 320px;
+  flex-shrink: 0;
 `;

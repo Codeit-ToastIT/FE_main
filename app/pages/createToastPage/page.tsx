@@ -59,7 +59,6 @@ export default function CreateToastPage() {
     <div>
       <Home onHelpClick={() => setShowOnboarding(true)} />
       {showOnboarding && <Help onClose={() => setShowOnboarding(false)} />}
-
       <Container
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
