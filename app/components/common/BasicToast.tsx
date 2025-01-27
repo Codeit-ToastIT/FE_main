@@ -46,9 +46,9 @@ export default function Toast() {
     //   fetchMemo();
   }, []);
 
-  // 클릭 시 메모 입력 페이지로 이동(임시 라우터 주소)
+  // 클릭 시 메모 입력 페이지로 이동
   const handleToastClick = () => {
-    router.push('/memo-input');
+    router.push('/pages/memoInput');
   };
 
   return (

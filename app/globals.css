@@ -34,6 +34,12 @@ body {
   box-sizing: border-box;
 }
 
+:root {
+  --black: rgba(0, 0, 0);
+  --ivory: #e5dcca;
+  --brown: #473728;
+}
+
 @media (width: 375px) and (height: 812px) {
   body {
     background-color: #171612; /* 아이폰 13 미니 전용 배경 */

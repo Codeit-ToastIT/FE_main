@@ -18,7 +18,7 @@ interface HeaderProps {
   onProfileClick: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ title, onHelpClick, onProfileClick }) => {
+export default function Header({ title, onHelpClick, onProfileClick }: HeaderProps) {
   return (
     <HeaderContainer>
       <Logo>{title}</Logo>
@@ -28,9 +28,7 @@ const Header: React.FC<HeaderProps> = ({ title, onHelpClick, onProfileClick }) =
       </IconWrapper>
     </HeaderContainer>
   );
-};
-
-export default Header;
+}
 
 const HeaderContainer = styled.header`
   display: flex;
