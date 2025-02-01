@@ -17,18 +17,26 @@ import iconTrash from '../../assets/icons/icon_trash.svg';
 import BasicToast from './BasicToast';
 import DeleteModal from './DeleteModal';
 
-export default function Body() {
+interface BodyProps {
+  deletedMemoId?: string; // ✅ 삭제된 메모 ID를 props로 받음
+}
+
+export default function Body({ deletedMemoId }: BodyProps) {
   const [showPlus, setShowPlus] = useState(false);
 
   const [slides, setSlides] = useState<number[]>([1, 2, 3]);
+  const uniqueSlides = Array.from(new Set(slides));
 
-  const [selectedSlide, setSelectedSlide] = useState<number | null>(null);
+  const [selectedSlide, setSelectedSlide] = useState<number | null>(slides[0]);
   const [showModal, setShowModal] = useState(false);
   const [swiperKey, setSwiperKey] = useState(0); // ✅ Swiper 리렌더링을 위한 Key 추가
 
   const [showToastMessage, setShowToastMessage] = useState(false);
   const [showDeleteMessage, setShowDeleteMessage] = useState(false);
+  const [showDeleteErrorMessage, setShowDeleteErrorMessage] = useState(false); // ❌ 삭제 실패 메시지 추가
+
   const [isSwiperActive, setIsSwiperActive] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const [dragging, setDragging] = useState(false);
   const offsetXRef = useRef(0);
@@ -48,32 +56,72 @@ export default function Body() {
     }
   }, [showDeleteMessage]);
 
+  useEffect(() => {
+    if (showDeleteErrorMessage) {
+      const timer = setTimeout(() => setShowDeleteErrorMessage(false), 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [showDeleteErrorMessage]);
+
+  // ✅ deletedMemoId가 있으면 슬라이드에서 제거
+  useEffect(() => {
+    if (deletedMemoId) {
+      setSlides((prevSlides) => prevSlides.filter((slide) => slide.toString() !== deletedMemoId));
+    }
+  }, [deletedMemoId]);
+
   // ✅ "휴지통 아이콘" 클릭 시 모달 열기
   const handleModalToggle = (id: number) => {
     setSelectedSlide(id); // 현재 선택된 슬라이드 저장
     setShowModal(true);
   };
 
-  // ✅ "먹어버리기" 버튼 클릭 시 슬라이드 삭제 및 정리
-  const handleDeleteToast = () => {
-    if (selectedSlide !== null) {
-      setSlides((prevSlides) => {
-        let newSlides = prevSlides.filter((slide) => slide !== selectedSlide);
+  // ✅ "먹어버리기" 버튼 클릭 시 API 호출하여 토스트 삭제
+  const handleDeleteToast = async () => {
+    if (selectedSlide === null) return;
+    setLoading(true);
 
-        if (newSlides.length === 0) {
-          // ✅ 양쪽에 토스트가 없으면 새로운 토스트 추가
-          newSlides = [selectedSlide + 1];
-        }
-
-        return newSlides;
+    try {
+      const response = await fetch(`/api/memos/${selectedSlide}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer sdfajkljadklsvjlkafjsd`,
+          // Authorization: `Bearer ${localStorage.getItem('authToken')}`, // ✅ 토큰 추가
+          // 'Content-Type': 'application/json',
+        },
       });
-      setShowDeleteMessage(true);
 
-      setSwiperKey((prev) => prev + 1);
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log('✅ 토스트 삭제 성공:', data.message);
+
+        setSlides((prevSlides) => {
+          let newSlides = prevSlides.filter((slide) => slide !== selectedSlide);
+
+          if (newSlides.length === 0) {
+            newSlides = [selectedSlide + 1]; // ✅ 새 토스트 추가
+          }
+
+          return newSlides;
+        });
+
+        setShowDeleteMessage(true);
+      } else {
+        console.error('❌ 토스트 삭제 실패:', data.message);
+        setShowDeleteErrorMessage(true);
+      }
+    } catch (error) {
+      console.error('❌ 삭제 요청 오류:', error);
+      setShowDeleteErrorMessage(true);
+    } finally {
+      setLoading(false);
       setShowModal(false);
+      setSwiperKey((prev) => prev + 1);
     }
   };
 
+  // ✅ 새로운 토스트 추가 모션 로직
   const handleTouchStart = (e: React.TouchEvent) => {
     if (isSwiperActive) return;
     setDragging(true);
@@ -113,15 +161,16 @@ export default function Body() {
       <IconTrash
         src={iconTrash}
         alt="Trash"
-        onClick={() => handleModalToggle(slides[0])}
+        onClick={() => selectedSlide !== null && handleModalToggle(selectedSlide)} // ✅ 현재 선택된 슬라이드 삭제
         priority
       />
 
       <Swiper
+        key={swiperKey}
         effect={'coverflow'}
         grabCursor={true}
         centeredSlides={true}
-        slidesPerView={Math.min(3, slides.length)}
+        slidesPerView={Math.min(3, uniqueSlides.length)}
         coverflowEffect={{
           rotate: 0,
           stretch: 240,
@@ -136,10 +185,13 @@ export default function Body() {
           left: '50%',
           transform: 'translate(-50%, -50%)',
         }}
+        onSlideChange={(swiper) => {
+          setSelectedSlide(uniqueSlides[swiper.realIndex]); // ✅ 현재 선택된 슬라이드 ID 업데이트
+        }}
         onTouchStart={() => setIsSwiperActive(true)}
         onTouchEnd={() => setIsSwiperActive(false)}
       >
-        {slides.map((id) => (
+        {uniqueSlides.map((id) => (
           <StyledSwiperSlide key={id}>
             <StyledBasicToast />
           </StyledSwiperSlide>
@@ -148,6 +200,8 @@ export default function Body() {
 
       {showToastMessage && <ToastMessage>새 토스트를 추가했어요.</ToastMessage>}
       {showDeleteMessage && <ToastMessage>토스트 하나를 버렸어요.</ToastMessage>}
+      {showDeleteErrorMessage && <ErrorMessageBox>삭제를 실패하였습니다.</ErrorMessageBox>}
+
       <DeleteModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
@@ -211,4 +265,8 @@ const ToastMessage = styled.div`
   font-style: normal;
   font-weight: 400;
   line-height: 16px;
+`;
+
+const ErrorMessageBox = styled(ToastMessage)`
+  background: rgba(80, 15, 15, 0.8);
 `;

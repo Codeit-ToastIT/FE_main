@@ -2,7 +2,7 @@
  * 파일명: MemoHeader.tsx
  * 작성일: 2025-01-27
  * 작성자: 이서연
- * 설명: 메모 작성(editing) 화면 header 부분 UI 설계.
+ * 설명: 메모 삭제 로직 구현.
  */
 
 import React, { useState, useEffect } from 'react';
@@ -23,6 +23,7 @@ export default function MemoHeader({ toastId }: MemoHeaderProps) {
   const router = useRouter();
   const [title, setTitle] = useState<string>('');
   const [showModal, setShowModal] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (toastId) {
@@ -45,12 +46,40 @@ export default function MemoHeader({ toastId }: MemoHeaderProps) {
     setShowModal(true); // ✅ 삭제 모달 띄우기
   };
 
-  // ✅ 메모 삭제 함수
-  const handleDeleteMemo = () => {
-    localStorage.removeItem(`memoTitle_${toastId}`);
-    localStorage.removeItem(`memo_${toastId}`);
+  // ✅ 메모 삭제 함수 (백엔드 연동)
+  const handleDeleteMemo = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/memos/${toastId}`, {
+        method: 'DELETE',
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`, // ✅ 토큰 추가
+          'Content-Type': 'application/json',
+        },
+      });
 
-    router.push('/pages/createToastPage'); // ✅ 홈 화면으로 이동
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log('✅ 메모 삭제 성공:', data.message);
+
+        // ✅ localStorage에서도 해당 메모 삭제
+        localStorage.removeItem(`memoTitle_${toastId}`);
+        localStorage.removeItem(`memo_${toastId}`);
+
+        // ✅ 홈 화면으로 이동하면서 "삭제 상태"를 전달
+        router.push('/pages/createToastPage?deleted=true');
+      } else {
+        console.error('❌ 메모 삭제 실패:', data.message);
+        // ✅ 실패 시 `deletedError=true` 상태 전달
+        router.push('/pages/createToastPage?deletedError=true');
+      }
+    } catch (error) {
+      console.error('❌ 메모 삭제 요청 오류:', error);
+      router.push('/pages/createToastPage?deletedError=true');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

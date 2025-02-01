@@ -5,7 +5,8 @@
  * 설명: header, body 스타일 수정.
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'next/navigation';
 import styled from 'styled-components';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
@@ -24,11 +25,37 @@ export default function Home({ onHelpClick }: HomeProps) {
     router.push(`/pages/myPage`);
   };
 
+  const searchParams = useSearchParams();
+  const [showDeletedMessage, setShowDeletedMessage] = useState(false);
+  const [showDeleteErrorMessage, setShowDeleteErrorMessage] = useState(false);
+  const [deletedMemoId, setDeletedMemoId] = useState<string | null>(null); // ✅ 삭제된 메모 ID 상태 추가
+
+  useEffect(() => {
+    if (searchParams.get('deleted') === 'true') {
+      setShowDeletedMessage(true);
+      setTimeout(() => setShowDeletedMessage(false), 2000);
+    }
+    if (searchParams.get('deletedError') === 'true') {
+      setShowDeleteErrorMessage(true);
+      setTimeout(() => setShowDeleteErrorMessage(false), 2000);
+    }
+
+    // ✅ 삭제된 메모 ID 가져오기
+    const memoId = searchParams.get('deletedMemoId');
+    if (memoId) {
+      setDeletedMemoId(memoId);
+    }
+  }, [searchParams]);
+
   return (
     <div>
       <StyledHeader title="TOAST IT" onHelpClick={onHelpClick} onProfileClick={onProfileClick} />
       <IconAdd src={iconAdd} alt="Add" />
-      <StyledBody />
+      {showDeletedMessage && <DeletedMessage>삭제되었습니다.</DeletedMessage>}
+      {showDeleteErrorMessage && <ErrorMessageBox>삭제를 실패하였습니다.</ErrorMessageBox>}
+
+      {/* ✅ Body에 deletedMemoId 전달 */}
+      <StyledBody deletedMemoId={deletedMemoId} />
     </div>
   );
 }
@@ -49,6 +76,24 @@ const IconAdd = styled(Image)`
   height: 80px;
   flex-shrink: 0;
   opacity: 0.9;
+`;
+
+const DeletedMessage = styled.div`
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 16px;
+  background: rgba(0, 0, 0, 0.8);
+  color: #fff;
+  border-radius: 20px;
+  font-size: 14px;
+  z-index: 1000;
+  animation: fadeInOut 2s ease-in-out;
+`;
+
+const ErrorMessageBox = styled.div`
+  background: rgba(255, 0, 0, 0.8);
 `;
 
 const StyledBody = styled(Body)`
