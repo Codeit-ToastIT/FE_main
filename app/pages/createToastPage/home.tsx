@@ -5,15 +5,12 @@
  * 설명: header, body 스타일 수정.
  */
 
+// 임사랑 - 프레스 씹힘 문제로 Swiper 사용 삭제
+
 import React from 'react';
 import styled from 'styled-components';
 import Header from '../../components/layout/header';
 import Body from '../../components/common/body';
-
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/css';
-import 'swiper/css/effect-coverflow';
-import { EffectCoverflow } from 'swiper/modules';
 
 interface HomeProps {
   onHelpClick: () => void;
@@ -24,25 +21,7 @@ export default function Home({ onHelpClick, onProfileClick }: HomeProps) {
   return (
     <div>
       <StyledHeader title="TOAST IT" onHelpClick={onHelpClick} onProfileClick={onProfileClick} />
-      <Swiper
-        effect="coverflow"
-        grabCursor
-        centeredSlides
-        slidesPerView={1}
-        coverflowEffect={{
-          rotate: -20,
-          stretch: 250,
-          depth: 95,
-          modifier: 1,
-          slideShadows: false,
-        }}
-        pagination
-        modules={[EffectCoverflow]}
-      >
-        <SwiperSlide>
-          <StyledBody />
-        </SwiperSlide>
-      </Swiper>
+      <StyledBody />
     </div>
   );
 }

@@ -5,7 +5,7 @@
  * 설명: 메모 저장 컴포넌트 구현
  */
 
-// 화면 사이즈 조절 필요
+// 화면 사이즈 조절 필요, 코드 분리 필요(코드 너무 길어짐)
 
 'use client';
 
@@ -23,30 +23,36 @@ interface SaveToastProps {
   content: string | null; // 내용
 }
 
-const SaveToast: React.FC<SaveToastProps> = ({
-  onClose,
-  onSave,
-  memoId,
-  title,
-  content,
-}) => {
+const SaveToast: React.FC<SaveToastProps> = ({ onClose, onSave, memoId, title, content }) => {
   const [position, setPosition] = useState({ x: 0, y: 0 }); // 식빵 위치
   const [activeSlice, setActiveSlice] = useState<number | null>(null); // 활성화된 조각 (0~3)
   const [isDragging, setIsDragging] = useState(false); // 드래그 상태 확인
   const [showHint, setShowHint] = useState(false); // 힌트 표시 여부
+  const [showSaveMessage, setShowSaveMessage] = useState<string | null>(null); // 저장 메시지 상태
   let inactivityTimeout: NodeJS.Timeout;
 
   useEffect(() => {
     console.log('Memo Info:', { memoId, title, content });
   }, [memoId, title, content]);
 
+  useEffect(() => {
+    // SaveToast가 처음 렌더링될 때 힌트 타이머 시작
+    resetInactivityTimeout();
+
+    // 마우스 움직임 및 클릭 이벤트 리스너 추가
+    window.addEventListener('mousemove', resetInactivityTimeout);
+    window.addEventListener('mousedown', resetInactivityTimeout);
+
+    return () => {
+      // 이벤트 리스너 정리
+      clearTimeout(inactivityTimeout);
+      window.removeEventListener('mousemove', resetInactivityTimeout);
+      window.removeEventListener('mousedown', resetInactivityTimeout);
+    };
+  }, []);
+
   // 카테고리 이름. 추후 api로 교체 필요
-  const categoryNames = [
-    '카테고리 1',
-    '카테고리 2',
-    '카테고리 3',
-    '카테고리 4',
-  ];
+  const categoryNames = ['카테고리 1', '카테고리 2', '카테고리 3', '카테고리 4'];
 
   // 마우스 이벤트
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -78,16 +84,33 @@ const SaveToast: React.FC<SaveToastProps> = ({
     });
   };
 
+  // ✅ 효과음 재생 함수 추가
+  const playSaveSound = () => {
+    const audio = new Audio('/sounds/toaster_save.wav'); // 효과음 경로
+    audio
+      .play()
+      .then(() => console.log('✅ 효과음 재생 성공'))
+      .catch((error) => console.error('❌ 효과음 재생 실패:', error));
+  };
+
   const handleMouseUp = () => {
     setIsDragging(false); // 드래그 종료
     if (activeSlice !== null) {
       const selectedCategory = categoryNames[activeSlice];
 
-      // 제목이 null인 경우 현재 날짜로 설정
+      if (typeof onSave === 'function') {
+        onSave(selectedCategory);
+        playSaveSound(); // 효과음 재생 추가
+      } else {
+        console.error('onSave is not a function');
+      }
+
       const now = new Date();
       const currentTitle =
         title ||
-        `${now.getFullYear()}년 ${String(now.getMonth() + 1).padStart(2, '0')}월 ${String(now.getDate()).padStart(2, '0')}일`;
+        `${now.getFullYear()}년 ${String(now.getMonth() + 1).padStart(2, '0')}월 ${String(
+          now.getDate(),
+        ).padStart(2, '0')}일`;
 
       console.log({
         memoId,
@@ -115,47 +138,58 @@ const SaveToast: React.FC<SaveToastProps> = ({
 
     const touch = e.touches[0];
     setPosition((prev) => {
-      const newX = Math.min(
-        16,
-        Math.max(-16, touch.clientX - window.innerWidth / 2),
-      );
-      const newY = Math.min(
-        16,
-        Math.max(-16, touch.clientY - window.innerHeight / 2),
-      );
+      const newX = Math.min(16, Math.max(-16, touch.clientX - window.innerWidth / 2));
+      const newY = Math.min(16, Math.max(-16, touch.clientY - window.innerHeight / 2));
 
-      checkCollision(newX, newY);
+      // 최대치 16px까지 도달해야만 카테고리 선택 가능
+      if (Math.abs(newX) === 16 || Math.abs(newY) === 16) {
+        checkCollision(newX, newY);
+      } else {
+        setActiveSlice(null); // 최대치 미만 이동 시 카테고리 선택 해제
+      }
+
       return { x: newX, y: newY };
     });
   };
 
   const handleTouchEnd = () => {
     setIsDragging(false); // 드래그 종료
+
+    // 중앙 근방(오차 범위 16px)으로 돌아왔을 경우 저장 취소
+    const isNearCenter = Math.abs(position.x) < 16 && Math.abs(position.y) < 16;
+
+    if (isNearCenter || activeSlice === null) {
+      console.log('저장을 취소했어요.');
+      setShowSaveMessage('저장을 취소했어요.'); // 취소 메시지 표시
+      setTimeout(() => {
+        setShowSaveMessage(null); // 2초 후 메시지 사라지게 설정
+      }, 2000);
+      setPosition({ x: 0, y: 0 }); // 위치 초기화
+      setActiveSlice(null); // 활성화된 카테고리 초기화
+      onClose(''); // 모달 닫기 (카테고리 없이)
+      return; // 저장 로직 실행되지 않도록 여기서 종료!
+    }
+
     if (activeSlice !== null) {
       const selectedCategory = categoryNames[activeSlice];
-
-      // 제목이 null인 경우 현재 날짜로 설정
-      const now = new Date();
-      const currentTitle =
-        title ||
-        `${now.getFullYear()}년 ${String(now.getMonth() + 1).padStart(2, '0')}월 ${String(now.getDate()).padStart(2, '0')}일`;
 
       console.log({
         memoId,
         category: selectedCategory,
-        title: currentTitle,
+        title,
         content,
       });
 
       onSave(selectedCategory); // 선택된 카테고리 전달
       onClose(selectedCategory); // 선택된 카테고리 전달
     }
+
     setPosition({ x: 0, y: 0 });
     setActiveSlice(null);
   };
 
   const checkCollision = (x: number, y: number) => {
-    const threshold = 20;
+    const threshold = 16; // 16px 이상 이동해야 선택 가능
     let closestSlice: number | null = null;
     let minDistance = Infinity;
 
@@ -166,7 +200,12 @@ const SaveToast: React.FC<SaveToastProps> = ({
       { id: 3, dx: -threshold, dy: 0 }, // 왼쪽 조각
     ];
 
-    // 각 조각과의 거리 계산
+    // 최대 이동 거리(16px) 도달했을 때만 계산
+    if (Math.abs(x) < threshold && Math.abs(y) < threshold) {
+      setActiveSlice(null);
+      return;
+    }
+
     for (const slice of slices) {
       const distance = Math.sqrt((x - slice.dx) ** 2 + (y - slice.dy) ** 2);
       if (distance < minDistance && distance <= threshold) {
@@ -181,8 +220,10 @@ const SaveToast: React.FC<SaveToastProps> = ({
   const resetInactivityTimeout = () => {
     clearTimeout(inactivityTimeout);
     setShowHint(false); // 힌트 숨김
+
+    // 일정 시간(2초) 동안 움직임이 없으면 힌트 표시
     inactivityTimeout = setTimeout(() => {
-      setShowHint(true); // 2초 동안 아무 동작 없을 시 힌트 표시
+      setShowHint(true);
     }, 2000);
   };
 
@@ -223,11 +264,7 @@ const SaveToast: React.FC<SaveToastProps> = ({
           {/* 상단 조각 */}
           <CategoryWrapper>
             <Category
-              src={
-                activeSlice === 0
-                  ? selectedCategoryImage.src
-                  : categorySliceImage.src
-              }
+              src={activeSlice === 0 ? selectedCategoryImage.src : categorySliceImage.src}
               style={{
                 transform: 'translateY(-81.9px) rotate(0deg)',
               }}
@@ -240,11 +277,7 @@ const SaveToast: React.FC<SaveToastProps> = ({
           {/* 오른쪽 조각 */}
           <CategoryWrapper>
             <Category
-              src={
-                activeSlice === 1
-                  ? selectedCategoryImage.src
-                  : categorySliceImage.src
-              }
+              src={activeSlice === 1 ? selectedCategoryImage.src : categorySliceImage.src}
               style={{
                 transform: 'translateX(81px) translateY(-0.5px) rotate(90deg)',
               }}
@@ -257,11 +290,7 @@ const SaveToast: React.FC<SaveToastProps> = ({
           {/* 하단 조각 */}
           <CategoryWrapper>
             <Category
-              src={
-                activeSlice === 2
-                  ? selectedCategoryImage.src
-                  : categorySliceImage.src
-              }
+              src={activeSlice === 2 ? selectedCategoryImage.src : categorySliceImage.src}
               style={{
                 transform: 'translateY(81px) rotate(180deg)',
               }}
@@ -274,14 +303,9 @@ const SaveToast: React.FC<SaveToastProps> = ({
           {/* 왼쪽 조각 */}
           <CategoryWrapper>
             <Category
-              src={
-                activeSlice === 3
-                  ? selectedCategoryImage.src
-                  : categorySliceImage.src
-              }
+              src={activeSlice === 3 ? selectedCategoryImage.src : categorySliceImage.src}
               style={{
-                transform:
-                  'translateX(-81.3px) translateY(-0.4px) rotate(-90deg)',
+                transform: 'translateX(-81.3px) translateY(-0.4px) rotate(-90deg)',
               }}
               alt="카테고리 왼쪽"
             />
