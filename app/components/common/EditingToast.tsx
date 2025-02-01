@@ -8,27 +8,32 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 
-export default function EditingToast({ initialValue }) {
+interface EditingToastProps {
+  toastId: string; // 고유한 toastId를 props로 받음
+}
+
+export default function EditingToast({ toastId }: EditingToastProps) {
   const [text, setText] = useState('');
 
   useEffect(() => {
-    setText(initialValue || '');
-  }, [initialValue]);
+    if (toastId) {
+      const savedMemo = localStorage.getItem(`memo_${toastId}`);
+      if (savedMemo) setText(savedMemo);
+    }
+  }, [toastId]);
+
+  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const newText = e.target.value;
+    setText(newText);
+    localStorage.setItem(`memo_${toastId}`, newText); // ID별로 저장
+  };
 
   return (
-    <>
-      <StyledPadding />
-      <StyledTextArea value={text} onChange={(e) => setText(e.target.value)}></StyledTextArea>
-    </>
+    <div>
+      <StyledTextArea value={text} onChange={handleTextChange}></StyledTextArea>
+    </div>
   );
 }
-
-const StyledPadding = styled.div`
-  width: 375px;
-  height: 34px;
-  flex-shrink: 0;
-  background: linear-gradient(180deg, #e5dcca 0%, rgba(229, 220, 202, 0.2) 100%);
-`;
 
 const StyledTextArea = styled.textarea`
   width: 100%;
@@ -46,6 +51,7 @@ const StyledTextArea = styled.textarea`
   background: none;
   resize: none;
   padding: 0px 32px 32px 32px;
+  background: var(--ivory);
 
   ::-webkit-scrollbar {
     display: none;

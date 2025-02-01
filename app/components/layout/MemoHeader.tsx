@@ -2,27 +2,72 @@
  * 파일명: MemoHeader.tsx
  * 작성일: 2025-01-27
  * 작성자: 이서연
- * 설명: 메모 작성 화면 header 부분 UI 설계.
+ * 설명: 메모 작성(editing) 화면 header 부분 UI 설계.
  */
 
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
 
 import iconBack from '../../assets/icons/icon_back.svg';
 import iconTrash from '../../assets/icons/icon_trash.svg';
 
+import DeleteModal from '../common/DeleteModal';
+
 interface MemoHeaderProps {
-  onBackClick: () => void;
-  onTrashClick: () => void;
+  toastId: string; // ✅ 개별 토스트 ID를 받아옴
 }
 
-export default function MemoHeader({ onBackClick, onTrashClick }: MemoHeaderProps) {
+export default function MemoHeader({ toastId }: MemoHeaderProps) {
+  const router = useRouter();
+  const [title, setTitle] = useState<string>('');
+  const [showModal, setShowModal] = useState(false);
+
+  useEffect(() => {
+    if (toastId) {
+      const savedTitle = localStorage.getItem(`memoTitle_${toastId}`);
+      if (savedTitle) setTitle(savedTitle);
+    }
+  }, [toastId]);
+
+  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTitle = e.target.value;
+    setTitle(newTitle);
+    localStorage.setItem(`memoTitle_${toastId}`, newTitle); // ✅ ID별로 저장
+  };
+
+  const handleBackClick = () => {
+    router.push('/pages/createToastPage');
+  };
+
+  const handleDeleteClick = () => {
+    setShowModal(true); // ✅ 삭제 모달 띄우기
+  };
+
+  // ✅ 메모 삭제 함수
+  const handleDeleteMemo = () => {
+    localStorage.removeItem(`memoTitle_${toastId}`);
+    localStorage.removeItem(`memo_${toastId}`);
+
+    router.push('/pages/createToastPage'); // ✅ 홈 화면으로 이동
+  };
+
   return (
     <HeaderContainer>
-      <IconBack src={iconBack} alt="Back" onClick={onBackClick} />
-      <TitleInput type="text" placeholder="토스트의 제목을 입력해주세요." />
-      <IconTrash src={iconTrash} alt="Trash" onClick={onTrashClick} />
+      <IconBack src={iconBack} alt="Back" onClick={handleBackClick} />
+      <TitleInput
+        type="text"
+        placeholder="토스트의 제목을 입력해주세요."
+        value={title}
+        onChange={handleTitleChange}
+      />
+      <IconTrash src={iconTrash} alt="Trash" onClick={handleDeleteClick} />
+      <DeleteModal
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        onConfirm={handleDeleteMemo}
+      />
     </HeaderContainer>
   );
 }
