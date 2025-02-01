@@ -46,14 +46,14 @@ export default function MemoHeader({ toastId }: MemoHeaderProps) {
     setShowModal(true); // ✅ 삭제 모달 띄우기
   };
 
-  // ✅ 메모 삭제 함수 (백엔드 연동)
+  // ✅ 삭제 실패 상태를 localStorage에 저장하도록 변경
   const handleDeleteMemo = async () => {
     setLoading(true);
     try {
       const response = await fetch(`/api/memos/${toastId}`, {
         method: 'DELETE',
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('authToken')}`, // ✅ 토큰 추가
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
           'Content-Type': 'application/json',
         },
       });
@@ -67,18 +67,23 @@ export default function MemoHeader({ toastId }: MemoHeaderProps) {
         localStorage.removeItem(`memoTitle_${toastId}`);
         localStorage.removeItem(`memo_${toastId}`);
 
-        // ✅ 홈 화면으로 이동하면서 "삭제 상태"를 전달
-        router.push('/pages/createToastPage?deleted=true');
+        // ✅ 삭제 성공 상태 저장
+        localStorage.setItem('deletedMemoId', toastId);
+        localStorage.setItem('deleteSuccess', 'true');
       } else {
         console.error('❌ 메모 삭제 실패:', data.message);
-        // ✅ 실패 시 `deletedError=true` 상태 전달
-        router.push('/pages/createToastPage?deletedError=true');
+
+        // ✅ 삭제 실패 상태 저장
+        localStorage.setItem('deleteError', 'true');
       }
     } catch (error) {
       console.error('❌ 메모 삭제 요청 오류:', error);
-      router.push('/pages/createToastPage?deletedError=true');
+
+      // ✅ 삭제 실패 상태 저장
+      localStorage.setItem('deleteError', 'true');
     } finally {
       setLoading(false);
+      router.push('/pages/createToastPage'); // ✅ 홈 화면으로 이동
     }
   };
 

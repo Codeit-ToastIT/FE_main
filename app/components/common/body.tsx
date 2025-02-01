@@ -63,12 +63,20 @@ export default function Body({ deletedMemoId }: BodyProps) {
     }
   }, [showDeleteErrorMessage]);
 
-  // ✅ deletedMemoId가 있으면 슬라이드에서 제거
   useEffect(() => {
-    if (deletedMemoId) {
-      setSlides((prevSlides) => prevSlides.filter((slide) => slide.toString() !== deletedMemoId));
+    // ✅ localStorage에서 삭제된 메모 ID 가져오기
+    const memoId = localStorage.getItem('deletedMemoId');
+    if (memoId) {
+      setSlides((prevSlides) => prevSlides.filter((slide) => slide.toString() !== memoId));
+      localStorage.removeItem('deletedMemoId'); // ✅ 삭제 후 상태 초기화
     }
-  }, [deletedMemoId]);
+
+    // ✅ 삭제 실패 상태 확인
+    if (localStorage.getItem('deleteError') === 'true') {
+      setShowDeleteErrorMessage(true);
+      localStorage.removeItem('deleteError'); // ✅ 삭제 후 상태 초기화
+    }
+  }, []);
 
   // ✅ "휴지통 아이콘" 클릭 시 모달 열기
   const handleModalToggle = (id: number) => {

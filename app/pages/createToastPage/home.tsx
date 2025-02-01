@@ -51,8 +51,6 @@ export default function Home({ onHelpClick }: HomeProps) {
     <div>
       <StyledHeader title="TOAST IT" onHelpClick={onHelpClick} onProfileClick={onProfileClick} />
       <IconAdd src={iconAdd} alt="Add" />
-      {showDeletedMessage && <DeletedMessage>삭제되었습니다.</DeletedMessage>}
-      {showDeleteErrorMessage && <ErrorMessageBox>삭제를 실패하였습니다.</ErrorMessageBox>}
 
       {/* ✅ Body에 deletedMemoId 전달 */}
       <StyledBody deletedMemoId={deletedMemoId} />
