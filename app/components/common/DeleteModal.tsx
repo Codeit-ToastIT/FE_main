@@ -55,8 +55,9 @@ const ModalContainer = styled.div`
   backdrop-filter: blur(4px);
 `;
 
-const Message = styled.p`
+const Message = styled.div`
   color: var(--black, #171612);
+  padding-top: 20px;
   text-align: center;
   font-family: SUIT;
   font-size: 16px;
