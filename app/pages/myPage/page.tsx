@@ -5,10 +5,10 @@
  * 설명: 마이페이지 임시 화면 구현.
  */
 
-"use client";
+'use client';
 
 import React, { useState } from 'react';
-import styled from 'styled-components'; 
+import styled from 'styled-components';
 import styles from './MyPage.module.css'; // styled-components로 변환 후 삭제 예정
 
 interface MyPageProps {
@@ -19,17 +19,17 @@ interface MyPageProps {
 const MyPage: React.FC<MyPageProps> = ({ userEmail, isPremiumUser }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [categories, setCategories] = useState({
-    top: "카테고리 1",
-    right: "카테고리 2",
-    bottom: "카테고리 3",
-    left: "카테고리 4",
+    top: '카테고리 1',
+    right: '카테고리 2',
+    bottom: '카테고리 3',
+    left: '카테고리 4',
   });
   const [editingCategory, setEditingCategory] = useState<string | null>(null);
-  const [tempCategoryName, setTempCategoryName] = useState("");
+  const [tempCategoryName, setTempCategoryName] = useState('');
 
   // 기본값 설정
-  const displayedEmail = userEmail || "test@example.com";
-  const userPlan = isPremiumUser ? "유료 플랜 이용중" : "무료 플랜 이용중";
+  const displayedEmail = userEmail || 'test@example.com';
+  const userPlan = isPremiumUser ? '유료 플랜 이용중' : '무료 플랜 이용중';
 
   const toggleMyPage = () => {
     setIsOpen((prev) => !prev);
@@ -47,7 +47,7 @@ const MyPage: React.FC<MyPageProps> = ({ userEmail, isPremiumUser }) => {
         [editingCategory]: tempCategoryName,
       });
       setEditingCategory(null);
-      setTempCategoryName("");
+      setTempCategoryName('');
     }
   };
 
@@ -60,11 +60,7 @@ const MyPage: React.FC<MyPageProps> = ({ userEmail, isPremiumUser }) => {
 
       {/* MyPage */}
       <div
-        className={
-          isOpen
-            ? `${styles.myPage} ${styles.open}`
-            : `${styles.myPage} ${styles.closed}`
-        }
+        className={isOpen ? `${styles.myPage} ${styles.open}` : `${styles.myPage} ${styles.closed}`}
       >
         <div className={styles.email}>{displayedEmail}</div>
         <div className={styles.plan}>{userPlan}</div>
@@ -77,7 +73,7 @@ const MyPage: React.FC<MyPageProps> = ({ userEmail, isPremiumUser }) => {
               <div
                 key={position}
                 className={`${styles.menuItem} ${styles[position]} ${
-                  editingCategory === position ? styles.editing : ""
+                  editingCategory === position ? styles.editing : ''
                 }`}
                 onClick={() => startEditing(position)}
               >
@@ -95,7 +91,7 @@ const MyPage: React.FC<MyPageProps> = ({ userEmail, isPremiumUser }) => {
               </div>
             ))}
           </div>
-          <button className={styles.centerButton} onClick={() => startEditing("center")}>
+          <button className={styles.centerButton} onClick={() => startEditing('center')}>
             <img src="/iconbutton.png" alt="Edit Button" />
           </button>
         </div>
