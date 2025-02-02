@@ -26,40 +26,40 @@ export default function CreateToastPage() {
     }
   }, []);
 
-  const [isLongPress, setIsLongPress] = useState(false);
-  const [pressTimeout, setPressTimeout] = useState<NodeJS.Timeout | null>(null);
-  const [showSaveMessage, setShowSaveMessage] = useState<string | null>(null); // 저장 메시지 상태
+  // const [isLongPress, setIsLongPress] = useState(false);
+  // const [pressTimeout, setPressTimeout] = useState<NodeJS.Timeout | null>(null);
+  // const [showSaveMessage, setShowSaveMessage] = useState<string | null>(null); // 저장 메시지 상태
 
-  // 메모 ID, 제목, 내용 상태
-  const [memoId] = useState(() => '1');
-  const [title, setTitle] = useState<string | null>(null);
-  const [content, setContent] = useState<string | null>(null);
+  // // 메모 ID, 제목, 내용 상태
+  // const [memoId] = useState(() => '1');
+  // const [title, setTitle] = useState<string | null>(null);
+  // const [content, setContent] = useState<string | null>(null);
 
-  const handleMouseDown = () => {
-    const timeout = setTimeout(() => setIsLongPress(true), 2000); // 2초 누르면 SaveToast 표시
-    setPressTimeout(timeout);
-  };
+  // const handleMouseDown = () => {
+  //   const timeout = setTimeout(() => setIsLongPress(true), 2000); // 2초 누르면 SaveToast 표시
+  //   setPressTimeout(timeout);
+  // };
 
-  const handleMouseUp = () => {
-    if (pressTimeout) clearTimeout(pressTimeout); // 타이머 취소
-    setPressTimeout(null);
-  };
+  // const handleMouseUp = () => {
+  //   if (pressTimeout) clearTimeout(pressTimeout); // 타이머 취소
+  //   setPressTimeout(null);
+  // };
 
-  const handleCloseModal = (selectedCategory?: string) => {
-    setIsLongPress(false); // SaveToast 닫기
-    if (selectedCategory) {
-      // 저장 완료 메시지 설정
-      setShowSaveMessage(`${selectedCategory}에 저장되었어요.`);
-      // 메시지 2초 후 사라지기
-      setTimeout(() => setShowSaveMessage(null), 2000);
-    }
-  };
+  // const handleCloseModal = (selectedCategory?: string) => {
+  //   setIsLongPress(false); // SaveToast 닫기
+  //   if (selectedCategory) {
+  //     // 저장 완료 메시지 설정
+  //     setShowSaveMessage(`${selectedCategory}에 저장되었어요.`);
+  //     // 메시지 2초 후 사라지기
+  //     setTimeout(() => setShowSaveMessage(null), 2000);
+  //   }
+  // };
 
   return (
     <div>
       <Home onHelpClick={() => setShowOnboarding(true)} />
       {showOnboarding && <Help onClose={() => setShowOnboarding(false)} />}
-      <Container
+      {/* <Container
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
@@ -88,7 +88,7 @@ export default function CreateToastPage() {
             <SaveBold>{showSaveMessage.split('에 저장되었어요.')[0]}</SaveBold>에 저장되었어요.
           </SaveMessage>
         )}
-      </Container>
+      </Container> */}
     </div>
   );
 }

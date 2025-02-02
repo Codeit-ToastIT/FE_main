@@ -1,0 +1,209 @@
+@font-face {
+  font-family: 'SUIT-Regular';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_suit@1.0/SUIT-Regular.woff2')
+    format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
+.container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.centerBox {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px;
+  height: 300px;
+  background-color: #f0f0f0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #ccc;
+}
+.circularMenu {
+  margin-top: 10px;
+  position: relative;
+  width: 320px;
+  height: 320px;
+}
+.circularMenuImage {
+  width: 100%;
+  height: 100%;
+  padding: 15px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.menuCenter {
+  position: relative;
+  z-index: 10;
+}
+
+.centerButton {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  border: none;
+  border-radius: 50%;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+  box-shadow: none;
+}
+
+.icon {
+  font-size: 16px;
+}
+.menuItems {
+  z-index: 2;
+}
+
+.menuItem {
+  position: absolute;
+  width: 75px;
+  height: 30px;
+  text-align: center;
+  font-family: 'SUIT-Regular';
+  font-size: 12px;
+  font-weight: normal;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.menuItem.editing {
+  color: yellow;
+}
+
+.inlineInput {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 12px;
+  text-align: center;
+  outline: none;
+}
+
+.menuItem.top {
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.menuItem.right {
+  top: 50%;
+  right: 25px;
+  transform: translateY(-50%);
+}
+
+.menuItem.bottom {
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.menuItem.left {
+  top: 50%;
+  left: 25px;
+  transform: translateY(-50%);
+}
+
+.centerButton {
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border: none;
+  background-color: transparent;
+  z-index: 3;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.menuLabel {
+  width: 100%;
+  text-align: center;
+}
+
+.toggleButton {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 1000;
+}
+
+.myPage {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 320px;
+  height: 100vh;
+  background-color: #eaeaea;
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+  transform: translateX(100%);
+  transition: transform 0.3s ease-in-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 999;
+  border-top-left-radius: 40px;
+  border-bottom-left-radius: 40px;
+}
+
+.myPage.open {
+  transform: translateX(0);
+}
+
+.myPage.closed {
+  transform: translateX(100%);
+}
+.email {
+  margin-top: 96px;
+  font-family: 'SUIT-Regular';
+  font-size: 12px;
+  text-align: center;
+}
+.plan {
+  margin-top: 5px;
+  font-family: 'SUIT-Regular';
+  font-size: 12px;
+  font-weight: 600;
+  text-align: center;
+}
+.iconButton {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-family: 'SUIT-Regular';
+  font-size: 16px;
+  color: #000;
+  cursor: pointer;
+}
+.buttonLabel {
+  font-size: 16px;
+  font-weight: bold;
+  text-align: center;
+}
