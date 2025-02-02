@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import Image from 'next/image.js';
-import burnt1 from '../../../public/burnt1.png';
+import burnt1 from '../../../public/toasts/burnt1.png';
 
 interface ToastProps {
   index: number;
@@ -26,6 +26,10 @@ export default Toast;
 const ImageWrapper = styled.div`
   position: relative;
   height: auto;
+  ::-webkit-scrollbar {
+    display: none; /* 크롬, 사파리, 엣지 */
+  }
+  scrollbar-width: none; /* Firefox */
 `;
 
 const TextOverlay = styled.div`
@@ -76,4 +80,5 @@ const TitleText = styled.div`
   /* or 125% */
   text-align: center;
   color: black;
+  margin-bottom: 10px;
 `;
