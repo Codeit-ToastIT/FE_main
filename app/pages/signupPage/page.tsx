@@ -3,6 +3,7 @@
 import { styled } from "styled-components";
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import SubmitButton from '../../components/common/SubmitButton';
 
 const Whole = styled.div`
   display: inline-flex;
@@ -52,19 +53,6 @@ const Input = styled.input`
   padding-left: 1rem;
   font-weight: 600;
 `
-
-const Submit = styled.input.withConfig({
-  shouldForwardProp: (prop) => !['isActive'].includes(prop)
-})<{ isActive: boolean }>`
-  display: flex;
-  height: 2.5rem;
-  border-radius: 2.5rem;
-  border: 1px solid var(--ivory, #E5DCCA);
-  background-color: ${({ isActive }) => (isActive ? '#E5DCCA' : 'transparent')};
-  color: ${({ isActive }) => (isActive ? '#171612' : '#E5DCCA')};
-  opacity: ${({ isActive }) => (isActive ? '1' : '0.2')};
-  font-weight: 800;
-`;
 
 const BackIcon = styled.svg`
   width: 1.5rem;
@@ -200,7 +188,9 @@ const SignupPage = () => {
           </div>
           {!isPwValid && <ErrorMessage>아직 8자리가 아니에요.</ErrorMessage>} {/* 오류 메시지 조건부 렌더링 */}
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>} {/* 오류 메시지 표시 */}
-          <Submit type="submit" value="계속하기"  isActive={isPwValid && pw === pwCheck} disabled={!isPwValid || pw !== pwCheck}/>
+          <SubmitButton 
+          isActive={isPwValid && pw === pwCheck} 
+          />
         </Form>
       </Container>
     </Whole>

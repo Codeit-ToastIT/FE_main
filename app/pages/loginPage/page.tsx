@@ -3,6 +3,7 @@
 import { styled } from "styled-components";
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import SubmitButton from '../../components/common/SubmitButton';
 
 const Whole = styled.div`
   display: inline-flex;
@@ -52,19 +53,6 @@ const Input = styled.input`
   padding-left: 1rem;
   font-weight: 600;
 `
-
-const Submit = styled.input.withConfig({
-  shouldForwardProp: (prop) => !['isActive'].includes(prop)
-})<{ isActive: boolean }>`
-  display: flex;
-  height: 2.5rem;
-  border-radius: 2.5rem;
-  border: 1px solid var(--ivory, #E5DCCA);
-  background-color: ${({ isActive }) => (isActive ? '#E5DCCA' : 'transparent')};
-  color: ${({ isActive }) => (isActive ? '#171612' : '#E5DCCA')};
-  opacity: ${({ isActive }) => (isActive ? '1' : '0.2')};
-  font-weight: 800;
-`;
 
 const Link = styled.div`
   color: var(--ivory, #E5DCCA);
@@ -122,6 +110,12 @@ const LoginPage = () => {
       };
 
 
+      const handleSubmit = () => {
+        // 비밀번호 제출 로직 추가
+        console.log("비밀번호 제출:", pw);
+      };
+
+
   return (
     <Whole onMouseDown={handleMouseDown}>
       <Header>
@@ -144,7 +138,10 @@ const LoginPage = () => {
           autoComplete="off"
         />
         {/* {error && <ErrorMessage>{error}</ErrorMessage>}  */}
-        <Submit type="submit" value="계속하기"  isActive={isPwNotEmpty} disabled={!isPwNotEmpty}/>
+        <SubmitButton 
+            isActive={isPwNotEmpty} 
+            onClick={handleSubmit} // 클릭 시 처리
+        />
         </Form>
         <Link>비밀번호를 잊어버렸나요?</Link>
       </Container>
