@@ -145,18 +145,49 @@ export default function Body({ deletedMemoId }: BodyProps) {
     }
   };
 
-  const handleTouchEnd = () => {
-    if (showPlus) {
-      setShowToastMessage(true);
-      setSlides((prevSlides) => [prevSlides.length + 1, ...prevSlides].slice(0, 3));
-    }
+  // ✅ "오른쪽으로 드래그" 시 새로운 메모 생성
+  const handleTouchEnd = async () => {
+    if (!showPlus) return;
     setShowPlus(false);
-    setDragging(false);
-    if (bodyRef.current) {
-      bodyRef.current.style.transition = 'transform 0.3s ease-out';
-      bodyRef.current.style.transform = 'translateX(0px)';
+
+    try {
+      const response = await fetch(`/api/memos`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
+        },
+        body: JSON.stringify({
+          title: new Date().toISOString().split('T')[0], // ✅ 오늘 날짜로 제목 설정
+          content: '새로운 영감을 적어볼까요?', // ✅ 기본 내용 설정
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log('✅ 새 메모 생성 성공:', data);
+
+        setSlides((prevSlides) => [data.note.id, ...prevSlides]);
+        setShowToastMessage(true);
+      } else {
+        console.error('❌ 메모 생성 실패:', data.message);
+      }
+    } catch (error) {
+      console.error('❌ 메모 생성 요청 오류:', error);
+    } finally {
+      if (showPlus) {
+        setShowToastMessage(true);
+        setSlides((prevSlides) => [prevSlides.length + 1, ...prevSlides].slice(0, 3));
+      }
+      setShowPlus(false);
+      setDragging(false);
+      if (bodyRef.current) {
+        bodyRef.current.style.transition = 'transform 0.3s ease-out';
+        bodyRef.current.style.transform = 'translateX(0px)';
+      }
+      setTimeout(() => bodyRef.current && (bodyRef.current.style.transition = ''), 300);
     }
-    setTimeout(() => bodyRef.current && (bodyRef.current.style.transition = ''), 300);
   };
 
   return (
