@@ -9,6 +9,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { v4 as uuidv4 } from 'uuid';
 
 import Toast1 from '../../../public/toasts/toast1.png';
 import Toast2 from '../../../public/toasts/toast2.png';
@@ -18,41 +19,37 @@ import Toast5 from '../../../public/toasts/toast5.png';
 
 const toastImages = [Toast1, Toast2, Toast3, Toast4, Toast5];
 
-export default function Toast() {
-  const [toastNumber, setToastNumber] = useState<string>(toastImages[0].src);
-  const [memo, setMemo] = useState<string>('');
+interface ToastProps {
+  toastid?: string; // 개별 Toast의 ID
+}
+
+export default function BasicToast({ toastid }: ToastProps) {
   const router = useRouter();
+  const [toastId] = useState(toastid || uuidv4()); // 기존 ID 없으면 새로 생성
+  const [toastNumber, setToastNumber] = useState<string>(toastImages[0].src);
+  const [memoTitle, setMemoTitle] = useState<string>('');
+  const [memo, setMemo] = useState<string>('');
 
   useEffect(() => {
-    // 랜덤으로 토스트 이미지를 선택
+    // 랜덤으로 토스트 이미지 선택
     const randomToast = toastImages[Math.floor(Math.random() * toastImages.length)];
     setToastNumber(randomToast.src);
 
-    // 백엔드에서 메모 데이터 불러오기
-    //   const fetchMemo = async () => {
-    //     try {
-    //       const response = await fetch('/api/memo'); // 백엔드 API 엔드포인트
-    //       if (response.ok) {
-    //         const data = await response.json();
-    //         setMemo(data.memo); // 받아온 데이터를 상태로 설정
-    //       } else {
-    //         console.error('Failed to fetch memo');
-    //       }
-    //     } catch (error) {
-    //       console.error('Error fetching memo:', error);
-    //     }
-    //   };
+    // 해당 Toast ID에 대한 메모 데이터 불러오기
+    const savedTitle = localStorage.getItem(`memoTitle_${toastId}`);
+    const savedMemo = localStorage.getItem(`memo_${toastId}`);
 
-    //   fetchMemo();
-  }, []);
+    if (savedTitle) setMemoTitle(savedTitle);
+    if (savedMemo) setMemo(savedMemo);
+  }, [toastId]);
 
-  // 클릭 시 메모 입력 페이지로 이동(임시 라우터 주소)
   const handleToastClick = () => {
-    router.push('/memo-input');
+    router.push(`/pages/memoInput?id=${toastId}`); // ✅ ID 포함하여 이동
   };
 
   return (
     <ToastContainer onClick={handleToastClick}>
+      <MemoTitleDisplay>{memoTitle || '제목없음'}</MemoTitleDisplay>
       <StyledToastImage src={toastNumber} alt="RandomToast" width={296} height={320} priority />
       <MemoDisplay>{memo || '새로운 영감을 적어볼까요?'}</MemoDisplay>
     </ToastContainer>
@@ -62,7 +59,7 @@ export default function Toast() {
 const ToastContainer = styled.div`
   position: relative;
   width: 296px;
-  height: 320px;
+  height: 360px;
   cursor: pointer;
 `;
 
@@ -74,9 +71,23 @@ const StyledToastImage = styled(Image)`
   flex-shrink: 0;
 `;
 
+const MemoTitleDisplay = styled.div`
+  position: relative;
+  margin-bottom: 16px;
+  background: transparent;
+  border: none;
+  outline: none;
+  display: flex;
+  width: 280px;
+  height: 24px;
+  justify-content: center;
+  align-items: center;
+  flex-shrink: 0;
+`;
+
 const MemoDisplay = styled.div`
   position: absolute;
-  top: 5%;
+  top: 12%;
   left: 50%;
   transform: translateX(-50%);
   background: transparent;
