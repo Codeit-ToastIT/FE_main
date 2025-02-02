@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { useEmail } from '../../context/EmailContext';
 import styled from 'styled-components';
 
@@ -63,7 +63,7 @@ const Form = styled.form`
   gap: 0.5rem;
 `;
 
-const EmailInput = () => {
+const EmailInputPage = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [email, setEmail] = useState(""); // 이메일 상태
   const [error, setError] = useState(""); // 오류 메시지 상태
@@ -99,20 +99,26 @@ const EmailInput = () => {
       setEmailContext(email); // 이메일 상태 업데이트
 
       // 이메일 등록 여부 확인 API 호출
-      const response = await fetch('/api/check-email', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }),
-      });
-
-      const data = await response.json();
-
-      if (data.exists) {
-        // 로그인 페이지로 이동
-        router.push('/login');
-      } else {
-        // 회원가입 페이지로 이동
-        router.push('/signup');
+      try {
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        });
+  
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
+        }
+  
+        const data = await response.json();
+  
+        if (data.exists) {
+          router.push('/pages/loginPage');
+        } else {
+          router.push('/pages/signupPage');
+        }
+      } catch (error) {
+        console.error('이메일 확인 중 오류 발생', error);
       }
     }
   };
@@ -143,4 +149,4 @@ const EmailInput = () => {
   );
 };
 
-export default EmailInput;
+export default EmailInputPage;
