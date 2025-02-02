@@ -10,7 +10,7 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import Header from '../../components/layout/header';
-import { useRouter } from "next/navigation"; // Next.js 라우터 추가
+import { useRouter } from "next/navigation";
 
 interface MyPageProps {
   userEmail: string;
@@ -225,10 +225,9 @@ const MenuItem = styled.div<{ position: string }>`
     position === "left" && "left: 10px; top: 50%; transform: translateY(-50%);"}
 `;
 
-/* 카테고리 텍스트의 고정 폭 래퍼 */
 const CategoryText = styled.span`
   display: inline-block;
-  width: 80px; /* 원하는 고정폭으로 설정 */
+  width: 80px;
   text-align: center;
   overflow: hidden;
   white-space: nowrap;
@@ -245,7 +244,6 @@ const InlineInput = styled.input`
   width: 100%;
   padding: 0;
   margin: 0;
-  /* 텍스트가 길어져도 잘리도록 */
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
