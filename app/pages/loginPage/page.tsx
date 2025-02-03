@@ -51,7 +51,15 @@ const Input = styled.input`
   outline: none;
   color: #E5DCCA;
   padding-left: 1rem;
+  overflow: hidden;
+  color: var(--ivory, #E5DCCA);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: SUIT;
+  font-size: 1rem;
+  font-style: normal;
   font-weight: 600;
+  line-height: normal;
 `
 
 const Link = styled.div`
@@ -65,6 +73,7 @@ const Link = styled.div`
   text-decoration-style: solid;
   text-underline-position: from-font;
   margin-top: 0.5rem;
+  cursor: pointer;
 `
 
 const BackIcon = styled.svg`
@@ -115,6 +124,10 @@ const LoginPage = () => {
         console.log("비밀번호 제출:", pw);
       };
 
+      const handleLinkClick = () => {
+        router.push("/pages/resetPWPage"); // 홈으로 이동
+      };
+
 
   return (
     <Whole onMouseDown={handleMouseDown}>
@@ -143,7 +156,7 @@ const LoginPage = () => {
             onClick={handleSubmit} // 클릭 시 처리
         />
         </Form>
-        <Link>비밀번호를 잊어버렸나요?</Link>
+        <Link onClick={handleLinkClick}>비밀번호를 잊어버렸나요?</Link>
       </Container>
     </Whole>
   )

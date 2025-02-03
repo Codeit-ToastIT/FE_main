@@ -11,7 +11,12 @@ const StyledButton = styled.input.withConfig({
   background-color: ${({ isActive }) => (isActive ? '#E5DCCA' : 'transparent')};
   color: ${({ isActive }) => (isActive ? '#171612' : '#E5DCCA')};
   opacity: ${({ isActive }) => (isActive ? '1' : '0.2')};
+  text-align: center;
+  font-family: SUIT;
+  font-size: 1rem;
+  font-style: normal;
   font-weight: 800;
+  line-height: normal;
 `;
 
 interface SubmitButtonProps {
