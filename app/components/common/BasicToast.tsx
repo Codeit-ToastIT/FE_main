@@ -49,7 +49,7 @@ export default function BasicToast({ toastid }: ToastProps) {
 
   return (
     <ToastContainer onClick={handleToastClick}>
-      <MemoTitleDisplay>{memoTitle || '제목없음'}</MemoTitleDisplay>
+      <MemoTitleDisplay>{memoTitle || null}</MemoTitleDisplay>
       <StyledToastImage src={toastNumber} alt="RandomToast" width={296} height={320} priority />
       <MemoDisplay>{memo || '새로운 영감을 적어볼까요?'}</MemoDisplay>
     </ToastContainer>

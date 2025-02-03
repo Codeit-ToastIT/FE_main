@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import StyledComponentsRegistry from '@/registry';
+import StyledComponentsRegistry from '../registry';
 
 export const metadata: Metadata = {
   title: 'Toast-it',

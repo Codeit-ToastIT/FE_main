@@ -2,8 +2,8 @@
 
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import Toast from '@/app/components/common/Toast';
-import SearchBarComponent from '@/app/components/common/SearchBarComponent';
+import Toast from '../../components/common/toast';
+import SearchBarComponent from '../../components/common/SearchBarComponent';
 import BreadBox from '../../../public/Group 7.svg';
 import Image from 'next/image.js';
 // import { PiCaretCircleUpDownFill } from 'react-icons/pi';

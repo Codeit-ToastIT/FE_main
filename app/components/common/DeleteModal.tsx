@@ -4,10 +4,11 @@ import styled from 'styled-components';
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onConfirm: () => void;
+  // onConfirm: () => void;
+  onClick: () => void;
 }
-
-export default function Modal({ isOpen, onClose, onConfirm }: ModalProps) {
+//onConfirm
+export default function Modal({ isOpen, onClose, onClick }: ModalProps) {
   if (!isOpen) return null;
 
   return (
@@ -21,7 +22,7 @@ export default function Modal({ isOpen, onClose, onConfirm }: ModalProps) {
 
         <ButtonContainer>
           <CancelButton onClick={onClose}>취소</CancelButton>
-          <DeleteButton onClick={onConfirm}>먹어버리기</DeleteButton>
+          <DeleteButton onClick={onClick}>먹어버리기</DeleteButton>
         </ButtonContainer>
       </ModalContainer>
     </Overlay>
