@@ -26,102 +26,83 @@ export default function CreateToastPage() {
     }
   }, []);
 
-  // const [isLongPress, setIsLongPress] = useState(false);
-  // const [pressTimeout, setPressTimeout] = useState<NodeJS.Timeout | null>(null);
-  // const [showSaveMessage, setShowSaveMessage] = useState<string | null>(null); // 저장 메시지 상태
+  // ------------------------------------------------------------- 임사랑 - SaveToast 관련 추가되는 부분
+  const [isLongPress, setIsLongPress] = useState(false);
+  const [pressTimeout, setPressTimeout] = useState<NodeJS.Timeout | null>(null);
+  const [showSaveMessage, setShowSaveMessage] = useState<string | null>(null); // 저장 메시지 상태
 
-  // // 메모 ID, 제목, 내용 상태
-  // const [memoId] = useState(() => '1');
-  // const [title, setTitle] = useState<string | null>(null);
-  // const [content, setContent] = useState<string | null>(null);
+  // 메모 ID, 제목, 내용 상태
+  const [memoId] = useState(() => '1');
+  const [title, setTitle] = useState<string | null>(null);
+  const [content, setContent] = useState<string | null>(null);
 
-  // const handleMouseDown = () => {
-  //   const timeout = setTimeout(() => setIsLongPress(true), 2000); // 2초 누르면 SaveToast 표시
-  //   setPressTimeout(timeout);
-  // };
+  // 1초 이상 꾹 누르면 SaveToast 띄우기
+  const handleMouseDown = (e: React.MouseEvent) => {
+    e.stopPropagation(); // 이벤트 버블링 방지
+    const timeout = setTimeout(() => {
+      setIsLongPress(true);
+    }, 1000);
+    setPressTimeout(timeout);
+  };
 
-  // const handleMouseUp = () => {
-  //   if (pressTimeout) clearTimeout(pressTimeout); // 타이머 취소
-  //   setPressTimeout(null);
-  // };
+  const handleMouseUp = (e: React.MouseEvent) => {
+    e.stopPropagation(); // 이벤트 버블링 방지
+    if (pressTimeout) clearTimeout(pressTimeout);
+    setPressTimeout(null);
+  };
 
-  // const handleCloseModal = (selectedCategory?: string) => {
-  //   setIsLongPress(false); // SaveToast 닫기
-  //   if (selectedCategory) {
-  //     // 저장 완료 메시지 설정
-  //     setShowSaveMessage(`${selectedCategory}에 저장되었어요.`);
-  //     // 메시지 2초 후 사라지기
-  //     setTimeout(() => setShowSaveMessage(null), 2000);
-  //   }
-  // };
+  const handleCloseSaveToast = () => {
+    setIsLongPress(false);
+  };
 
+  const handleSave = (category: string) => {
+    setShowSaveMessage(`${category}에 저장되었어요.`);
+
+    // 2초 후 메시지 사라지게 설정
+    setTimeout(() => {
+      setShowSaveMessage(null);
+    }, 2000);
+  };
+
+  // ------------------------------------------------------------- 임사랑 - SaveToast 관련 추가되는 부분
+
+  // 임사랑 - return 부분 수정.
   return (
-    <div>
+    <div onMouseDown={handleMouseDown} onMouseUp={handleMouseUp} onMouseLeave={handleMouseUp}>
       <Home onHelpClick={() => setShowOnboarding(true)} />
       {showOnboarding && <Help onClose={() => setShowOnboarding(false)} />}
-      {/* <Container
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
-      >
-        <TitleInput
-          placeholder="제목을 입력하세요"
-          value={title || ''}
-          onChange={(e) => setTitle(e.target.value || null)}
-        />
-        <ContentInput
-          placeholder="내용을 입력하세요"
-          value={content || ''}
-          onChange={(e) => setContent(e.target.value || null)}
-        />
-        {isLongPress && (
+      {isLongPress && (
+        <SaveToastWrapper onClick={handleCloseSaveToast}>
           <SaveToast
-            onClose={handleCloseModal}
-            onSave={(category) => console.log(`Saved to category: ${category}`)}
+            onClose={handleCloseSaveToast}
+            onSave={handleSave}
             memoId={memoId}
             title={title}
             content={content}
+            onClick={(e) => e.stopPropagation()} // SaveToast 내부 클릭 시 닫히지 않도록 막기
           />
-        )}
-        {showSaveMessage && (
-          <SaveMessage>
-            <SaveBold>{showSaveMessage.split('에 저장되었어요.')[0]}</SaveBold>에 저장되었어요.
-          </SaveMessage>
-        )}
-      </Container> */}
+        </SaveToastWrapper>
+      )}
+      {showSaveMessage && (
+        <SaveMessage>
+          <SaveBold>{showSaveMessage.split('에 저장되었어요.')[0]}</SaveBold>에 저장되었어요.
+        </SaveMessage>
+      )}
     </div>
   );
 }
 
-const Container = styled.div`
+const SaveToastWrapper = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  height: 100%;
-  background: white;
+  height: 100vh;
+
   display: flex;
-  flex-direction: column;
+  justify-content: center;
   align-items: center;
-  justify-content: flex-start;
-  padding: 16px;
-  position: relative;
-`;
-
-const TitleInput = styled.input`
-  width: 90%;
-  padding: 12px;
-  margin-bottom: 12px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 16px;
-`;
-
-const ContentInput = styled.textarea`
-  width: 90%;
-  height: 300px;
-  padding: 12px;
-  border: 1px solid #ccc;
-  border-radius: 8px;
-  font-size: 16px;
-  resize: none;
+  z-index: 9999;
 `;
 
 const SaveMessage = styled.div`
