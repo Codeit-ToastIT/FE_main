@@ -27,13 +27,22 @@ const Title = styled.div`
 
 const Input = styled.input`
   height: 2.5rem;
+  min-width: 20.5rem;
   border-radius: 2.5rem;
   background: rgba(255, 255, 255, 0.2);
   border: none;
   outline: none;
   color: #E5DCCA;
   padding-left: 1rem;
+  overflow: hidden;
+  color: var(--ivory, #E5DCCA);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: SUIT;
+  font-size: 1rem;
+  font-style: normal;
   font-weight: 600;
+  line-height: normal;
 `;
 
 const ErrorMessage = styled.div`

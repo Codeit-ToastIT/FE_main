@@ -3,7 +3,10 @@
 import { styled } from "styled-components";
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from 'next/image';
 import SubmitButton from '../../components/common/SubmitButton';
+import iconEyeOpen from '../../assets/icons/icon_eye_closed.svg';
+import iconEyeClosed from '../../assets/icons/icon_eye_open.svg';
 
 const Whole = styled.div`
   display: inline-flex;
@@ -82,6 +85,16 @@ const BackIcon = styled.svg`
   flex-shrink: 0;
 `;
 
+const IconEye = styled(Image)`
+  width: 1.5rem;
+  height: 1.5rem;
+  position: absolute;
+  right: 1rem; /* 오른쪽 여백 */
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+`;
+
 
 
 const LoginPage = () => {
@@ -90,6 +103,7 @@ const LoginPage = () => {
   const [pw, setPw] = useState(""); 
   const isPwNotEmpty = pw.length > 0; 
   const router = useRouter();
+  const [showPw, setShowPw] = useState(false);
   
     // 입력 필드 포커싱 
     useEffect(() => {
@@ -140,16 +154,24 @@ const LoginPage = () => {
       </Header>
       <Container>
         <Form noValidate>
-        <Input 
-          type="password"
-          name="password"
-          placeholder="비밀번호를 입력해주세요."
-          ref={inputRef}
-          value={pw}
-          onChange={handlePwChange} // 비밀번호 상태 업데이트
-          // onInvalid={() => setError("비밀번호를 확인해주세요.")}
-          autoComplete="off"
-        />
+          <div style={{ position: 'relative' }}>
+            <Input 
+              type={showPw ? "text" : "password"} 
+              name="password"
+              placeholder="비밀번호를 입력해주세요."
+              ref={inputRef}
+              value={pw}
+              onChange={handlePwChange} // 비밀번호 상태 업데이트
+              // onInvalid={() => setError("비밀번호를 확인해주세요.")}
+              autoComplete="off"
+            />
+            <IconEye 
+              src={showPw ? iconEyeOpen : iconEyeClosed} // 상태에 따라 아이콘 변경
+              alt={showPw ? "비밀번호 숨기기" : "비밀번호 보이기"} // 대체 텍스트 추가
+              onClick={() => setShowPw(prev => !prev)}
+            />
+          </div>
+        
         {/* {error && <ErrorMessage>{error}</ErrorMessage>}  */}
         <SubmitButton 
             isActive={isPwNotEmpty} 

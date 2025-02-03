@@ -126,12 +126,7 @@ const ErrorMessage = styled.div`
   line-height: 0.875rem; 
 `;
 
-interface ToastProps {
-  isVisible: boolean;
-}
-
-const Toast = styled.div<ToastProps>`
-  display: inline-flex;
+const Toast = styled.div`
   padding: 0.75rem 1rem;
   justify-content: center;
   align-items: center;
@@ -146,10 +141,11 @@ const Toast = styled.div<ToastProps>`
   font-style: normal;
   font-weight: 400;
   line-height: 1rem; /* 114.286% */
-  opacity: ${({ isVisible }) => (isVisible ? 1 : 0)};
+  opacity: 0; /* 기본값 */
   transition: opacity 0.3s ease-in-out;
   z-index: 1000;
 `;
+
 
 // Props 타입 정의
 interface EmailVerificationProps {
@@ -299,7 +295,9 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ onSuccess }) => {
         </InputContainer>
         <ResendLink onClick={handleResendClick}>인증번호를 재전송할까요?</ResendLink>
       </Container>
-      <Toast isVisible={toastVisible}>{toastMessage}</Toast> 
+      <Toast style={{ display: toastVisible ? 'inline-flex' : 'none', opacity: toastVisible ? 1 : 0 }}>
+        {toastMessage}
+      </Toast> 
     </Whole>
   );
 };
