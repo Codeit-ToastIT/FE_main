@@ -6,58 +6,58 @@ import { useRouter } from "next/navigation";
 import SubmitButton from '../../components/common/SubmitButton';
 
 const Whole = styled.div`
-  display: inline-flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6rem;
-  background-color: #171612;
-  padding-top: 1.5rem;
-  height: 100vh;
+display: inline-flex;
+flex-direction: column;
+align-items: center;
+gap: 6rem;
+background-color: #171612;
+padding-top: 1.5rem;
+height: 100vh;
 `;
 
 const Header = styled.div`
-  width: 20.5rem;
-  display: inline-flex;
+width: 20.5rem;
+display: inline-flex;
 `;
 
 const Title = styled.div`
-  width: 20.5rem;
-  color: var(--ivory, #E5DCCA);
-  margin-left: 35%;
-  font-family: SUIT;
-  font-size: 1rem;
-  font-style: normal;
-  font-weight: 600;
-  line-height: 1.5rem; 
+width: 20.5rem;
+color: var(--ivory, #E5DCCA);
+font-family: SUIT;
+font-size: 1rem;
+font-style: normal;
+font-weight: 600;
+line-height: 1.5rem; 
+margin-left: 27%;
 `;
 
 const Container = styled.div`
-  display: flex;
-  flex-direction: column;
+display: flex;
+flex-direction: column;
 `;
 
 const Form = styled.form`
-  display: flex;
-  flex-direction: column;
-  gap: 0.5rem;
+display: flex;
+flex-direction: column;
+gap: 0.5rem;
 `;
 
 const Input = styled.input`
-  height: 2.5rem;
-  min-width: 20.5rem;
-  border-radius: 2.5rem;
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  outline: none;
-  color: #E5DCCA;
-  padding-left: 1rem;
-  font-weight: 600;
+height: 2.5rem;
+min-width: 20.5rem;
+border-radius: 2.5rem;
+background: rgba(255, 255, 255, 0.2);
+border: none;
+outline: none;
+color: #E5DCCA;
+padding-left: 1rem;
+font-weight: 600;
 `
 
 const BackIcon = styled.svg`
-  width: 1.5rem;
-  height: 1.5rem;
-  flex-shrink: 0;
+width: 1.5rem;
+height: 1.5rem;
+flex-shrink: 0;
 `;
 
 const ErrorMessage = styled.div`
@@ -70,16 +70,16 @@ padding-left: 1rem;
 `;
 
 const EyeIcon = styled.svg`
-  width: 1.5rem;
-  height: 1.5rem;
-  position: absolute;
-  right: 1rem; /* 오른쪽 여백 */
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
+width: 1.5rem;
+height: 1.5rem;
+position: absolute;
+right: 1rem; /* 오른쪽 여백 */
+top: 50%;
+transform: translateY(-50%);
+cursor: pointer;
 `;
 
-const SignupPage = () => {
+const ResetPasswordForm = () => {
 
   const inputRef1 = useRef<HTMLInputElement | null>(null);
   const inputRef2 = useRef<HTMLInputElement | null>(null);
@@ -146,6 +146,39 @@ const SignupPage = () => {
   const handleBackClick = () => {
     router.back(); // 이전 페이지로 이동
   };
+
+  // 비밀번호 재설정 API 호출
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault(); // 기본 폼 제출 방지
+
+    try {
+      const token = "YOUR_BEARER_TOKEN"; // 실제 Bearer Token으로 교체
+
+      const response = await fetch('/api/auth/password/reset', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          newPassword: pw,
+          confirmPassword: pwCheck,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        setErrorMessage(errorData.message || "비밀번호 재설정에 실패했습니다.");
+        return;
+      }
+
+      router.push('/pages/createToastPage');
+    } catch (error) {
+      setErrorMessage("비밀번호 재설정 중 오류가 발생했습니다.");
+      console.error(error);
+    }
+  };
+
   
   
   return (
@@ -154,10 +187,10 @@ const SignupPage = () => {
         <BackIcon onClick={handleBackClick} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
         <path d="M14.4 16.7998L9.59998 11.9998L14.4 7.19981" stroke="#E5DCCA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         </BackIcon>
-        <Title>회원가입</Title>
+        <Title>비밀번호 재설정</Title>
       </Header>
       <Container>
-        <Form noValidate>
+        <Form noValidate onSubmit={handleSubmit}>
           <div style={{ position: 'relative' }}>
             <Input 
               type={showPw ? "text" : "password"} // 비밀번호 타입 전환
@@ -186,10 +219,10 @@ const SignupPage = () => {
               <path d="M20.4 19.5L5.40002 4.5M10.2 10.4416C9.82661 10.8533 9.60002 11.394 9.60002 11.9863C9.60002 13.2761 10.6745 14.3217 12 14.3217C12.6112 14.3217 13.169 14.0994 13.5927 13.7334M20.4388 14.3217C21.265 13.0848 21.6 12.0761 21.6 12.0761C21.6 12.0761 19.4154 5.1 12 5.1C11.5837 5.1 11.1839 5.12199 10.8 5.16349M17.4 17.3494C16.0226 18.2281 14.2494 18.8495 12 18.8127C4.67695 18.693 2.40002 12.0761 2.40002 12.0761C2.40002 12.0761 3.45788 8.69808 6.60002 6.64332" stroke="#E5DCCA" strokeWidth="2" strokeLinecap="round"/>
             </EyeIcon>
           </div>
-          {!isPwValid && <ErrorMessage>아직 8자리가 아니에요.</ErrorMessage>} {/* 오류 메시지 조건부 렌더링 */}
-          {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>} {/* 오류 메시지 표시 */}
+          {!isPwValid && <ErrorMessage>아직 8자리가 아니에요.</ErrorMessage>}
+          {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>} 
           <SubmitButton 
-          isActive={isPwValid && pw === pwCheck} 
+            isActive={isPwValid && pw === pwCheck} 
           />
         </Form>
       </Container>
@@ -197,4 +230,4 @@ const SignupPage = () => {
   );
 };
 
-export default SignupPage;
+export default ResetPasswordForm;

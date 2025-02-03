@@ -3,6 +3,10 @@
 import { styled } from "styled-components";
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from 'next/image';
+import SubmitButton from '../../components/common/SubmitButton';
+import iconEyeOpen from '../../assets/icons/icon_eye_closed.svg';
+import iconEyeClosed from '../../assets/icons/icon_eye_open.svg';
 
 const Whole = styled.div`
   display: inline-flex;
@@ -50,21 +54,16 @@ const Input = styled.input`
   outline: none;
   color: #E5DCCA;
   padding-left: 1rem;
+  overflow: hidden;
+  color: var(--ivory, #E5DCCA);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: SUIT;
+  font-size: 1rem;
+  font-style: normal;
   font-weight: 600;
+  line-height: normal;
 `
-
-const Submit = styled.input.withConfig({
-  shouldForwardProp: (prop) => !['isActive'].includes(prop)
-})<{ isActive: boolean }>`
-  display: flex;
-  height: 2.5rem;
-  border-radius: 2.5rem;
-  border: 1px solid var(--ivory, #E5DCCA);
-  background-color: ${({ isActive }) => (isActive ? '#E5DCCA' : 'transparent')};
-  color: ${({ isActive }) => (isActive ? '#171612' : '#E5DCCA')};
-  opacity: ${({ isActive }) => (isActive ? '1' : '0.2')};
-  font-weight: 800;
-`;
 
 const Link = styled.div`
   color: var(--ivory, #E5DCCA);
@@ -77,12 +76,23 @@ const Link = styled.div`
   text-decoration-style: solid;
   text-underline-position: from-font;
   margin-top: 0.5rem;
+  cursor: pointer;
 `
 
 const BackIcon = styled.svg`
   width: 1.5rem;
   height: 1.5rem;
   flex-shrink: 0;
+`;
+
+const IconEye = styled(Image)`
+  width: 1.5rem;
+  height: 1.5rem;
+  position: absolute;
+  right: 1rem; /* 오른쪽 여백 */
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
 `;
 
 
@@ -93,6 +103,7 @@ const LoginPage = () => {
   const [pw, setPw] = useState(""); 
   const isPwNotEmpty = pw.length > 0; 
   const router = useRouter();
+  const [showPw, setShowPw] = useState(false);
   
     // 입력 필드 포커싱 
     useEffect(() => {
@@ -122,6 +133,16 @@ const LoginPage = () => {
       };
 
 
+      const handleSubmit = () => {
+        // 비밀번호 제출 로직 추가
+        console.log("비밀번호 제출:", pw);
+      };
+
+      const handleLinkClick = () => {
+        router.push("/pages/resetPasswordPage"); // 홈으로 이동
+      };
+
+
   return (
     <Whole onMouseDown={handleMouseDown}>
       <Header>
@@ -133,20 +154,31 @@ const LoginPage = () => {
       </Header>
       <Container>
         <Form noValidate>
-        <Input 
-          type="password"
-          name="password"
-          placeholder="비밀번호를 입력해주세요."
-          ref={inputRef}
-          value={pw}
-          onChange={handlePwChange} // 비밀번호 상태 업데이트
-          // onInvalid={() => setError("비밀번호를 확인해주세요.")}
-          autoComplete="off"
-        />
+          <div style={{ position: 'relative' }}>
+            <Input 
+              type={showPw ? "text" : "password"} 
+              name="password"
+              placeholder="비밀번호를 입력해주세요."
+              ref={inputRef}
+              value={pw}
+              onChange={handlePwChange} // 비밀번호 상태 업데이트
+              // onInvalid={() => setError("비밀번호를 확인해주세요.")}
+              autoComplete="off"
+            />
+            <IconEye 
+              src={showPw ? iconEyeOpen : iconEyeClosed} // 상태에 따라 아이콘 변경
+              alt={showPw ? "비밀번호 숨기기" : "비밀번호 보이기"} // 대체 텍스트 추가
+              onClick={() => setShowPw(prev => !prev)}
+            />
+          </div>
+        
         {/* {error && <ErrorMessage>{error}</ErrorMessage>}  */}
-        <Submit type="submit" value="계속하기"  isActive={isPwNotEmpty} disabled={!isPwNotEmpty}/>
+        <SubmitButton 
+            isActive={isPwNotEmpty} 
+            onClick={handleSubmit} // 클릭 시 처리
+        />
         </Form>
-        <Link>비밀번호를 잊어버렸나요?</Link>
+        <Link onClick={handleLinkClick}>비밀번호를 잊어버렸나요?</Link>
       </Container>
     </Whole>
   )

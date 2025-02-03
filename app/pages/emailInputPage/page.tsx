@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useEmail } from '../../context/EmailContext';
 import styled from 'styled-components';
+import SubmitButton from '../../components/common/SubmitButton';
 
 const Whole = styled.div`
   display: inline-flex;
@@ -26,26 +27,22 @@ const Title = styled.div`
 
 const Input = styled.input`
   height: 2.5rem;
+  min-width: 20.5rem;
   border-radius: 2.5rem;
   background: rgba(255, 255, 255, 0.2);
   border: none;
   outline: none;
   color: #E5DCCA;
   padding-left: 1rem;
+  overflow: hidden;
+  color: var(--ivory, #E5DCCA);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: SUIT;
+  font-size: 1rem;
+  font-style: normal;
   font-weight: 600;
-`;
-
-const Submit = styled.input.withConfig({
-  shouldForwardProp: (prop) => !['isActive'].includes(prop)
-})<{ isActive: boolean }>`
-  height: 2.5rem;
-  min-width: 20.5rem;
-  border-radius: 2.5rem;
-  border: 1px solid var(--ivory, #E5DCCA);
-  background-color: ${({ isActive }) => (isActive ? '#E5DCCA' : 'transparent')};
-  color: ${({ isActive }) => (isActive ? '#171612' : '#E5DCCA')};
-  opacity: ${({ isActive }) => (isActive ? '1' : '0.2')};
-  font-weight: 800;
+  line-height: normal;
 `;
 
 const ErrorMessage = styled.div`
@@ -67,31 +64,33 @@ const EmailInputPage = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [email, setEmail] = useState(""); // 이메일 상태
   const [error, setError] = useState(""); // 오류 메시지 상태
-  const isEmailNotEmpty = email.length > 0; // 이메일 입력 여부
+  const isEmailNotEmpty = email.length > 0; // 이메일 입력 여부 확인
   const router = useRouter();
   const { setEmail: setEmailContext } = useEmail(); // EmailContext에서 setEmail 가져오기
 
-  // 입력 필드 포커싱 
+  // 컴포넌트 마운트 시 이메일 입력 필드에 포커스
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (inputRef.current) {
-        inputRef.current.focus(); // 입력 필드에 포커스
+        inputRef.current.focus(); // 포커스 설정
       }
     }, 100);
 
-    return () => clearTimeout(timeoutId);
+    return () => clearTimeout(timeoutId); // 정리 함수
   }, []);
 
+  // 마우스 클릭 시 입력 필드 포커스
   const handleMouseDown = (event: React.MouseEvent) => {
     event.preventDefault(); // 기본 동작 방지
     inputRef.current?.focus(); // 입력 필드에 포커스
   };
 
-  // 이메일 유효성 검사 및 제출
+  // 폼 제출 처리
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault(); // 기본 제출 동작 방지
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // 이메일 형식 정규 표현식
 
+    // 이메일 형식 검사
     if (!emailPattern.test(email)) {
       setError("이메일 형식을 확인해주세요."); // 오류 메시지 설정
     } else {
@@ -105,20 +104,21 @@ const EmailInputPage = () => {
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email }),
         });
-  
+
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-  
-        const data = await response.json();
-  
+
+        const data = await response.json(); // 응답 데이터 파싱
+
+        // 이메일 존재 여부에 따라 라우팅
         if (data.exists) {
           router.push('/pages/loginPage');
         } else {
           router.push('/pages/signupPage');
         }
       } catch (error) {
-        console.error('이메일 확인 중 오류 발생', error);
+        console.error('이메일 확인 중 오류 발생', error); // 오류 로깅
       }
     }
   };
@@ -143,7 +143,9 @@ const EmailInputPage = () => {
           autoComplete="off"
         />
         {error && <ErrorMessage>{error}</ErrorMessage>} {/* 오류 메시지 표시 */}
-        <Submit type="submit" value="계속하기" isActive={isEmailNotEmpty} disabled={!isEmailNotEmpty} />
+        <SubmitButton 
+          isActive={isEmailNotEmpty} 
+        />
       </Form>
     </Whole>
   );
