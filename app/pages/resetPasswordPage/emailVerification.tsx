@@ -10,7 +10,6 @@ const Whole = styled.div`
   display: inline-flex;
   flex-direction: column;
   align-items: center;
-  gap: 6rem;
   background-color: #171612;
   padding-top: 1.5rem;
   height: 100vh;
@@ -127,43 +126,48 @@ const ErrorMessage = styled.div`
   line-height: 0.875rem; 
 `;
 
-const ResetPWPage = () => {
+interface ToastProps {
+  isVisible: boolean;
+}
+
+const Toast = styled.div<ToastProps>`
+  display: inline-flex;
+  padding: 0.75rem 1rem;
+  justify-content: center;
+  align-items: center;
+  gap: 0.625rem;
+  border-radius: 2.5rem;
+  background: rgba(229, 220, 202, 0.20);
+  color: var(--ivory, #E5DCCA);
+  margin-top: 2.37rem;
+  text-align: center;
+  font-family: SUIT;
+  font-size: 0.875rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1rem; /* 114.286% */
+  opacity: ${({ isVisible }) => (isVisible ? 1 : 0)};
+  transition: opacity 0.3s ease-in-out;
+  z-index: 1000;
+`;
+
+// Props 타입 정의
+interface EmailVerificationProps {
+  onSuccess: () => void; // onSuccess는 매개변수가 없는 함수
+}
+
+const EmailVerification: React.FC<EmailVerificationProps> = ({ onSuccess }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [authCode, setAuthCode] = useState(""); // 사용자 입력값
-  const [generatedCode, setGeneratedCode] = useState(""); // 생성된 6자리 숫자
   const [error, setError] = useState(""); // 에러 메시지
-  const { email, setEmail: setEmailContext } = useEmail(); 
+  const { email } = useEmail(); 
   const router = useRouter();
-  
   const [countdown, setCountdown] = useState(300); // 5분 카운트다운 (300초)
-
-  // 랜덤한 6자리 숫자 생성 및 이메일 전송
-  useEffect(() => {
-    const code = Math.floor(100000 + Math.random() * 900000).toString(); // 100000 ~ 999999
-    setGeneratedCode(code);
-    
-    const sendCode = async () => {
-      await sendEmail(code); 
-    };
-
-    sendCode(); 
-
-    // 카운트다운 타이머 설정
-    const timer = setInterval(() => {
-      setCountdown(prev => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          return 0; // 카운트다운이 끝나면 0으로 설정
-        }
-        return prev - 1; // 1초씩 감소
-      });
-    }, 1000);
-
-    return () => clearInterval(timer); // 컴포넌트 언마운트 시 타이머 정리
-  }, []);
+  const [toastVisible, setToastVisible] = useState(false); // 토스트 가시성
+  const [toastMessage, setToastMessage] = useState(""); // 토스트 메시지
 
   // 이메일로 코드 전송
-  const sendEmail = async (code: string) => {
+  const sendEmail = async () => {
     try {
       const response = await fetch('/api/auth/password/reset/send-code', {
         method: 'POST',
@@ -172,8 +176,7 @@ const ResetPWPage = () => {
         },
         body: JSON.stringify({
           message: {
-            email: email, // 이메일과 인증 코드를 포함
-            code: code, // 생성한 인증 코드
+            email: email, // 이메일을 포함
           },
         }),
       });
@@ -183,11 +186,28 @@ const ResetPWPage = () => {
       }
 
       const data = await response.json();
-      console.log(`이메일 ${data.email}로 인증번호 ${code}를 전송했습니다.`);
+      console.log(`이메일 ${data.email}로 인증번호를 전송했습니다.`);
     } catch (error) {
       console.error(error);
     }
   };
+
+   // 컴포넌트 마운트 시 이메일 전송
+  useEffect(() => {
+    sendEmail(); // 이메일 전송 요청
+    const timer = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
 
   // BackIcon 클릭 시 이전 화면으로 이동
   const handleBackClick = () => {
@@ -196,14 +216,16 @@ const ResetPWPage = () => {
 
   // 재전송 버튼 클릭 시
   const handleResendClick = async () => {
-    const code = Math.floor(100000 + Math.random() * 900000).toString(); // 새로운 코드 생성
-    setGeneratedCode(code); 
     setAuthCode(""); // 입력 필드 초기화
     setCountdown(300); // 카운트다운 초기화
 
     try {
-      await sendEmail(code); 
-      // 재전송 토스트 알림 코드 추가 필요 
+      await sendEmail(); 
+      setToastMessage("인증번호가 재전송되었습니다.");
+      setToastVisible(true);
+      setTimeout(() => {
+        setToastVisible(false);
+      }, 800);
     } catch (error) {
       setError("이메일 전송에 실패했습니다. 다시 시도해주세요.");
       console.error(error);
@@ -211,19 +233,34 @@ const ResetPWPage = () => {
   };
 
   // 폼 제출 처리
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (authCode === generatedCode) {
-      setError("");
-      setEmailContext(email); 
-      router.push("/"); 
-    } else {
-      setError("인증번호가 일치하지 않습니다."); 
+  
+    try {
+      const response = await fetch('/api/auth/password/reset/verify-code', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email, 
+          code: authCode, // 사용자가 입력한 인증 코드
+        }),
+      });
+  
+      const data = await response.json();
+      console.log(data.message); 
+  
+      // 인증 성공 시 onSuccess 호출
+      onSuccess();
+    } catch (error) {
+      setError("인증번호가 일치하지 않습니다.");
+      console.error(error);
     }
   };
 
-  // 카운트다운 시간을 분과 초로 변환하여 반환하는 함수
+
+  // 카운트다운 시간 -> 분과 초로 변환
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -262,9 +299,9 @@ const ResetPWPage = () => {
         </InputContainer>
         <ResendLink onClick={handleResendClick}>인증번호를 재전송할까요?</ResendLink>
       </Container>
+      <Toast isVisible={toastVisible}>{toastMessage}</Toast> 
     </Whole>
   );
 };
 
-export default ResetPWPage;
-
+export default EmailVerification;

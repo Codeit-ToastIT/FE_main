@@ -125,7 +125,7 @@ const LoginPage = () => {
       };
 
       const handleLinkClick = () => {
-        router.push("/pages/resetPWPage"); // 홈으로 이동
+        router.push("/pages/resetPasswordPage"); // 홈으로 이동
       };
 
 
