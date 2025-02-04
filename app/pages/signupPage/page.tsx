@@ -5,6 +5,7 @@ import { styled } from "styled-components";
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useEmail } from "../../context/EmailContext";
+import { useAuth } from '../../context/AuthContext';
 import SubmitButton from '../../components/common/SubmitButton';
 
 
@@ -87,6 +88,7 @@ const SignupPage = () => {
   const inputRef1 = useRef<HTMLInputElement | null>(null);
   const inputRef2 = useRef<HTMLInputElement | null>(null);
   const { email } = useEmail();  
+  const { login } = useAuth();
   const [pw, setPw] = useState(""); 
   const [pwCheck, setPwCheck] = useState(""); 
   const [errorMessage, setErrorMessage] = useState("");
@@ -169,9 +171,13 @@ const SignupPage = () => {
         confirmPassword: pwCheck,
       });
 
-      setSuccessMessage(response.data.message);
-      console.log(successMessage);
-      router.push("/pages/createToastPage");
+      // 회원가입 성공 시 토큰 저장 및 로그인 상태 업데이트
+      if (response.data.token) {
+        login(response.data.token); // AuthContext의 login 함수 호출
+        setSuccessMessage(response.data.message);
+        console.log(successMessage);
+        router.push("/pages/createToastPage"); // 홈 페이지로 이동
+      }
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         if (error.response && error.response.data.message) {
