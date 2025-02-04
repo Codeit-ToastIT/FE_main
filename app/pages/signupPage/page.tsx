@@ -1,9 +1,12 @@
 "use client";
 
+import axios from "axios"; 
 import { styled } from "styled-components";
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useEmail } from "../../context/EmailContext";
 import SubmitButton from '../../components/common/SubmitButton';
+
 
 const Whole = styled.div`
   display: inline-flex;
@@ -83,13 +86,16 @@ const SignupPage = () => {
 
   const inputRef1 = useRef<HTMLInputElement | null>(null);
   const inputRef2 = useRef<HTMLInputElement | null>(null);
+  const { email } = useEmail();  
   const [pw, setPw] = useState(""); 
   const [pwCheck, setPwCheck] = useState(""); 
   const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
   const isPwValid = pw.length >= 8; // 비밀번호 유효성 체크
   const router = useRouter();
   const [showPw, setShowPw] = useState(false); // 비밀번호 보이기 상태
   const [showPwCheck, setShowPwCheck] = useState(false); // 비밀번호 확인 보이기 상태
+
 
   // 입력 필드 포커싱 
   useEffect(() => {
@@ -147,6 +153,37 @@ const SignupPage = () => {
     router.back(); // 이전 페이지로 이동
   };
   
+  // 회원가입 요청 
+  const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // 기본 폼 제출 방지
+
+    if (pw !== pwCheck) {
+      setErrorMessage("비밀번호가 서로 달라요.");
+      return;
+    }
+
+    try {
+      const response = await axios.post("/api/auth/signup", {
+        email, 
+        password: pw,
+        confirmPassword: pwCheck,
+      });
+
+      setSuccessMessage(response.data.message);
+      console.log(successMessage);
+      router.push("/pages/createToastPage");
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        if (error.response && error.response.data.message) {
+          setErrorMessage(error.response.data.message);
+        } else {
+          setErrorMessage("회원가입에 실패했습니다.");
+        }
+      } else {
+        setErrorMessage("회원가입에 실패했습니다.");
+      }
+    }
+  };
   
   return (
     <Whole onMouseDown={handleMouseDown}>
@@ -157,7 +194,7 @@ const SignupPage = () => {
         <Title>회원가입</Title>
       </Header>
       <Container>
-        <Form noValidate>
+        <Form noValidate onSubmit={handleSignup}>
           <div style={{ position: 'relative' }}>
             <Input 
               type={showPw ? "text" : "password"} // 비밀번호 타입 전환
