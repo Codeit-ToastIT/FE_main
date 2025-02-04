@@ -329,7 +329,7 @@ const Container = styled.div`
   align-items: center;
 `;
 
-const Hint = styled.div`
+export const Hint = styled.div`
   position: absolute;
   top: 148px;
   left: calc(50% - 125.5px);
@@ -350,7 +350,7 @@ const Hint = styled.div`
   white-space: nowrap;
 `;
 
-const HintBold = styled.span`
+export const HintBold = styled.span`
   font-weight: 800;
 `;
 
