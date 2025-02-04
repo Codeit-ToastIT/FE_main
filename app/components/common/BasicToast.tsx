@@ -85,6 +85,9 @@ const MemoTitleDisplay = styled.div`
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 const MemoDisplay = styled.div`
@@ -106,6 +109,11 @@ const MemoDisplay = styled.div`
   flex: 1 0 0;
   align-self: stretch;
   overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 16; /* 최대 16줄 표시 */
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+  white-space: normal;
   color: var(--caramel, #974b00);
   text-overflow: ellipsis;
   white-space: nowrap;

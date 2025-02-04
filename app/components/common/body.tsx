@@ -108,8 +108,8 @@ export default function Body({ deletedMemoId }: BodyProps) {
   };
 
   // ✅ "먹어버리기" 버튼 클릭 시 API 호출하여 토스트 삭제
-  const handleDeleteToast = async () => {
-    if (selectedSlide === null) return;
+  const handleDeleteToast = async (): Promise<boolean> => {
+    if (selectedSlide === null) return false;
     setLoading(true);
 
     // ✅ selectedSlide 값으로 memos 리스트에서 해당 `memoId` 찾기 (index - 1 적용)
@@ -118,7 +118,8 @@ export default function Body({ deletedMemoId }: BodyProps) {
     if (!memoToDelete || !memoToDelete.id) {
       console.error('❌ 삭제할 메모를 찾을 수 없습니다.');
       setLoading(false);
-      return;
+      setShowModal(false);
+      return false;
     }
 
     try {
@@ -152,13 +153,17 @@ export default function Body({ deletedMemoId }: BodyProps) {
           setShowDeleteMessage(true);
           return newSlides;
         });
+
+        return true;
       } else {
         console.error('❌ 토스트 삭제 실패:', data.message);
         setShowDeleteErrorMessage(true);
+        return false;
       }
     } catch (error) {
       console.error('❌ 삭제 요청 오류:', error);
       setShowDeleteErrorMessage(true);
+      return false;
     } finally {
       setLoading(false);
       setShowModal(false);
@@ -390,9 +395,7 @@ export default function Body({ deletedMemoId }: BodyProps) {
       <DeleteModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
-        // onConfirm={handleDeleteToast}
         onClick={handleDeleteToast}
-        memoID={memos.find((memo, index) => index === selectedSlide)?._id || null}
       />
     </Container>
   );
