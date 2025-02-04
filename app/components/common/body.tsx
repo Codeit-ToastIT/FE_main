@@ -177,10 +177,17 @@ export default function Body({ deletedMemoId }: BodyProps) {
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
+    if (!dragging) return;
+
     const deltaX = e.touches[0].clientX - offsetXRef.current;
 
     // ✅ Swiper에서 발생한 터치 이벤트인지 확인하고 처리 방지
     if (isSwiperActive) return;
+
+    // ✅ 드래그 거리가 50px 이상이어야 실제로 "드래그 중" 상태로 인식
+    if (Math.abs(deltaX) > 50) {
+      setDragging(true);
+    }
 
     setShowPlus(deltaX > 240);
 
@@ -191,7 +198,8 @@ export default function Body({ deletedMemoId }: BodyProps) {
 
   // ✅ "오른쪽으로 드래그" 시 새로운 메모 생성
   const handleTouchEnd = async () => {
-    if (!showPlus || isSwiperActive) return; // ✅ Swiper에서 발생한 터치 이벤트라면 실행하지 않음.
+    // ✅ Swiper에서 발생한 터치 이벤트거나 충분히 드래그되지 않았다면 실행 안 함.
+    if (!showPlus || isSwiperActive || !dragging) return;
 
     try {
       const response = await fetch(`${API_BASE_URL}/api/memos`, {
@@ -236,6 +244,7 @@ export default function Body({ deletedMemoId }: BodyProps) {
       console.error('❌ 메모 생성 요청 오류:', error);
     } finally {
       setDragging(false);
+      setShowPlus(false); // ✅ 터치 종료 후 초기화
       if (bodyRef.current) {
         bodyRef.current.style.transition = 'transform 0.3s ease-out';
         bodyRef.current.style.transform = 'translateX(0px)';
