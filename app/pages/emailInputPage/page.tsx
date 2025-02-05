@@ -92,34 +92,37 @@ const EmailInputPage = () => {
 
     // 이메일 형식 검사
     if (!emailPattern.test(email)) {
-      setError("이메일 형식을 확인해주세요."); // 오류 메시지 설정
+      setError("이메일 형식을 확인해주세요."); 
     } else {
       setError(""); // 오류 메시지 초기화
       setEmailContext(email); // 이메일 상태 업데이트
 
       // 이메일 등록 여부 확인 API 호출
-      try {
-        const response = await fetch('/api/auth/login', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email }),
-        });
+    try {
+      const response = await fetch('/api/auth/check-email', { // API 경로 수정
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email }), // 요청 바디 수정
+      });
 
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-
-        const data = await response.json(); // 응답 데이터 파싱
-
-        // 이메일 존재 여부에 따라 라우팅
-        if (data.exists) {
-          router.push('/pages/loginPage');
-        } else {
-          router.push('/pages/signupPage');
-        }
-      } catch (error) {
-        console.error('이메일 확인 중 오류 발생', error); // 오류 로깅
+      if (!response.ok) {
+        const errorData = await response.json(); // 오류 메시지 파싱
+        setError(errorData.message); // 오류 메시지 설정
+        return;
       }
+
+      const data = await response.json(); // 응답 데이터 파싱
+
+      // 이메일 존재 여부에 따라 라우팅
+      if (data.exists) {
+        router.push('/pages/loginPage');
+      } else {
+        router.push('/pages/signupPage');
+      }
+    } catch (error) {
+      console.error('이메일 확인 중 오류 발생', error); // 오류 로깅
+      setError("이메일 확인 중 오류가 발생했습니다."); // 사용자에게 오류 메시지 설정
+    }
     }
   };
 
