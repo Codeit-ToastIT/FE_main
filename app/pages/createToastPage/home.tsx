@@ -13,6 +13,7 @@ import { useRouter } from 'next/navigation';
 
 import Header from '../../components/layout/header';
 import Body from '../../components/common/body';
+import MyPage from '../myPage/myPage'; // ✅ MyPage 컴포넌트 추가
 
 import iconAdd from '../../assets/icons/icon_add.svg';
 
@@ -22,11 +23,21 @@ interface HomeProps {
 
 export default function Home({ onHelpClick }: HomeProps) {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // ✅ myPage를 열고 닫는 상태 추가
+  const [isMyPageOpen, setIsMyPageOpen] = useState(false);
+
+  // ✅ 프로필 버튼 클릭 시 myPage 표시
   const onProfileClick = () => {
-    router.push(`/pages/myPage`);
+    setIsMyPageOpen(true); // ✅ myPage 열기
   };
 
-  const searchParams = useSearchParams();
+  // ✅ myPage 닫기 함수
+  const onCloseMyPage = () => {
+    setIsMyPageOpen(false);
+  };
+
   const [showDeletedMessage, setShowDeletedMessage] = useState(false);
   const [showDeleteErrorMessage, setShowDeleteErrorMessage] = useState(false);
   const [deletedMemoId, setDeletedMemoId] = useState<string | null>(null); // ✅ 삭제된 메모 ID 상태 추가
@@ -55,6 +66,11 @@ export default function Home({ onHelpClick }: HomeProps) {
 
       {/* ✅ Body에 deletedMemoId 전달 */}
       <StyledBody deletedMemoId={deletedMemoId} />
+
+      {/* ✅ MyPage 컴포넌트가 오른쪽에서 왼쪽으로 슬라이드되며 나타남 */}
+      <MyPageOverlay isOpen={isMyPageOpen} onClick={onCloseMyPage}>
+        <StyledMyPage onClick={(e) => e.stopPropagation()} isOpen={isMyPageOpen} />
+      </MyPageOverlay>
     </div>
   );
 }
@@ -101,4 +117,39 @@ const StyledBody = styled(Body)`
   border-radius: 40px 0px 0px 40px;
   background: #fff;
   box-sizing: border-box;
+`;
+
+/* ✅ MyPage 배경 오버레이 */
+const MyPageOverlay = styled.div<{ isOpen: boolean }>`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background-color: ${({ isOpen }) => (isOpen ? 'rgba(0, 0, 0, 0.5)' : 'transparent')};
+  display: ${({ isOpen }) => (isOpen ? 'flex' : 'none')};
+  justify-content: flex-end;
+  align-items: center;
+  z-index: 999;
+`;
+
+/* ✅ 오른쪽에서 왼쪽으로 슬라이드되는 MyPage */
+const StyledMyPage = styled(MyPage)<{ isOpen: boolean }>`
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 320px;
+  height: 100vh;
+  background-color: rgba(255, 255, 255, 0.9);
+  backdrop-filter: blur(10px);
+  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 1100;
+  border-top-right-radius: 40px;
+  border-bottom-right-radius: 40px;
+
+  transform: ${({ isOpen }) => (isOpen ? 'translateX(0)' : 'translateX(100%)')};
+  transition: transform 0.3s ease-in-out;
 `;

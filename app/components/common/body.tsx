@@ -8,6 +8,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
@@ -34,6 +36,8 @@ interface Memo {
 export default function Body({ deletedMemoId }: BodyProps) {
   const [memos, setMemos] = useState<Memo[]>([]); // ✅ MongoDB의 메모 리스트 저장
   const [showPlus, setShowPlus] = useState(false);
+
+  const router = useRouter();
 
   const [slides, setSlides] = useState<number[]>([1, 2, 3]);
   const [selectedSlide, setSelectedSlide] = useState<number | null>(slides[0]);
@@ -105,6 +109,8 @@ export default function Body({ deletedMemoId }: BodyProps) {
   const { token } = useAuth();
 
   //----------------
+
+  const memoToEditing = memos.find((_, index) => index + 1 === selectedSlide);
 
   //-------------------------------🍞토스트 삭제 로직 구현 완료🍞-------------------------------
 
@@ -396,7 +402,15 @@ export default function Body({ deletedMemoId }: BodyProps) {
       >
         {memos.length > 0 ? (
           memos.map((memo) => (
-            <StyledSwiperSlide key={memo.id}>
+            <StyledSwiperSlide
+              key={memo.id}
+              onClick={() => {
+                if (memoToEditing + 1 === selectedSlide) {
+                  // ✅ notes 배열의 인덱스 +1 값과 비교
+                  router.push(`/memoInput?id=${memo.id}`);
+                }
+              }} // ✅ 현재 활성화된 토스트만 클릭 가능
+            >
               <StyledBasicToast toastid={memo.id} title={memo.title} content={memo.content} />
             </StyledSwiperSlide>
           ))
