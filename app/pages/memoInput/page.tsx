@@ -1,8 +1,8 @@
 /**
  * 파일명: memoInput/page.tsx
- * 작성일: 2025-01-27
+ * 작성일: 2025-02-06
  * 작성자: 이서연
- * 설명: 메모 작성 화면 UI 설계.
+ * 설명: 메모 작성 기능 구현
  */
 
 'use client';
@@ -19,9 +19,9 @@ export default function MemoInput() {
 
   return (
     <Container>
-      <StyledMemoHeader toastId={toastId} />
+      <StyledMemoHeader toastId={toastId} /> {/*id 쿼리 파라미터 props로 전달 */}
       <HeaderBottomStyle />
-      <StyledMemoBody toastId={toastId} />
+      <StyledMemoBody toastId={toastId} /> {/*id 쿼리 파라미터 props로 전달 */}
     </Container>
   );
 }

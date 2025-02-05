@@ -9,6 +9,8 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
+import { API_BASE_URL } from '../../api/api';
+import { useAuth } from '../../api/AuthContext';
 
 import iconBack from '../../assets/icons/icon_back.svg';
 import iconTrash from '../../assets/icons/icon_trash.svg';
@@ -23,7 +25,8 @@ export default function MemoHeader({ toastId }: MemoHeaderProps) {
   const router = useRouter();
   const [title, setTitle] = useState<string>('');
   const [showModal, setShowModal] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [_loading, setLoading] = useState(false);
+  const { token } = useAuth();
 
   useEffect(() => {
     if (toastId) {
@@ -47,14 +50,14 @@ export default function MemoHeader({ toastId }: MemoHeaderProps) {
   };
 
   // ✅ 삭제 실패 상태를 localStorage에 저장하도록 변경
-  const handleDeleteMemo = async () => {
+  const handleDeleteMemo = async (): Promise<boolean> => {
     setLoading(true);
     try {
-      const response = await fetch(`/api/memos/${toastId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/memos/${toastId}`, {
         method: 'DELETE',
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('authToken')}`,
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -70,17 +73,23 @@ export default function MemoHeader({ toastId }: MemoHeaderProps) {
         // ✅ 삭제 성공 상태 저장
         localStorage.setItem('deletedMemoId', toastId);
         localStorage.setItem('deleteSuccess', 'true');
+
+        return true; // ✅ 삭제 성공 시 true 반환
       } else {
         console.error('❌ 메모 삭제 실패:', data.message);
 
         // ✅ 삭제 실패 상태 저장
         localStorage.setItem('deleteError', 'true');
+
+        return false; // ✅ 삭제 실패 시 false 반환
       }
     } catch (error) {
       console.error('❌ 메모 삭제 요청 오류:', error);
 
       // ✅ 삭제 실패 상태 저장
       localStorage.setItem('deleteError', 'true');
+
+      return false; // ✅ 오류 발생 시 false 반환
     } finally {
       setLoading(false);
       router.push('/pages/createToastPage'); // ✅ 홈 화면으로 이동
@@ -100,7 +109,7 @@ export default function MemoHeader({ toastId }: MemoHeaderProps) {
       <DeleteModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
-        onConfirm={handleDeleteMemo}
+        onClick={handleDeleteMemo}
       />
     </HeaderContainer>
   );

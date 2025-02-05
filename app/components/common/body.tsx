@@ -6,6 +6,7 @@
  */
 
 // 💖 표시된 부분 SaveToast로 활성화된 메모 id 전달을 위해 수정한 부분
+'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
@@ -30,7 +31,6 @@ interface BodyProps {
   // 💖 활성 메모 id를 상위로 전달할 콜백 prop 추가
   onActiveMemoChange?: (id: string) => void;
 }
-
 
 // 💖 onActiveMemoChange 추가
 export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
@@ -342,7 +342,6 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
     }
   };
 
-
   useEffect(() => {
     const bodyElement = bodyRef.current;
     if (!bodyElement) return;
@@ -405,22 +404,13 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
           left: '50%',
           transform: 'translate(-50%, -50%)',
         }}
-        onSlideChange={handleSlideChange} // 💖 활성 슬라이드 변경 시 콜백 호출 (위의 주석처리된 부분은 handleSlideChange 안에 넣었습니다)
-
+        onSlideChange={handleSlideChange} // 💖 활성 슬라이드 변경 시 콜백 호출
         onTouchStart={() => setIsSwiperActive(true)}
         onTouchEnd={() => setIsSwiperActive(false)}
       >
         {memos.length > 0 ? (
           memos.map((memo) => (
-            <StyledSwiperSlide
-              key={memo.id}
-              onClick={() => {
-                if (memoToEditing + 1 === selectedSlide) {
-                  // ✅ notes 배열의 인덱스 +1 값과 비교
-                  router.push(`/memoInput?id=${memo.id}`);
-                }
-              }} // ✅ 현재 활성화된 토스트만 클릭 가능
-            >
+            <StyledSwiperSlide key={memo.id}>
               <StyledBasicToast toastid={memo.id} title={memo.title} content={memo.content} />
             </StyledSwiperSlide>
           ))

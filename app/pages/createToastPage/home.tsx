@@ -6,6 +6,7 @@
  */
 
 // 💖 표시된 부분 SaveToast로 활성화된 메모 id 전달을 위해 수정한 부분
+'use client';
 
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
@@ -27,7 +28,7 @@ interface HomeProps {
 
 // 💖 onActiveMemoChange 추가
 export default function Home({ onHelpClick, onActiveMemoChange }: HomeProps) {
-  const router = useRouter();
+  // const router = useRouter();
   const searchParams = useSearchParams();
 
   // ✅ myPage를 열고 닫는 상태 추가
@@ -76,7 +77,6 @@ export default function Home({ onHelpClick, onActiveMemoChange }: HomeProps) {
       <MyPageOverlay isOpen={isMyPageOpen} onClick={onCloseMyPage}>
         <StyledMyPage onClick={(e) => e.stopPropagation()} isOpen={isMyPageOpen} />
       </MyPageOverlay>
-
     </div>
   );
 }
