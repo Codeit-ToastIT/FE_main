@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import StyledComponentsRegistry from '@/registry';
+import StyledComponentsRegistry from '../registry';
 import { AuthProvider } from './context/AuthContext'; 
 import { EmailProvider } from './context/EmailContext'; 
 
