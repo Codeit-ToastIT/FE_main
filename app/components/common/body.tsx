@@ -11,7 +11,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
@@ -31,14 +30,20 @@ interface BodyProps {
   // 💖 활성 메모 id를 상위로 전달할 콜백 prop 추가
   onActiveMemoChange?: (id: string) => void;
 }
+interface Memo {
+  id: string;
+  categoryId: string;
+  title: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 // 💖 onActiveMemoChange 추가
 export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
   const [memos, setMemos] = useState<Memo[]>([]); // ✅ MongoDB의 메모 리스트 저장
 
   const [showPlus, setShowPlus] = useState(false);
-
-  const router = useRouter();
 
   const [slides, setSlides] = useState<number[]>([1, 2, 3]);
   const [selectedSlide, setSelectedSlide] = useState<number | null>(slides[0]);
