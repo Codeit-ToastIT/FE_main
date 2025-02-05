@@ -1,7 +1,15 @@
-"use client";
+/**
+ * 파일명: page.tsx
+ * 작성일: 2025-02-02
+ * 작성자: 이유진
+ * 설명: 마이페이지 화면 수정 및 styled-components 반영.
+ */
+
+'use client';
 
 import React, { useState } from 'react';
 import styled from 'styled-components';
+
 import Header from '../../components/layout/header';
 import Body from '../../components/common/body';
 import { useRouter } from "next/navigation";
@@ -18,13 +26,13 @@ const MyPage: React.FC<MyPageProps> = ({ userEmail, isPremiumUser }) => {
   const [isEditing, setIsEditing] = useState(false);
 
   const [categories, setCategories] = useState({
-    top: "카테고리 1",
-    right: "카테고리 2",
-    bottom: "카테고리 3",
-    left: "카테고리 4",
+    top: '카테고리 1',
+    right: '카테고리 2',
+    bottom: '카테고리 3',
+    left: '카테고리 4',
   });
   const [editingCategory, setEditingCategory] = useState<string | null>(null);
-  const [tempCategoryName, setTempCategoryName] = useState("");
+  const [tempCategoryName, setTempCategoryName] = useState('');
 
   const displayedEmail = userEmail || "test@example.com";
   const userPlan = isPremiumUser ? "메이플 시럽 버터 토스트 플랜 이용중" : "토스트 플랜 이용중";

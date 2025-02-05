@@ -20,28 +20,30 @@ import Toast5 from '../../../public/toasts/toast5.png';
 const toastImages = [Toast1, Toast2, Toast3, Toast4, Toast5];
 
 interface ToastProps {
-  toastid?: string; // 개별 Toast의 ID
+  toastid?: string;
+  title: string; // ✅ title 추가
+  content: string; // ✅ content 추가
 }
 
-export default function BasicToast({ toastid }: ToastProps) {
+export default function BasicToast({ toastid, title, content }: ToastProps) {
   const router = useRouter();
   const [toastId] = useState(toastid || uuidv4()); // 기존 ID 없으면 새로 생성
   const [toastNumber, setToastNumber] = useState<string>(toastImages[0].src);
-  const [memoTitle, setMemoTitle] = useState<string>('');
-  const [memo, setMemo] = useState<string>('');
+  // const [memoTitle, setMemoTitle] = useState<string>('');
+  // const [memo, setMemo] = useState<string>('');
 
   useEffect(() => {
     // 랜덤으로 토스트 이미지 선택
     const randomToast = toastImages[Math.floor(Math.random() * toastImages.length)];
     setToastNumber(randomToast.src);
 
-    // 해당 Toast ID에 대한 메모 데이터 불러오기
-    const savedTitle = localStorage.getItem(`memoTitle_${toastId}`);
-    const savedMemo = localStorage.getItem(`memo_${toastId}`);
+    // // 해당 Toast ID에 대한 메모 데이터 불러오기
+    // const savedTitle = localStorage.getItem(`memoTitle_${toastId}`);
+    // const savedMemo = localStorage.getItem(`memo_${toastId}`);
 
-    if (savedTitle) setMemoTitle(savedTitle);
-    if (savedMemo) setMemo(savedMemo);
-  }, [toastId]);
+    // if (savedTitle) setMemoTitle(savedTitle);
+    // if (savedMemo) setMemo(savedMemo);
+  }, []);
 
   const handleToastClick = () => {
     router.push(`/pages/memoInput?id=${toastId}`); // ✅ ID 포함하여 이동
@@ -49,9 +51,9 @@ export default function BasicToast({ toastid }: ToastProps) {
 
   return (
     <ToastContainer onClick={handleToastClick}>
-      <MemoTitleDisplay>{memoTitle || '제목없음'}</MemoTitleDisplay>
+      <MemoTitleDisplay>{title}</MemoTitleDisplay>
       <StyledToastImage src={toastNumber} alt="RandomToast" width={296} height={320} priority />
-      <MemoDisplay>{memo || '새로운 영감을 적어볼까요?'}</MemoDisplay>
+      <MemoDisplay>{content}</MemoDisplay>
     </ToastContainer>
   );
 }
@@ -83,6 +85,9 @@ const MemoTitleDisplay = styled.div`
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 `;
 
 const MemoDisplay = styled.div`
@@ -104,6 +109,11 @@ const MemoDisplay = styled.div`
   flex: 1 0 0;
   align-self: stretch;
   overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 16; /* 최대 16줄 표시 */
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
+  white-space: normal;
   color: var(--caramel, #974b00);
   text-overflow: ellipsis;
   white-space: nowrap;

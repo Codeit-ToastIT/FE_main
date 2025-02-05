@@ -1,8 +1,14 @@
-"use client";
+'use client';
+
 
 import { styled } from "styled-components";
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import Image from 'next/image';
+import SubmitButton from '../../components/common/SubmitButton';
+import iconEyeOpen from '../../assets/icons/icon_eye_closed.svg';
+import iconEyeClosed from '../../assets/icons/icon_eye_open.svg';
+
 
 const Whole = styled.div`
   display: inline-flex;
@@ -21,13 +27,13 @@ const Header = styled.div`
 
 const Title = styled.div`
   width: 20.5rem;
-  color: var(--ivory, #E5DCCA);
+  color: var(--ivory, #e5dcca);
   margin-left: 35%;
   font-family: SUIT;
   font-size: 1rem;
   font-style: normal;
   font-weight: 600;
-  line-height: 1.5rem; 
+  line-height: 1.5rem;
 `;
 
 const Container = styled.div`
@@ -48,36 +54,33 @@ const Input = styled.input`
   background: rgba(255, 255, 255, 0.2);
   border: none;
   outline: none;
-  color: #E5DCCA;
+  color: #e5dcca;
   padding-left: 1rem;
+  overflow: hidden;
+  color: var(--ivory, #E5DCCA);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: SUIT;
+  font-size: 1rem;
+  font-style: normal;
   font-weight: 600;
+  line-height: normal;
 `
 
-const Submit = styled.input.withConfig({
-  shouldForwardProp: (prop) => !['isActive'].includes(prop)
-})<{ isActive: boolean }>`
-  display: flex;
-  height: 2.5rem;
-  border-radius: 2.5rem;
-  border: 1px solid var(--ivory, #E5DCCA);
-  background-color: ${({ isActive }) => (isActive ? '#E5DCCA' : 'transparent')};
-  color: ${({ isActive }) => (isActive ? '#171612' : '#E5DCCA')};
-  opacity: ${({ isActive }) => (isActive ? '1' : '0.2')};
-  font-weight: 800;
-`;
-
 const Link = styled.div`
-  color: var(--ivory, #E5DCCA);
+  color: var(--ivory, #e5dcca);
   text-align: center;
   font-family: SUIT;
   font-size: 0.75rem;
   font-weight: 400;
-  line-height: 0.875rem; 
+  line-height: 0.875rem;
   text-decoration-line: underline;
   text-decoration-style: solid;
   text-underline-position: from-font;
   margin-top: 0.5rem;
+  cursor: pointer;
 `
+
 
 const BackIcon = styled.svg`
   width: 1.5rem;
@@ -85,14 +88,23 @@ const BackIcon = styled.svg`
   flex-shrink: 0;
 `;
 
+const IconEye = styled(Image)`
+  width: 1.5rem;
+  height: 1.5rem;
+  position: absolute;
+  right: 1rem; /* 오른쪽 여백 */
+  top: 50%;
+  transform: translateY(-50%);
+  cursor: pointer;
+`;
 
 
 const LoginPage = () => {
-
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [pw, setPw] = useState(""); 
-  const isPwNotEmpty = pw.length > 0; 
+  const [pw, setPw] = useState('');
+  const isPwNotEmpty = pw.length > 0;
   const router = useRouter();
+  const [showPw, setShowPw] = useState(false);
   
     // 입력 필드 포커싱 
     useEffect(() => {
@@ -122,33 +134,64 @@ const LoginPage = () => {
       };
 
 
+      const handleSubmit = () => {
+        // 비밀번호 제출 로직 추가
+        console.log("비밀번호 제출:", pw);
+      };
+
+      const handleLinkClick = () => {
+        router.push("/pages/resetPasswordPage"); // 홈으로 이동
+      };
+
+
   return (
     <Whole onMouseDown={handleMouseDown}>
       <Header>
-        
-        <BackIcon onClick={handleBackClick} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-        <path d="M14.4 16.7998L9.59998 11.9998L14.4 7.19981" stroke="#E5DCCA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <BackIcon
+          onClick={handleBackClick}
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+        >
+          <path
+            d="M14.4 16.7998L9.59998 11.9998L14.4 7.19981"
+            stroke="#E5DCCA"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </BackIcon>
         <Title>로그인</Title>
       </Header>
       <Container>
         <Form noValidate>
-        <Input 
-          type="password"
-          name="password"
-          placeholder="비밀번호를 입력해주세요."
-          ref={inputRef}
-          value={pw}
-          onChange={handlePwChange} // 비밀번호 상태 업데이트
-          // onInvalid={() => setError("비밀번호를 확인해주세요.")}
-          autoComplete="off"
-        />
+          <div style={{ position: 'relative' }}>
+            <Input 
+              type={showPw ? "text" : "password"} 
+              name="password"
+              placeholder="비밀번호를 입력해주세요."
+              ref={inputRef}
+              value={pw}
+              onChange={handlePwChange} // 비밀번호 상태 업데이트
+              // onInvalid={() => setError("비밀번호를 확인해주세요.")}
+              autoComplete="off"
+            />
+            <IconEye 
+              src={showPw ? iconEyeOpen : iconEyeClosed} // 상태에 따라 아이콘 변경
+              alt={showPw ? "비밀번호 숨기기" : "비밀번호 보이기"} // 대체 텍스트 추가
+              onClick={() => setShowPw(prev => !prev)}
+            />
+          </div>
+        
         {/* {error && <ErrorMessage>{error}</ErrorMessage>}  */}
-        <Submit type="submit" value="계속하기"  isActive={isPwNotEmpty} disabled={!isPwNotEmpty}/>
+        <SubmitButton 
+            isActive={isPwNotEmpty} 
+            onClick={handleSubmit} // 클릭 시 처리
+        />
         </Form>
-        <Link>비밀번호를 잊어버렸나요?</Link>
+        <Link onClick={handleLinkClick}>비밀번호를 잊어버렸나요?</Link>
       </Container>
     </Whole>
-  )
-}
+  );
+};
 export default LoginPage;

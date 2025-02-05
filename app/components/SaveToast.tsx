@@ -5,7 +5,7 @@
  * 설명: 메모 저장 컴포넌트 구현
  */
 
-// 화면 사이즈 조절 필요
+// 화면 사이즈 조절 필요, 코드 분리 필요(코드 너무 길어짐)
 
 'use client';
 
@@ -15,6 +15,9 @@ import toastImage from '../assets/save/saveToast.png'; // 식빵 이미지
 import categorySliceImage from '../assets/save/category.png'; // 카테고리 조각 이미지(css로 구현 or svg로 변경 필요)
 import selectedCategoryImage from '../assets/save/selectedCategory.png'; // 선택된 카테고리 조각 이미지(css로 구현 or svg로 변경 필요)
 
+import { API_BASE_URL } from '../api/api';
+import { useAuth } from '../api/AuthContext';
+
 interface SaveToastProps {
   onClose: (category: string) => void; // 모달 닫기 함수, 인자 추가
   onSave: (category: string) => void; // 저장 콜백 함수
@@ -23,30 +26,173 @@ interface SaveToastProps {
   content: string | null; // 내용
 }
 
-const SaveToast: React.FC<SaveToastProps> = ({
-  onClose,
-  onSave,
-  memoId,
-  title,
-  content,
-}) => {
+const SaveToast: React.FC<SaveToastProps> = ({ onClose, onSave, memoId, title, content }) => {
   const [position, setPosition] = useState({ x: 0, y: 0 }); // 식빵 위치
   const [activeSlice, setActiveSlice] = useState<number | null>(null); // 활성화된 조각 (0~3)
   const [isDragging, setIsDragging] = useState(false); // 드래그 상태 확인
   const [showHint, setShowHint] = useState(false); // 힌트 표시 여부
+  const [showSaveMessage, setShowSaveMessage] = useState<string | null>(null); // 저장 메시지 상태
+  const [categoryNames, setCategoryNames] = useState<string[]>([]); // 카테고리 이름
   let inactivityTimeout: NodeJS.Timeout;
+
+  const [memoTitle, setMemoTitle] = useState<string | null>(title || null);
+  const [memoContent, setMemoContent] = useState<string | null>(content || null);
+
+  // 카테고리 이름. 추후 api로 교체 필요
+  // const categoryNames = ['카테고리 1', '카테고리 2', '카테고리 3', '카테고리 4'];
+
+  const { token } = useAuth();
+
+  // 💖 특정 메모 정보를 가져오는 함수 추가
+  const fetchMemoDataFromCategories = async () => {
+    try {
+      const categoryIds = [1, 2, 3, 4]; // 실제 카테고리 ID 사용
+
+      const results = await Promise.all(
+        categoryIds.map((id) =>
+          fetch(`${API_BASE_URL}/api/categories/${id}/memos`, {
+            method: 'GET',
+            headers: {
+              Authorization: 'Bearer ${token}',
+            },
+          }).then((res) => {
+            if (!res.ok) throw new Error(`카테고리 ${id} 데이터 불러오기 실패`);
+            return res.json();
+          }),
+        ),
+      );
+
+      // 모든 카테고리의 메모 데이터를 합침
+      const allMemos = results.flatMap((result) =>
+        result.notes.map((note: any) => ({
+          id: note.id,
+          categoryId: result.category.id,
+          categoryName: result.category.name,
+          title: note.title,
+          content: note.content,
+        })),
+      );
+
+      // 특정 memoId를 찾음
+      const memoData = allMemos.find((memo) => memo.id === Number(memoId));
+
+      if (memoData) {
+        console.log('✅ 찾은 메모 정보:', memoData);
+      } else {
+        console.log('❌ 해당 memoId에 대한 메모를 찾을 수 없습니다.');
+      }
+    } catch (error) {
+      console.error('메모 데이터 가져오기 실패:', error);
+    }
+  };
+
+  // ✅ 컴포넌트 마운트 시 실행
+  useEffect(() => {
+    fetchMemoDataFromCategories();
+  }, [memoId]);
 
   useEffect(() => {
     console.log('Memo Info:', { memoId, title, content });
   }, [memoId, title, content]);
 
-  // 카테고리 이름. 추후 api로 교체 필요
-  const categoryNames = [
-    '카테고리 1',
-    '카테고리 2',
-    '카테고리 3',
-    '카테고리 4',
-  ];
+  useEffect(() => {
+    // SaveToast가 처음 렌더링될 때 힌트 타이머 시작
+    resetInactivityTimeout();
+
+    // 마우스 움직임 및 클릭 이벤트 리스너 추가
+    window.addEventListener('mousemove', resetInactivityTimeout);
+    window.addEventListener('mousedown', resetInactivityTimeout);
+
+    return () => {
+      // 이벤트 리스너 정리
+      clearTimeout(inactivityTimeout);
+      window.removeEventListener('mousemove', resetInactivityTimeout);
+      window.removeEventListener('mousedown', resetInactivityTimeout);
+    };
+  }, []);
+
+  // 카테고리 불러오기
+  useEffect(() => {
+    // 카테고리 ID 배열
+    const categoryIds = [1, 2, 3, 4];
+
+    // 💖여러 API 호출을 동시에 진행 (Promise.all 사용)
+    const fetchCategoryNames = async () => {
+      try {
+        const results = await Promise.all(
+          categoryIds.map((id) =>
+            fetch(`${API_BASE_URL}/api/categories/${id}/memos`, {
+              method: 'GET',
+              headers: {
+                Authorization: 'Bearer ${token}',
+              },
+            }).then((res) => {
+              if (!res.ok) {
+                throw new Error(`카테고리 ${id}를 가져오는데 실패했습니다.`);
+              }
+              return res.json();
+            }),
+          ),
+        );
+
+        // 각 응답에서 category.name 추출
+        const names = results.map((result) => result.category.name);
+        setCategoryNames(names);
+      } catch (error) {
+        console.error('카테고리 이름 가져오기 실패:', error);
+      }
+    };
+
+    fetchCategoryNames();
+  }, []);
+
+  // 💖 선택된 카테고리에 메모 저장하는 함수
+  const saveMemoToCategory = async (selectedCategoryId: string, selectedCategoryName: string) => {
+    try {
+      // 제목이 없으면 현재 날짜로 자동 설정
+      const now = new Date();
+      const defaultTitle = `${now.getFullYear()}년 ${String(now.getMonth() + 1).padStart(2, '0')}월 ${String(now.getDate()).padStart(2, '0')}일`;
+
+      const memoData = {
+        title: memoTitle || defaultTitle, // 제목이 없으면 날짜로 설정
+        content: memoContent, // 내용
+        categoryId: selectedCategoryId, // 선택된 카테고리 ID
+      };
+
+      // 내용이 없으면 저장하지 않음
+      if (!memoData.content) {
+        console.log('❌ 본문 내용이 없어 저장되지 않았습니다.');
+        setShowSaveMessage('❌ 메모 내용이 없어 저장되지 않았습니다.');
+        return;
+      }
+
+      const response = await fetch(`${API_BASE_URL}/api/memos`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ${token}',
+        },
+        body: JSON.stringify(memoData),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        console.log('✅ 메모 저장 성공:', result);
+        setShowSaveMessage('✅ 메모가 성공적으로 저장되었습니다!');
+
+        // 저장 성공 후 콜백 실행하여 UI 갱신
+        onSave(selectedCategoryName);
+        onClose(selectedCategoryName);
+      } else {
+        console.error('❌ 메모 저장 실패:', result);
+        setShowSaveMessage(`❌ 저장 실패: ${result.message}`);
+      }
+    } catch (error) {
+      console.error('❌ 메모 저장 중 오류 발생:', error);
+      setShowSaveMessage('❌ 메모 저장 중 오류가 발생했습니다.');
+    }
+  };
 
   // 마우스 이벤트
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -78,16 +224,38 @@ const SaveToast: React.FC<SaveToastProps> = ({
     });
   };
 
+  // ✅ 효과음 재생 함수 추가
+  const playSaveSound = () => {
+    const audio = new Audio('/sounds/toaster_save.wav'); // 효과음 경로
+    audio
+      .play()
+      .then(() => console.log('✅ 효과음 재생 성공'))
+      .catch((error) => console.error('❌ 효과음 재생 실패:', error));
+  };
+
   const handleMouseUp = () => {
     setIsDragging(false); // 드래그 종료
     if (activeSlice !== null) {
       const selectedCategory = categoryNames[activeSlice];
 
-      // 제목이 null인 경우 현재 날짜로 설정
+      console.log('📌 선택한 카테고리:', selectedCategory);
+
+      // 카테고리 ID를 가져와 메모 저장
+      saveMemoToCategory(String(activeSlice + 1), selectedCategory); // ID는 1부터 시작한다고 가정
+
+      if (typeof onSave === 'function') {
+        onSave(selectedCategory);
+        playSaveSound(); // 효과음 재생 추가
+      } else {
+        console.error('onSave is not a function');
+      }
+
       const now = new Date();
       const currentTitle =
         title ||
-        `${now.getFullYear()}년 ${String(now.getMonth() + 1).padStart(2, '0')}월 ${String(now.getDate()).padStart(2, '0')}일`;
+        `${now.getFullYear()}년 ${String(now.getMonth() + 1).padStart(2, '0')}월 ${String(
+          now.getDate(),
+        ).padStart(2, '0')}일`;
 
       console.log({
         memoId,
@@ -115,47 +283,58 @@ const SaveToast: React.FC<SaveToastProps> = ({
 
     const touch = e.touches[0];
     setPosition((prev) => {
-      const newX = Math.min(
-        16,
-        Math.max(-16, touch.clientX - window.innerWidth / 2),
-      );
-      const newY = Math.min(
-        16,
-        Math.max(-16, touch.clientY - window.innerHeight / 2),
-      );
+      const newX = Math.min(16, Math.max(-16, touch.clientX - window.innerWidth / 2));
+      const newY = Math.min(16, Math.max(-16, touch.clientY - window.innerHeight / 2));
 
-      checkCollision(newX, newY);
+      // 최대치 16px까지 도달해야만 카테고리 선택 가능
+      if (Math.abs(newX) === 16 || Math.abs(newY) === 16) {
+        checkCollision(newX, newY);
+      } else {
+        setActiveSlice(null); // 최대치 미만 이동 시 카테고리 선택 해제
+      }
+
       return { x: newX, y: newY };
     });
   };
 
   const handleTouchEnd = () => {
     setIsDragging(false); // 드래그 종료
+
+    // 중앙 근방(오차 범위 16px)으로 돌아왔을 경우 저장 취소
+    const isNearCenter = Math.abs(position.x) < 16 && Math.abs(position.y) < 16;
+
+    if (isNearCenter || activeSlice === null) {
+      console.log('저장을 취소했어요.');
+      setShowSaveMessage('저장을 취소했어요.'); // 취소 메시지 표시
+      setTimeout(() => {
+        setShowSaveMessage(null); // 2초 후 메시지 사라지게 설정
+      }, 2000);
+      setPosition({ x: 0, y: 0 }); // 위치 초기화
+      setActiveSlice(null); // 활성화된 카테고리 초기화
+      onClose(''); // 모달 닫기 (카테고리 없이)
+      return; // 저장 로직 실행되지 않도록 여기서 종료!
+    }
+
     if (activeSlice !== null) {
       const selectedCategory = categoryNames[activeSlice];
-
-      // 제목이 null인 경우 현재 날짜로 설정
-      const now = new Date();
-      const currentTitle =
-        title ||
-        `${now.getFullYear()}년 ${String(now.getMonth() + 1).padStart(2, '0')}월 ${String(now.getDate()).padStart(2, '0')}일`;
 
       console.log({
         memoId,
         category: selectedCategory,
-        title: currentTitle,
+        title,
         content,
       });
 
       onSave(selectedCategory); // 선택된 카테고리 전달
       onClose(selectedCategory); // 선택된 카테고리 전달
     }
+
     setPosition({ x: 0, y: 0 });
     setActiveSlice(null);
   };
 
   const checkCollision = (x: number, y: number) => {
-    const threshold = 20;
+    const threshold = 16; // 16px 이상 이동해야 선택 가능
     let closestSlice: number | null = null;
     let minDistance = Infinity;
 
@@ -166,7 +345,12 @@ const SaveToast: React.FC<SaveToastProps> = ({
       { id: 3, dx: -threshold, dy: 0 }, // 왼쪽 조각
     ];
 
-    // 각 조각과의 거리 계산
+    // 최대 이동 거리(16px) 도달했을 때만 계산
+    if (Math.abs(x) < threshold && Math.abs(y) < threshold) {
+      setActiveSlice(null);
+      return;
+    }
+
     for (const slice of slices) {
       const distance = Math.sqrt((x - slice.dx) ** 2 + (y - slice.dy) ** 2);
       if (distance < minDistance && distance <= threshold) {
@@ -181,8 +365,10 @@ const SaveToast: React.FC<SaveToastProps> = ({
   const resetInactivityTimeout = () => {
     clearTimeout(inactivityTimeout);
     setShowHint(false); // 힌트 숨김
+
+    // 일정 시간(2초) 동안 움직임이 없으면 힌트 표시
     inactivityTimeout = setTimeout(() => {
-      setShowHint(true); // 2초 동안 아무 동작 없을 시 힌트 표시
+      setShowHint(true);
     }, 2000);
   };
 
@@ -223,11 +409,7 @@ const SaveToast: React.FC<SaveToastProps> = ({
           {/* 상단 조각 */}
           <CategoryWrapper>
             <Category
-              src={
-                activeSlice === 0
-                  ? selectedCategoryImage.src
-                  : categorySliceImage.src
-              }
+              src={activeSlice === 0 ? selectedCategoryImage.src : categorySliceImage.src}
               style={{
                 transform: 'translateY(-81.9px) rotate(0deg)',
               }}
@@ -240,11 +422,7 @@ const SaveToast: React.FC<SaveToastProps> = ({
           {/* 오른쪽 조각 */}
           <CategoryWrapper>
             <Category
-              src={
-                activeSlice === 1
-                  ? selectedCategoryImage.src
-                  : categorySliceImage.src
-              }
+              src={activeSlice === 1 ? selectedCategoryImage.src : categorySliceImage.src}
               style={{
                 transform: 'translateX(81px) translateY(-0.5px) rotate(90deg)',
               }}
@@ -257,11 +435,7 @@ const SaveToast: React.FC<SaveToastProps> = ({
           {/* 하단 조각 */}
           <CategoryWrapper>
             <Category
-              src={
-                activeSlice === 2
-                  ? selectedCategoryImage.src
-                  : categorySliceImage.src
-              }
+              src={activeSlice === 2 ? selectedCategoryImage.src : categorySliceImage.src}
               style={{
                 transform: 'translateY(81px) rotate(180deg)',
               }}
@@ -274,14 +448,9 @@ const SaveToast: React.FC<SaveToastProps> = ({
           {/* 왼쪽 조각 */}
           <CategoryWrapper>
             <Category
-              src={
-                activeSlice === 3
-                  ? selectedCategoryImage.src
-                  : categorySliceImage.src
-              }
+              src={activeSlice === 3 ? selectedCategoryImage.src : categorySliceImage.src}
               style={{
-                transform:
-                  'translateX(-81.3px) translateY(-0.4px) rotate(-90deg)',
+                transform: 'translateX(-81.3px) translateY(-0.4px) rotate(-90deg)',
               }}
               alt="카테고리 왼쪽"
             />
@@ -327,6 +496,8 @@ const Container = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
+  user-select: none; /* 텍스트 선택 방지 */
+  touch-action: none; /* 기본 터치 동작(스크롤, 확대 등) 방지 */
 `;
 
 const Hint = styled.div`
@@ -395,6 +566,7 @@ const Toast = styled.img<{ x: number; y: number }>`
   transform: translate(-50%, -50%);
   cursor: grab;
   user-select: none;
+  touch-action: none; /* 터치 기본 동작 방지 */
   transition: transform 0.2s ease;
   z-index: 10;
 `;
