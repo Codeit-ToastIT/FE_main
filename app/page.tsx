@@ -7,6 +7,7 @@ import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import iconBack from './assets/icons/icon_back.svg';
 import Image from 'next/image';
+import iconKakao from './assets/icons/icon_kakao.svg';
 
 const Whole = styled.div`
   display: flex;
@@ -69,7 +70,7 @@ const Title = styled.span`
   margin-left: 0.5rem;
 `;
 
-const KakaoIcon = styled.img`
+const KakaoIcon = styled(Image)`
   display: flex;
   width: 1.5rem;
   height: 1.5rem;
@@ -190,7 +191,7 @@ export default function Home() {
             <Title>이메일로 시작하기</Title>
           </Button>
           <KakaoButton>
-            <KakaoIcon src="https://s3-alpha-sig.figma.com/img/b0e2/faa9/489207e3bac388c627cc68d80e262329?Expires=1737936000&Key-Pair-Id=APKAQ4GOSFWCVNEHN3O4&Signature=igAS8pgtU2y05YCT4cjNdSd32bneh8aCV2sf-e3muHDfg4vR6DbJMmHg7A5XVjcNvIYTyJgu4Rh9nU-ZfeHabKS8Dzlf~udAR7yj2Dor3CUL8sV1RHmQAgrIJTJvdBg2FjlIVHUhpTVqbojQmINthTRzxQDwcZWVWoSNLYOaUNnH~InwrF4Zc87Uu~mF2R~YpzrDXbTiyBtQMYagJAExL8Gr~NeFN~LUPJbyX2Ada4B~jm4TSOtHEht-UHJaFaR5wXE1v4m2wLOS9dxO8C~RSeMPmzltVJYmdMmWNrpzgl~3DAki6gy8jnvERp7fHS~VKtcUDwJsbaZ8YvnCfawdVQ__" />
+            <KakaoIcon src={iconKakao} alt="kakao"/>
             <Title>카카오 계정으로 시작하기</Title>
           </KakaoButton>
         </Container>

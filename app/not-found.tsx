@@ -6,6 +6,7 @@ import vector from "./assets/icons/Vector.svg";
 import ellipse7 from "./assets/icons/Ellipse 7.svg";
 import ellipse8 from "./assets/icons/Ellipse 8.svg";
 import bread from "./assets/icons/bread1.png";
+import { useRouter } from "next/navigation";
 
 const Whole = styled.div`
   display: flex;
@@ -82,6 +83,11 @@ const Container = styled.div`
 `
 
 export default function NotFound() {
+  const router = useRouter();
+  
+  const goHome = () => {
+    router.push('/');
+  }
   return (
     <Whole>
       <ImageError>
@@ -95,7 +101,7 @@ export default function NotFound() {
       <P>요청한 페이지의 주소가</P>
       <P>변경 또는 삭제 되었어요.</P>
       </Container>
-      <Button>홈으로</Button>
+      <Button onClick={goHome}>홈으로</Button>
     </Whole>
   )
 }
