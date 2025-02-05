@@ -5,6 +5,8 @@
  * 설명: header, body 스타일 수정.
  */
 
+// 💖 표시된 부분 SaveToast로 활성화된 메모 id 전달을 위해 수정한 부분
+
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import styled from 'styled-components';
@@ -19,9 +21,12 @@ import iconAdd from '../../assets/icons/icon_add.svg';
 
 interface HomeProps {
   onHelpClick: () => void;
+  // 💖 SaveToast로 활성화된 메모 id 전달을 위한 콜백 prop 추가
+  onActiveMemoChange?: (id: string) => void;
 }
 
-export default function Home({ onHelpClick }: HomeProps) {
+// 💖 onActiveMemoChange 추가
+export default function Home({ onHelpClick, onActiveMemoChange }: HomeProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -64,13 +69,14 @@ export default function Home({ onHelpClick }: HomeProps) {
       <StyledHeader title="TOAST IT" onHelpClick={onHelpClick} onProfileClick={onProfileClick} />
       <IconAdd src={iconAdd} alt="Add" />
 
-      {/* ✅ Body에 deletedMemoId 전달 */}
-      <StyledBody deletedMemoId={deletedMemoId} />
+      {/* // 💖 onActiveMemoChange 콜백 전달 추가*/}
+      <StyledBody deletedMemoId={deletedMemoId} onActiveMemoChange={onActiveMemoChange} />
 
       {/* ✅ MyPage 컴포넌트가 오른쪽에서 왼쪽으로 슬라이드되며 나타남 */}
       <MyPageOverlay isOpen={isMyPageOpen} onClick={onCloseMyPage}>
         <StyledMyPage onClick={(e) => e.stopPropagation()} isOpen={isMyPageOpen} />
       </MyPageOverlay>
+
     </div>
   );
 }
