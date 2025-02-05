@@ -1,15 +1,9 @@
-/**
- * 파일명: page.tsx
- * 작성일: 2025-02-02
- * 작성자: 이유진
- * 설명: 마이페이지 화면 수정 및 styled-components 반영.
- */
-
 "use client";
 
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import Header from '../../components/layout/header';
+import Body from '../../components/common/body';
 import { useRouter } from "next/navigation";
 
 interface MyPageProps {
@@ -20,6 +14,9 @@ interface MyPageProps {
 const MyPage: React.FC<MyPageProps> = ({ userEmail, isPremiumUser }) => {
   const router = useRouter();
   const [isOpen, setIsOpen] = useState(false);
+  // 수정 모드 활성화를 위한 상태
+  const [isEditing, setIsEditing] = useState(false);
+
   const [categories, setCategories] = useState({
     top: "카테고리 1",
     right: "카테고리 2",
@@ -30,7 +27,19 @@ const MyPage: React.FC<MyPageProps> = ({ userEmail, isPremiumUser }) => {
   const [tempCategoryName, setTempCategoryName] = useState("");
 
   const displayedEmail = userEmail || "test@example.com";
-  const userPlan = isPremiumUser ? "유료 플랜 이용중" : "무료 플랜 이용중";
+  const userPlan = isPremiumUser ? "메이플 시럽 버터 토스트 플랜 이용중" : "토스트 플랜 이용중";
+
+  // centerButton 클릭 시 수정 모드 토글
+  const handleCenterButtonClick = () => {
+    if (isEditing) {
+      // 수정모드 종료 시 입력 중인 내용은 반영하지 않고 취소
+      setEditingCategory(null);
+      setTempCategoryName("");
+      setIsEditing(false);
+    } else {
+      setIsEditing(true);
+    }
+  };
 
   return (
     <PageContainer>
@@ -47,52 +56,63 @@ const MyPage: React.FC<MyPageProps> = ({ userEmail, isPremiumUser }) => {
               <Email>{displayedEmail}</Email>
               <Plan>{userPlan}</Plan>
               <CircularMenu>
-                <MenuImage src="/4-radial_menu.png" alt="Circular Menu" />
+                {/* 수정모드 여부에 따라 배경 이미지 변경 (이미지 주소는 원하시는 것으로 변경) */}
+                <MenuImage 
+                  src={isEditing ? "/4-radial_menu_edit.svg" : "/4-radial_menu.svg"} 
+                  alt="Circular Menu" 
+                />
                 <MenuItems>
                   {Object.entries(categories).map(([position, name]) => (
                     <MenuItem
                       key={position}
                       position={position}
                       onClick={() => {
-                        setEditingCategory(position);
-                        setTempCategoryName(categories[position as keyof typeof categories]);
+                        // 수정 모드일 때만 해당 카테고리 수정 활성화
+                        if (isEditing) {
+                          setEditingCategory(position);
+                          setTempCategoryName(categories[position as keyof typeof categories]);
+                        }
                       }}
                     >
                       {editingCategory === position ? (
-                        <CategoryText>
-                          <InlineInput
-                            type="text"
-                            value={tempCategoryName}
-                            onChange={(e) => setTempCategoryName(e.target.value)}
-                            onBlur={() => {
-                              setCategories({
-                                ...categories,
-                                [editingCategory!]: tempCategoryName,
-                              });
-                              setEditingCategory(null);
-                              setTempCategoryName("");
-                            }}
-                            autoFocus
-                          />
-                        </CategoryText>
+                        // 편집 시: 제한 없이 입력 가능 (줄 제한 없음)
+                        <EditingInput
+                          value={tempCategoryName}
+                          onChange={(e) => setTempCategoryName(e.target.value)}
+                          onBlur={() => {
+                            // 포커스가 벗어나면 저장
+                            setCategories({
+                              ...categories,
+                              [editingCategory!]: tempCategoryName,
+                            });
+                            setEditingCategory(null);
+                            setTempCategoryName("");
+                          }}
+                          autoFocus
+                        />
                       ) : (
-                        <CategoryText>{name}</CategoryText>
+                        // 저장된 상태: 최대 2줄까지만 표시되고, 2줄 넘으면 말줄임표 처리
+                        <DisplayText>{name}</DisplayText>
                       )}
                     </MenuItem>
                   ))}
                 </MenuItems>
-                <CenterButton>
-                  <img src="/iconbutton.png" alt="Edit Button" />
+                <CenterButton onClick={handleCenterButtonClick}>
+                  {/* centerButton 이미지도 수정 모드에 따라 변경 */}
+                  <img 
+                    src={isEditing ? "/iconbutton_edit.svg" : "/iconbutton.svg"} 
+                    alt="Edit Button" 
+                  />
                 </CenterButton>
               </CircularMenu>
 
               <IconButtons>
                 <IconButton onClick={() => router.push("./myPage/account")}>
-                  <img src="/icon_profile.png" alt="계정 아이콘" />
+                  <img src="/icon_profile.svg" alt="계정 아이콘" />
                   <span>계정</span>
                 </IconButton>
                 <IconButton onClick={() => router.push("./myPage/plan")}>
-                  <img src="/icon_card.png" alt="플랜 아이콘" />
+                  <img src="/icon_card.svg" alt="플랜 아이콘" />
                   <span>플랜</span>
                 </IconButton>
               </IconButtons>
@@ -130,12 +150,11 @@ const ContentContainer = styled.div`
 `;
 
 const MyPageContainer = styled.div`
-  position: fixed;
+  position: absolute;
   top: 0;
-  left: 0;
+  right: 85%;
   width: 320px;
   height: 100vh;
-  background-color: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(10px);
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
   display: flex;
@@ -154,17 +173,10 @@ const MyPageContainer = styled.div`
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(255, 255, 255, 0.85);
+    background-color: rgba(255, 255, 255, 0.8);
     z-index: -1;
     border-top-left-radius: 40px;
     border-bottom-left-radius: 40px;
-  }
-
-  &.open {
-    transform: translateX(0);
-  }
-  &.closed {
-    transform: translateX(100%);
   }
 `;
 
@@ -190,7 +202,7 @@ const CircularMenu = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 `;
 
 const MenuImage = styled.img`
@@ -214,7 +226,6 @@ const MenuItem = styled.div<{ position: string }>`
   font-size: 14px;
   cursor: pointer;
 
-  /* 각 위치별로 고정된 기준점에 배치 */
   ${({ position }) =>
     position === "top" && "top: 20px; left: 50%; transform: translateX(-50%);"}
   ${({ position }) =>
@@ -225,29 +236,42 @@ const MenuItem = styled.div<{ position: string }>`
     position === "left" && "left: 10px; top: 50%; transform: translateY(-50%);"}
 `;
 
-const CategoryText = styled.span`
-  display: inline-block;
+/* 저장된(비편집) 상태에서 보여줄 텍스트 (최대 2줄까지 표시, 초과시 말줄임표 처리) */
+const DisplayText = styled.span`
+  font-family: 'SUIT-Regular';
   width: 80px;
   text-align: center;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  white-space: nowrap;
   text-overflow: ellipsis;
+  line-height: 1.2em;
+  max-height: 2.4em;
 `;
 
-const InlineInput = styled.input`
-  color: #fff;
+/* 편집 시 사용하는 입력창: 길이 제한 없이 입력할 수 있음 */
+const EditingInput = styled.textarea`
+  font-family: 'SUIT-Regular';
+  color: #EDCA85;
   font-size: 14px;
+  font-weight: 600;
   border: none;
   background: transparent;
   text-align: center;
   outline: none;
-  width: 100%;
+  width: 80px;
   padding: 0;
   margin: 0;
-  overflow: hidden;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  caret-color: auto;
+  resize: none;
+  overflow: auto;
+  -ms-overflow-style: none; /* IE, Edge */
+  scrollbar-width: none; /* Firefox */
+  &::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera */
+  }
+  white-space: pre-wrap;
+  word-break: break-all;
 `;
 
 const CenterButton = styled.button`
@@ -267,15 +291,31 @@ const IconButtons = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-top: 10px;
-  gap: 20px;
+  padding: 8px 0;
 `;
 
 const IconButton = styled.div`
   display: flex;
+  font-family: 'SUIT-Regular';
+  font-weight: 600;
   align-items: center;
-  gap: 10px;
+  padding: 8px 16px;
+  gap: 16px;
   cursor: pointer;
+  border-radius: 40px;         
+
+  &:hover {
+    background-color: white; 
+  }
+
+  & > img,
+  & > span {
+    vertical-align: middle;
+  }
+
+  & > span {
+    transform: translateY(-2px); /* 필요에 따라 값 조절 */
+  }
 `;
 
 export default MyPage;

@@ -17,7 +17,9 @@ const PlanPage = () => {
   return (
     <Container>
       <Header>
-        <BackButton onClick={() => router.back()}>←</BackButton>
+        <BackButton onClick={() => router.back()}>
+          <img src="/icon_back.svg" alt="뒤로 가기" />
+        </BackButton>
         <TitleWrapper>
           <TitleContainer>
             <Title>플랜</Title>
@@ -50,18 +52,19 @@ export default PlanPage;
 const Container = styled.div`
   width: 100%;
   height: 100vh;
-  background-color: #f5e8d6;
+  background-color: var(--ivory, #E5DCCA);
   display: flex;
   flex-direction: column;
   align-items: center;
 `;
 
 const Header = styled.div`
-  width: 100%;
+  width: 343px;
   display: flex;
   align-items: center;
   background-color: transparent;
-  padding: 10px;
+  margin-top: 16px;
+  margin-bottom: 8px;
 `;
 
 const BackButton = styled.button`
@@ -101,7 +104,7 @@ const Title = styled.h1`
 `;
 
 const PlanContainer = styled.div`
-  width: 90%;
+  width: 343px;
   margin-top: 20px;
 `;
 
@@ -114,21 +117,30 @@ const PlanBox = styled.div`
 `;
 
 const PlanTitle = styled.h2`
+  color: var(--black, #171612);
+  font-family: SUIT;
   font-size: 16px;
+  font-style: normal;
   font-weight: 800;
-  margin-bottom: 0;
+  line-height: 20px; /* 125% */
 `;
 
 const PlanPrice = styled.p`
+  color: var(--caramel, #974B00);
+  font-family: SUIT;
   font-size: 24px;
+  font-style: normal;
   font-weight: 800;
-  color: #974B00;
-  margin-top: 0;
+  margin: 0;
 `;
 
 const PlanFeature = styled.p`
-  font-size: 14px;
-  margin-top: 4px;
+  color: var(--black, #171612);
+  font-family: SUIT;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 400;
+  margin: 8px 0;
 `;
 
 const PlanButton = styled.button`

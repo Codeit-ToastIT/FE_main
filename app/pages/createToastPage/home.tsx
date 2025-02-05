@@ -22,7 +22,7 @@ interface HomeProps {
 export default function Home({ onHelpClick }: HomeProps) {
   const router = useRouter();
   const onProfileClick = () => {
-    router.push(`/pages/myPage`);
+    router.push("./myPage", undefined, { shallow: true });
   };
 
   const searchParams = useSearchParams();
