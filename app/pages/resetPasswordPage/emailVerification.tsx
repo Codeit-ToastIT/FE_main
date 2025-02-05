@@ -5,6 +5,7 @@ import { styled } from "styled-components";
 import { useRouter } from "next/navigation";
 import SubmitButton from '../../components/common/SubmitButton';
 import { useEmail } from '../../context/EmailContext'; // EmailContext 가져오기
+import { API_BASE_URL } from "../../api/api";
 
 const Whole = styled.div`
   display: inline-flex;
@@ -165,7 +166,7 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ onSuccess }) => {
   // 이메일로 코드 전송
   const sendEmail = async () => {
     try {
-      const response = await fetch('/api/auth/password/reset/send-code', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/password/reset/send-code`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

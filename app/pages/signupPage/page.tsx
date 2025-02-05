@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import { useEmail } from "../../context/EmailContext";
 import { useAuth } from '../../context/AuthContext';
 import SubmitButton from '../../components/common/SubmitButton';
-
+import { API_BASE_URL } from "../../api/api";
 
 const Whole = styled.div`
   display: inline-flex;
@@ -165,7 +165,7 @@ const SignupPage = () => {
     }
 
     try {
-      const response = await axios.post("/api/auth/signup", {
+      const response = await axios.post(`${API_BASE_URL}/api/auth/signup`, {
         email, 
         password: pw,
         confirmPassword: pwCheck,

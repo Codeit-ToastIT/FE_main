@@ -4,6 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useEmail } from '../../context/EmailContext';
 import styled from 'styled-components';
+import { API_BASE_URL } from '../../api/api';
 
 import SubmitButton from '../../components/common/SubmitButton';
 
@@ -73,7 +74,6 @@ const EmailInputPage = () => {
   const isEmailNotEmpty = email.length > 0; // 이메일 입력 여부 확인
   const router = useRouter();
   const { setEmail: setEmailContext } = useEmail(); // EmailContext에서 setEmail 가져오기
-
   // 컴포넌트 마운트 시 이메일 입력 필드에 포커스
 
   useEffect(() => {
@@ -106,12 +106,13 @@ const EmailInputPage = () => {
 
       // 이메일 등록 여부 확인 API 호출
     try {
-      const response = await fetch('/api/auth/check-email', { // API 경로 수정
+      const response = await fetch(`${API_BASE_URL}/api/auth/check-email`, { // API 경로 수정
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email }), // 요청 바디 수정
       });
-
+      
+      console.log(API_BASE_URL)
       if (!response.ok) {
         const errorData = await response.json(); // 오류 메시지 파싱
         setError(errorData.message); // 오류 메시지 설정
