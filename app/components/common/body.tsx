@@ -5,6 +5,8 @@
  * 설명: body 컴포넌트
  */
 
+// 💖 표시된 부분 SaveToast로 활성화된 메모 id 전달을 위해 수정한 부분
+
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
@@ -21,16 +23,15 @@ import { API_BASE_URL } from '../../api/api';
 
 interface BodyProps {
   deletedMemoId?: string; // ✅ 삭제된 메모 ID를 props로 받음
+  // 💖 활성 메모 id를 상위로 전달할 콜백 prop 추가
+  onActiveMemoChange?: (id: string) => void;
 }
 
-interface Memo {
-  id: string;
-  title: string;
-  content: string;
-}
 
-export default function Body({ deletedMemoId }: BodyProps) {
+// 💖 onActiveMemoChange 추가
+export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
   const [memos, setMemos] = useState<Memo[]>([]); // ✅ MongoDB의 메모 리스트 저장
+
   const [showPlus, setShowPlus] = useState(false);
 
   const [slides, setSlides] = useState<number[]>([1, 2, 3]);
@@ -323,6 +324,14 @@ export default function Body({ deletedMemoId }: BodyProps) {
     }
   };
 
+  // 💖 Swiper 슬라이드 변경 시 활성 메모 id 전달
+  const handleSlideChange = (swiper: any) => {
+    const activeId = uniqueSlides[swiper.realIndex];
+    setSelectedSlide(activeId);
+    if (onActiveMemoChange) {
+      onActiveMemoChange(activeId.toString());
+    }
+  };
   //-------------------------------🍞새로운 토스트 추가 로직 구현 완료🍞-------------------------------
 
   return (
@@ -359,10 +368,8 @@ export default function Body({ deletedMemoId }: BodyProps) {
           left: '50%',
           transform: 'translate(-50%, -50%)',
         }}
-        onSlideChange={(swiper) => {
-          // ✅ 현재 활성화된 슬라이드의 값을 selectedSlide로 설정
-          setSelectedSlide(slides[swiper.realIndex] || null);
-        }}
+        onSlideChange={handleSlideChange} // 💖 활성 슬라이드 변경 시 콜백 호출 (위의 주석처리된 부분은 handleSlideChange 안에 넣었습니다)
+
         onTouchStart={() => setIsSwiperActive(true)}
         onTouchEnd={() => setIsSwiperActive(false)}
       >
