@@ -1,3 +1,4 @@
+"use client";
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 // 이메일 상태의 타입 정의
