@@ -18,6 +18,8 @@ import BasicToast from './BasicToast';
 import DeleteModal from './DeleteModal';
 
 import { API_BASE_URL } from '../../api/api';
+// import { AUTH_TOKEN } from '../../api/api';
+import { useAuth } from '../../api/AuthContext';
 
 interface BodyProps {
   deletedMemoId?: string; // ✅ 삭제된 메모 ID를 props로 받음
@@ -99,6 +101,11 @@ export default function Body({ deletedMemoId }: BodyProps) {
     });
   }, []);
 
+  //Authorization token 불러오는 로직 구현
+  const { token } = useAuth();
+
+  //----------------
+
   //-------------------------------🍞토스트 삭제 로직 구현 완료🍞-------------------------------
 
   // ✅ "휴지통 아이콘" 클릭 시 모달 열기
@@ -128,7 +135,7 @@ export default function Body({ deletedMemoId }: BodyProps) {
       const response = await fetch(`${API_BASE_URL}/api/memos/${memoToDelete.id}`, {
         method: 'DELETE',
         headers: {
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTA2ZWJjZmQ2ZTE4MjYwYTAzOTg3NyIsImVtYWlsIjoiZWhkYWxzNTM4N0BnbWFpbC5jb20iLCJpYXQiOjE3Mzg1NjczNjYsImV4cCI6MTc0MTE1OTM2Nn0.VTAEkhRa5iLkhNwu0ylqg_xoN4CzdBUS8SNNhr9hHVM`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -170,6 +177,7 @@ export default function Body({ deletedMemoId }: BodyProps) {
       setSwiperKey((prev) => prev + 1);
     }
   };
+
   //-------------------------------🍞토스트 삭제 로직 구현 완료🍞-------------------------------
 
   //-------------------------------🍞새로운 토스트 추가 로직 구현 완료🍞-------------------------------
@@ -184,7 +192,7 @@ export default function Body({ deletedMemoId }: BodyProps) {
       const response = await fetch(`${API_BASE_URL}/api/categories/${lastCategoryId}/memos`, {
         method: 'GET',
         headers: {
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTA2ZWJjZmQ2ZTE4MjYwYTAzOTg3NyIsImVtYWlsIjoiZWhkYWxzNTM4N0BnbWFpbC5jb20iLCJpYXQiOjE3Mzg1NjczNjYsImV4cCI6MTc0MTE1OTM2Nn0.VTAEkhRa5iLkhNwu0ylqg_xoN4CzdBUS8SNNhr9hHVM`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -219,7 +227,7 @@ export default function Body({ deletedMemoId }: BodyProps) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTA2ZWJjZmQ2ZTE4MjYwYTAzOTg3NyIsImVtYWlsIjoiZWhkYWxzNTM4N0BnbWFpbC5jb20iLCJpYXQiOjE3Mzg1NjczNjYsImV4cCI6MTc0MTE1OTM2Nn0.VTAEkhRa5iLkhNwu0ylqg_xoN4CzdBUS8SNNhr9hHVM`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           title: new Date().toISOString().split('T')[0], // ✅ 오늘 날짜로 제목 설정
@@ -263,7 +271,6 @@ export default function Body({ deletedMemoId }: BodyProps) {
     if (Math.abs(deltaX) > 50) {
       setDragging(true);
     }
-
     setShowPlus(deltaX > 240);
 
     if (bodyRef.current) {
@@ -281,7 +288,7 @@ export default function Body({ deletedMemoId }: BodyProps) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTA2ZWJjZmQ2ZTE4MjYwYTAzOTg3NyIsImVtYWlsIjoiZWhkYWxzNTM4N0BnbWFpbC5jb20iLCJpYXQiOjE3Mzg1NjczNjYsImV4cCI6MTc0MTE1OTM2Nn0.VTAEkhRa5iLkhNwu0ylqg_xoN4CzdBUS8SNNhr9hHVM`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           title: new Date().toISOString().split('T')[0], // ✅ 오늘 날짜로 제목 설정
@@ -328,6 +335,22 @@ export default function Body({ deletedMemoId }: BodyProps) {
     }
   };
 
+  useEffect(() => {
+    const bodyElement = bodyRef.current;
+    if (!bodyElement) return;
+
+    const handleNativeTouchMove = (e: TouchEvent) => {
+      if (dragging) {
+        e.preventDefault(); // ✅ 이제 필요 없을 수도 있음 → 제거 가능
+      }
+    };
+
+    bodyElement.addEventListener('touchmove', handleNativeTouchMove);
+
+    return () => {
+      bodyElement.removeEventListener('touchmove', handleNativeTouchMove);
+    };
+  }, [dragging]);
   //-------------------------------🍞새로운 토스트 추가 로직 구현 완료🍞-------------------------------
 
   return (
@@ -410,6 +433,7 @@ const Container = styled.div`
   height: 80vh;
   position: relative;
   overflow: hidden;
+  touch-action: none;
 `;
 
 const IconTrash = styled(Image)`

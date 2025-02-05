@@ -1,9 +1,10 @@
-"use client";
+'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useEmail } from '../../context/EmailContext';
 import styled from 'styled-components';
+import { API_BASE_URL } from '../../api/api';
 
 const Whole = styled.div`
   display: inline-flex;
@@ -17,7 +18,7 @@ const Whole = styled.div`
 
 const Title = styled.div`
   width: 20.5rem;
-  color: var(--ivory, #E5DCCA);
+  color: var(--ivory, #e5dcca);
   font-family: SUIT;
   font-size: 1.5rem;
   font-weight: 800;
@@ -30,18 +31,18 @@ const Input = styled.input`
   background: rgba(255, 255, 255, 0.2);
   border: none;
   outline: none;
-  color: #E5DCCA;
+  color: #e5dcca;
   padding-left: 1rem;
   font-weight: 600;
 `;
 
 const Submit = styled.input.withConfig({
-  shouldForwardProp: (prop) => !['isActive'].includes(prop)
+  shouldForwardProp: (prop) => !['isActive'].includes(prop),
 })<{ isActive: boolean }>`
   height: 2.5rem;
   min-width: 20.5rem;
   border-radius: 2.5rem;
-  border: 1px solid var(--ivory, #E5DCCA);
+  border: 1px solid var(--ivory, #e5dcca);
   background-color: ${({ isActive }) => (isActive ? '#E5DCCA' : 'transparent')};
   color: ${({ isActive }) => (isActive ? '#171612' : '#E5DCCA')};
   opacity: ${({ isActive }) => (isActive ? '1' : '0.2')};
@@ -49,7 +50,7 @@ const Submit = styled.input.withConfig({
 `;
 
 const ErrorMessage = styled.div`
-  color: #FF5151;
+  color: #ff5151;
   font-family: SUIT;
   font-size: 0.75rem;
   font-weight: 400;
@@ -65,13 +66,13 @@ const Form = styled.form`
 
 const EmailInputPage = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [email, setEmail] = useState(""); // 이메일 상태
-  const [error, setError] = useState(""); // 오류 메시지 상태
+  const [email, setEmail] = useState(''); // 이메일 상태
+  const [error, setError] = useState(''); // 오류 메시지 상태
   const isEmailNotEmpty = email.length > 0; // 이메일 입력 여부
   const router = useRouter();
   const { setEmail: setEmailContext } = useEmail(); // EmailContext에서 setEmail 가져오기
 
-  // 입력 필드 포커싱 
+  // 입력 필드 포커싱
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (inputRef.current) {
@@ -93,25 +94,25 @@ const EmailInputPage = () => {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // 이메일 형식 정규 표현식
 
     if (!emailPattern.test(email)) {
-      setError("이메일 형식을 확인해주세요."); // 오류 메시지 설정
+      setError('이메일 형식을 확인해주세요.'); // 오류 메시지 설정
     } else {
-      setError(""); // 오류 메시지 초기화
+      setError(''); // 오류 메시지 초기화
       setEmailContext(email); // 이메일 상태 업데이트
 
       // 이메일 등록 여부 확인 API 호출
       try {
-        const response = await fetch('/api/auth/login', {
+        const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email }),
         });
-  
+
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-  
+
         const data = await response.json();
-  
+
         if (data.exists) {
           router.push('/pages/loginPage');
         } else {
@@ -139,11 +140,16 @@ const EmailInputPage = () => {
           ref={inputRef}
           value={email}
           onChange={handleEmailChange} // 이메일 상태 업데이트
-          onInvalid={() => setError("유효한 이메일 주소를 입력해주세요.")}
+          onInvalid={() => setError('유효한 이메일 주소를 입력해주세요.')}
           autoComplete="off"
         />
         {error && <ErrorMessage>{error}</ErrorMessage>} {/* 오류 메시지 표시 */}
-        <Submit type="submit" value="계속하기" isActive={isEmailNotEmpty} disabled={!isEmailNotEmpty} />
+        <Submit
+          type="submit"
+          value="계속하기"
+          isActive={isEmailNotEmpty}
+          disabled={!isEmailNotEmpty}
+        />
       </Form>
     </Whole>
   );
