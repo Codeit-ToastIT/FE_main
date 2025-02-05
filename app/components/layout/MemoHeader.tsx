@@ -1,8 +1,8 @@
 /**
  * 파일명: MemoHeader.tsx
- * 작성일: 2025-01-27
+ * 작성일: 2025-02-06
  * 작성자: 이서연
- * 설명: 메모 삭제 로직 구현.
+ * 설명: 메모 삭제 로직 수정
  */
 
 import React, { useState, useEffect } from 'react';
@@ -18,12 +18,15 @@ import iconTrash from '../../assets/icons/icon_trash.svg';
 import DeleteModal from '../common/DeleteModal';
 
 interface MemoHeaderProps {
-  toastId: string; // ✅ 개별 토스트 ID를 받아옴
+  toastId: string;
+  title: string;
+  setTitle: (title: string) => void;
+  content: string; // ✅ 본문도 함께 업데이트
 }
 
-export default function MemoHeader({ toastId }: MemoHeaderProps) {
+export default function MemoHeader({ toastId, title, setTitle, content }: MemoHeaderProps) {
   const router = useRouter();
-  const [title, setTitle] = useState<string>('');
+  // const [title, setTitle] = useState<string>('');
   const [showModal, setShowModal] = useState(false);
   const [_loading, setLoading] = useState(false);
   const { token } = useAuth();
@@ -35,10 +38,32 @@ export default function MemoHeader({ toastId }: MemoHeaderProps) {
     }
   }, [toastId]);
 
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleTitleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const newTitle = e.target.value;
     setTitle(newTitle);
-    localStorage.setItem(`memoTitle_${toastId}`, newTitle); // ✅ ID별로 저장
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/memos/${toastId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ title: newTitle, content }), // ✅ 현재 내용도 함께 업데이트
+      });
+
+      if (!response.ok) {
+        throw new Error('메모 수정 실패');
+      }
+
+      const data = await response.json();
+      console.log('✅ 메모 제목 수정 성공:', data);
+
+      // ✅ 서버에서 수정된 최신 데이터 반영
+      setTitle(data.note.title);
+    } catch (error) {
+      console.error('❌ 메모 제목 수정 요청 오류:', error);
+    }
   };
 
   const handleBackClick = () => {
@@ -148,6 +173,11 @@ const TitleInput = styled.input`
   font-size: 16px;
   font-weight: 800;
   line-height: 20px; /* 125% */
+
+  /* 말줄임표를 위한 설정 */
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 
   ::placeholder {
     color: var(--ivory, #e5dcca);

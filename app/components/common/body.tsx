@@ -1,6 +1,6 @@
 /**
  * 파일명: body.tsx
- * 작성일: 2025-01-
+ * 작성일: 2025-02-06
  * 작성자: 이서연
  * 설명: body 컴포넌트
  */
@@ -109,6 +109,24 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
       const updatedSlides = [...storedMemos, ...prevSlides]; // ✅ 기존 값 유지
       return updatedSlides.length > 3 ? updatedSlides.slice(0, 3) : updatedSlides; // ✅ 최대 3개 유지
     });
+  }, []);
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setMemos((prevMemos) =>
+        prevMemos.map((memo) => ({
+          ...memo,
+          title: localStorage.getItem(`memoTitle_${memo.id}`) || memo.title,
+          content: localStorage.getItem(`memo_${memo.id}`) || memo.content,
+        })),
+      );
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   //Authorization token 불러오는 로직 구현

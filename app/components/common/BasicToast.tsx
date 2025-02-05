@@ -10,7 +10,6 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-// import { v4 as uuidv4 } from 'uuid';
 
 import Toast1 from '../../../public/toasts/toast1.png';
 import Toast2 from '../../../public/toasts/toast2.png';
@@ -28,7 +27,6 @@ interface ToastProps {
 
 export default function BasicToast({ toastid, title, content }: ToastProps) {
   const router = useRouter();
-  // const [toastId] = useState(toastid || uuidv4()); // 기존 ID 없으면 새로 생성
   const [toastNumber, setToastNumber] = useState<string>(toastImages[0].src);
 
   useEffect(() => {
