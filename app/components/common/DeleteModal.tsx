@@ -1,31 +1,65 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
+import DeleteMotionModal from './DeleteMotionModal';
 
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
-  // onConfirm: () => void;
-  onClick: () => void;
+  onClick: () => Promise<boolean>; // ✅ 삭제 성공 여부를 반환하는 비동기 함수로 변경
 }
-//onConfirm
-export default function Modal({ isOpen, onClose, onClick }: ModalProps) {
+
+export default function DeleteModal({ isOpen, onClose, onClick }: ModalProps) {
+  const [showMotion, setShowMotion] = useState(false); // ✅ 삭제 애니메이션 모달 표시 여부
+  const [isDeleteSuccess, setIsDeleteSuccess] = useState(false); // ✅ 삭제 성공 여부
+
   if (!isOpen) return null;
 
   return (
-    <Overlay onClick={onClose}>
-      <ModalContainer onClick={(e) => e.stopPropagation()}>
-        <Message>
-          이 토스트를 버릴까요?
-          <br />
-          <MessageSmall>먹은 토스트는 삭제돼요.</MessageSmall>
-        </Message>
+    <>
+      {!showMotion ? (
+        // ✅ 기존 삭제 확인 모달
+        <Overlay onClick={onClose}>
+          <ModalContainer onClick={(e) => e.stopPropagation()}>
+            <Message>
+              이 토스트를 먹어버릴까요?
+              <br />
+              <MessageSmall>먹은 토스트는 삭제돼요.</MessageSmall>
+            </Message>
 
-        <ButtonContainer>
-          <CancelButton onClick={onClose}>취소</CancelButton>
-          <DeleteButton onClick={onClick}>먹어버리기</DeleteButton>
-        </ButtonContainer>
-      </ModalContainer>
-    </Overlay>
+            <ButtonContainer>
+              <CancelButton onClick={onClose}>취소</CancelButton>
+              <DeleteButton
+                onClick={async () => {
+                  setShowMotion(true); // ✅ 먼저 애니메이션 모달 실행
+
+                  setTimeout(async () => {
+                    const success = await onClick(); // ✅ 1.5초 후 삭제 실행
+                    setIsDeleteSuccess(success);
+
+                    if (success) {
+                      setTimeout(() => onClose(), 1000); // ✅ 삭제 성공 후 1초 뒤 모달 닫기
+                    } else {
+                      setShowMotion(false); // ✅ 삭제 실패 시 애니메이션 모달 숨김
+                    }
+                  }, 1500); // ✅ 애니메이션 지속 시간 1.5초
+                }}
+              >
+                먹어버리기
+              </DeleteButton>
+            </ButtonContainer>
+          </ModalContainer>
+        </Overlay>
+      ) : (
+        // ✅ 삭제 요청 성공한 경우에만 실행되는 애니메이션 모달
+        <DeleteMotionModal
+          isOpen={isDeleteSuccess}
+          onClose={() => {
+            setShowMotion(false);
+            onClose(); // ✅ 애니메이션 종료 후 기본 모달 닫기
+          }}
+        />
+      )}
+    </>
   );
 }
 
@@ -77,6 +111,8 @@ const MessageSmall = styled.p`
   font-weight: 600;
   line-height: 20px; /* 142.857% */
   opacity: 0.4;
+  margin-top: 0;
+  margin-bottom: 24px;
 `;
 
 const ButtonContainer = styled.div`

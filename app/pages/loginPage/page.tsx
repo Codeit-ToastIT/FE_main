@@ -1,4 +1,5 @@
-"use client";
+'use client';
+
 
 import { styled } from "styled-components";
 import React, { useEffect, useRef, useState } from "react";
@@ -7,6 +8,7 @@ import Image from 'next/image';
 import SubmitButton from '../../components/common/SubmitButton';
 import iconEyeOpen from '../../assets/icons/icon_eye_closed.svg';
 import iconEyeClosed from '../../assets/icons/icon_eye_open.svg';
+
 
 const Whole = styled.div`
   display: inline-flex;
@@ -25,13 +27,13 @@ const Header = styled.div`
 
 const Title = styled.div`
   width: 20.5rem;
-  color: var(--ivory, #E5DCCA);
+  color: var(--ivory, #e5dcca);
   margin-left: 35%;
   font-family: SUIT;
   font-size: 1rem;
   font-style: normal;
   font-weight: 600;
-  line-height: 1.5rem; 
+  line-height: 1.5rem;
 `;
 
 const Container = styled.div`
@@ -52,7 +54,7 @@ const Input = styled.input`
   background: rgba(255, 255, 255, 0.2);
   border: none;
   outline: none;
-  color: #E5DCCA;
+  color: #e5dcca;
   padding-left: 1rem;
   overflow: hidden;
   color: var(--ivory, #E5DCCA);
@@ -66,18 +68,19 @@ const Input = styled.input`
 `
 
 const Link = styled.div`
-  color: var(--ivory, #E5DCCA);
+  color: var(--ivory, #e5dcca);
   text-align: center;
   font-family: SUIT;
   font-size: 0.75rem;
   font-weight: 400;
-  line-height: 0.875rem; 
+  line-height: 0.875rem;
   text-decoration-line: underline;
   text-decoration-style: solid;
   text-underline-position: from-font;
   margin-top: 0.5rem;
   cursor: pointer;
 `
+
 
 const BackIcon = styled.svg`
   width: 1.5rem;
@@ -96,12 +99,10 @@ const IconEye = styled(Image)`
 `;
 
 
-
 const LoginPage = () => {
-
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [pw, setPw] = useState(""); 
-  const isPwNotEmpty = pw.length > 0; 
+  const [pw, setPw] = useState('');
+  const isPwNotEmpty = pw.length > 0;
   const router = useRouter();
   const [showPw, setShowPw] = useState(false);
   
@@ -146,9 +147,19 @@ const LoginPage = () => {
   return (
     <Whole onMouseDown={handleMouseDown}>
       <Header>
-        
-        <BackIcon onClick={handleBackClick} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-        <path d="M14.4 16.7998L9.59998 11.9998L14.4 7.19981" stroke="#E5DCCA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <BackIcon
+          onClick={handleBackClick}
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+        >
+          <path
+            d="M14.4 16.7998L9.59998 11.9998L14.4 7.19981"
+            stroke="#E5DCCA"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </BackIcon>
         <Title>로그인</Title>
       </Header>
@@ -181,6 +192,6 @@ const LoginPage = () => {
         <Link onClick={handleLinkClick}>비밀번호를 잊어버렸나요?</Link>
       </Container>
     </Whole>
-  )
-}
+  );
+};
 export default LoginPage;

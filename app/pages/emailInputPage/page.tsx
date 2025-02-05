@@ -1,10 +1,12 @@
-"use client";
+'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useEmail } from '../../context/EmailContext';
 import styled from 'styled-components';
+
 import SubmitButton from '../../components/common/SubmitButton';
+
 
 const Whole = styled.div`
   display: inline-flex;
@@ -18,7 +20,7 @@ const Whole = styled.div`
 
 const Title = styled.div`
   width: 20.5rem;
-  color: var(--ivory, #E5DCCA);
+  color: var(--ivory, #e5dcca);
   font-family: SUIT;
   font-size: 1.5rem;
   font-weight: 800;
@@ -32,7 +34,7 @@ const Input = styled.input`
   background: rgba(255, 255, 255, 0.2);
   border: none;
   outline: none;
-  color: #E5DCCA;
+  color: #e5dcca;
   padding-left: 1rem;
   overflow: hidden;
   color: var(--ivory, #E5DCCA);
@@ -43,10 +45,11 @@ const Input = styled.input`
   font-style: normal;
   font-weight: 600;
   line-height: normal;
+
 `;
 
 const ErrorMessage = styled.div`
-  color: #FF5151;
+  color: #ff5151;
   font-family: SUIT;
   font-size: 0.75rem;
   font-weight: 400;
@@ -62,6 +65,9 @@ const Form = styled.form`
 
 const EmailInputPage = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
+
+  // 입력 필드 포커싱
+
   const [email, setEmail] = useState(""); // 이메일 상태
   const [error, setError] = useState(""); // 오류 메시지 상태
   const isEmailNotEmpty = email.length > 0; // 이메일 입력 여부 확인
@@ -69,6 +75,7 @@ const EmailInputPage = () => {
   const { setEmail: setEmailContext } = useEmail(); // EmailContext에서 setEmail 가져오기
 
   // 컴포넌트 마운트 시 이메일 입력 필드에 포커스
+
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (inputRef.current) {
@@ -92,14 +99,14 @@ const EmailInputPage = () => {
 
     // 이메일 형식 검사
     if (!emailPattern.test(email)) {
-      setError("이메일 형식을 확인해주세요."); // 오류 메시지 설정
+      setError('이메일 형식을 확인해주세요.'); // 오류 메시지 설정
     } else {
-      setError(""); // 오류 메시지 초기화
+      setError(''); // 오류 메시지 초기화
       setEmailContext(email); // 이메일 상태 업데이트
 
       // 이메일 등록 여부 확인 API 호출
       try {
-        const response = await fetch('/api/auth/login', {
+        const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email }),
@@ -109,9 +116,11 @@ const EmailInputPage = () => {
           throw new Error('Network response was not ok');
         }
 
+
         const data = await response.json(); // 응답 데이터 파싱
 
         // 이메일 존재 여부에 따라 라우팅
+
         if (data.exists) {
           router.push('/pages/loginPage');
         } else {
@@ -139,10 +148,11 @@ const EmailInputPage = () => {
           ref={inputRef}
           value={email}
           onChange={handleEmailChange} // 이메일 상태 업데이트
-          onInvalid={() => setError("유효한 이메일 주소를 입력해주세요.")}
+          onInvalid={() => setError('유효한 이메일 주소를 입력해주세요.')}
           autoComplete="off"
         />
         {error && <ErrorMessage>{error}</ErrorMessage>} {/* 오류 메시지 표시 */}
+
         <SubmitButton 
           isActive={isEmailNotEmpty} 
         />

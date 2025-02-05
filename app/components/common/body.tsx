@@ -10,6 +10,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
@@ -20,6 +22,8 @@ import BasicToast from './BasicToast';
 import DeleteModal from './DeleteModal';
 
 import { API_BASE_URL } from '../../api/api';
+// import { AUTH_TOKEN } from '../../api/api';
+import { useAuth } from '../../api/AuthContext';
 
 interface BodyProps {
   deletedMemoId?: string; // ✅ 삭제된 메모 ID를 props로 받음
@@ -33,6 +37,8 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
   const [memos, setMemos] = useState<Memo[]>([]); // ✅ MongoDB의 메모 리스트 저장
 
   const [showPlus, setShowPlus] = useState(false);
+
+  const router = useRouter();
 
   const [slides, setSlides] = useState<number[]>([1, 2, 3]);
   const [selectedSlide, setSelectedSlide] = useState<number | null>(slides[0]);
@@ -100,6 +106,13 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
     });
   }, []);
 
+  //Authorization token 불러오는 로직 구현
+  const { token } = useAuth();
+
+  //----------------
+
+  const memoToEditing = memos.find((_, index) => index + 1 === selectedSlide);
+
   //-------------------------------🍞토스트 삭제 로직 구현 완료🍞-------------------------------
 
   // ✅ "휴지통 아이콘" 클릭 시 모달 열기
@@ -109,8 +122,8 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
   };
 
   // ✅ "먹어버리기" 버튼 클릭 시 API 호출하여 토스트 삭제
-  const handleDeleteToast = async () => {
-    if (selectedSlide === null) return;
+  const handleDeleteToast = async (): Promise<boolean> => {
+    if (selectedSlide === null) return false;
     setLoading(true);
 
     // ✅ selectedSlide 값으로 memos 리스트에서 해당 `memoId` 찾기 (index - 1 적용)
@@ -119,7 +132,8 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
     if (!memoToDelete || !memoToDelete.id) {
       console.error('❌ 삭제할 메모를 찾을 수 없습니다.');
       setLoading(false);
-      return;
+      setShowModal(false);
+      return false;
     }
 
     try {
@@ -128,7 +142,7 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
       const response = await fetch(`${API_BASE_URL}/api/memos/${memoToDelete.id}`, {
         method: 'DELETE',
         headers: {
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTA2ZWJjZmQ2ZTE4MjYwYTAzOTg3NyIsImVtYWlsIjoiZWhkYWxzNTM4N0BnbWFpbC5jb20iLCJpYXQiOjE3Mzg1NjczNjYsImV4cCI6MTc0MTE1OTM2Nn0.VTAEkhRa5iLkhNwu0ylqg_xoN4CzdBUS8SNNhr9hHVM`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -153,19 +167,24 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
           setShowDeleteMessage(true);
           return newSlides;
         });
+
+        return true;
       } else {
         console.error('❌ 토스트 삭제 실패:', data.message);
         setShowDeleteErrorMessage(true);
+        return false;
       }
     } catch (error) {
       console.error('❌ 삭제 요청 오류:', error);
       setShowDeleteErrorMessage(true);
+      return false;
     } finally {
       setLoading(false);
       setShowModal(false);
       setSwiperKey((prev) => prev + 1);
     }
   };
+
   //-------------------------------🍞토스트 삭제 로직 구현 완료🍞-------------------------------
 
   //-------------------------------🍞새로운 토스트 추가 로직 구현 완료🍞-------------------------------
@@ -180,7 +199,7 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
       const response = await fetch(`${API_BASE_URL}/api/categories/${lastCategoryId}/memos`, {
         method: 'GET',
         headers: {
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTA2ZWJjZmQ2ZTE4MjYwYTAzOTg3NyIsImVtYWlsIjoiZWhkYWxzNTM4N0BnbWFpbC5jb20iLCJpYXQiOjE3Mzg1NjczNjYsImV4cCI6MTc0MTE1OTM2Nn0.VTAEkhRa5iLkhNwu0ylqg_xoN4CzdBUS8SNNhr9hHVM`,
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -215,7 +234,7 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTA2ZWJjZmQ2ZTE4MjYwYTAzOTg3NyIsImVtYWlsIjoiZWhkYWxzNTM4N0BnbWFpbC5jb20iLCJpYXQiOjE3Mzg1NjczNjYsImV4cCI6MTc0MTE1OTM2Nn0.VTAEkhRa5iLkhNwu0ylqg_xoN4CzdBUS8SNNhr9hHVM`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           title: new Date().toISOString().split('T')[0], // ✅ 오늘 날짜로 제목 설정
@@ -259,7 +278,6 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
     if (Math.abs(deltaX) > 50) {
       setDragging(true);
     }
-
     setShowPlus(deltaX > 240);
 
     if (bodyRef.current) {
@@ -277,7 +295,7 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3YTA2ZWJjZmQ2ZTE4MjYwYTAzOTg3NyIsImVtYWlsIjoiZWhkYWxzNTM4N0BnbWFpbC5jb20iLCJpYXQiOjE3Mzg1NjczNjYsImV4cCI6MTc0MTE1OTM2Nn0.VTAEkhRa5iLkhNwu0ylqg_xoN4CzdBUS8SNNhr9hHVM`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
           title: new Date().toISOString().split('T')[0], // ✅ 오늘 날짜로 제목 설정
@@ -324,6 +342,24 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
     }
   };
 
+
+  useEffect(() => {
+    const bodyElement = bodyRef.current;
+    if (!bodyElement) return;
+
+    const handleNativeTouchMove = (e: TouchEvent) => {
+      if (dragging) {
+        e.preventDefault(); // ✅ 이제 필요 없을 수도 있음 → 제거 가능
+      }
+    };
+
+    bodyElement.addEventListener('touchmove', handleNativeTouchMove);
+
+    return () => {
+      bodyElement.removeEventListener('touchmove', handleNativeTouchMove);
+    };
+  }, [dragging]);
+
   // 💖 Swiper 슬라이드 변경 시 활성 메모 id 전달
   const handleSlideChange = (swiper: any) => {
     const activeId = uniqueSlides[swiper.realIndex];
@@ -332,6 +368,7 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
       onActiveMemoChange(activeId.toString());
     }
   };
+
   //-------------------------------🍞새로운 토스트 추가 로직 구현 완료🍞-------------------------------
 
   return (
@@ -375,7 +412,15 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
       >
         {memos.length > 0 ? (
           memos.map((memo) => (
-            <StyledSwiperSlide key={memo.id}>
+            <StyledSwiperSlide
+              key={memo.id}
+              onClick={() => {
+                if (memoToEditing + 1 === selectedSlide) {
+                  // ✅ notes 배열의 인덱스 +1 값과 비교
+                  router.push(`/memoInput?id=${memo.id}`);
+                }
+              }} // ✅ 현재 활성화된 토스트만 클릭 가능
+            >
               <StyledBasicToast toastid={memo.id} title={memo.title} content={memo.content} />
             </StyledSwiperSlide>
           ))
@@ -397,9 +442,7 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
       <DeleteModal
         isOpen={showModal}
         onClose={() => setShowModal(false)}
-        // onConfirm={handleDeleteToast}
         onClick={handleDeleteToast}
-        memoID={memos.find((memo, index) => index === selectedSlide)?._id || null}
       />
     </Container>
   );
@@ -414,6 +457,7 @@ const Container = styled.div`
   height: 80vh;
   position: relative;
   overflow: hidden;
+  touch-action: none;
 `;
 
 const IconTrash = styled(Image)`
