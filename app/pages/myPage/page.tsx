@@ -11,8 +11,8 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 
 import Header from '../../components/layout/header';
-import Body from '../../components/common/body';
-import { useRouter } from "next/navigation";
+import Body from '../../components/common/HomeBody';
+import { useRouter } from 'next/navigation';
 
 interface MyPageProps {
   userEmail: string;
@@ -34,15 +34,15 @@ const MyPage: React.FC<MyPageProps> = ({ userEmail, isPremiumUser }) => {
   const [editingCategory, setEditingCategory] = useState<string | null>(null);
   const [tempCategoryName, setTempCategoryName] = useState('');
 
-  const displayedEmail = userEmail || "test@example.com";
-  const userPlan = isPremiumUser ? "메이플 시럽 버터 토스트 플랜 이용중" : "토스트 플랜 이용중";
+  const displayedEmail = userEmail || 'test@example.com';
+  const userPlan = isPremiumUser ? '메이플 시럽 버터 토스트 플랜 이용중' : '토스트 플랜 이용중';
 
   // centerButton 클릭 시 수정 모드 토글
   const handleCenterButtonClick = () => {
     if (isEditing) {
       // 수정모드 종료 시 입력 중인 내용은 반영하지 않고 취소
       setEditingCategory(null);
-      setTempCategoryName("");
+      setTempCategoryName('');
       setIsEditing(false);
     } else {
       setIsEditing(true);
@@ -51,10 +51,10 @@ const MyPage: React.FC<MyPageProps> = ({ userEmail, isPremiumUser }) => {
 
   return (
     <PageContainer>
-      <Header 
+      <Header
         title="TOAST IT"
-        onHelpClick={() => console.log("Help clicked")}
-        onProfileClick={() => setIsOpen(true)} 
+        onHelpClick={() => console.log('Help clicked')}
+        onProfileClick={() => setIsOpen(true)}
       />
 
       <ContentContainer>
@@ -65,9 +65,9 @@ const MyPage: React.FC<MyPageProps> = ({ userEmail, isPremiumUser }) => {
               <Plan>{userPlan}</Plan>
               <CircularMenu>
                 {/* 수정모드 여부에 따라 배경 이미지 변경 (이미지 주소는 원하시는 것으로 변경) */}
-                <MenuImage 
-                  src={isEditing ? "/4-radial_menu_edit.svg" : "/4-radial_menu.svg"} 
-                  alt="Circular Menu" 
+                <MenuImage
+                  src={isEditing ? '/4-radial_menu_edit.svg' : '/4-radial_menu.svg'}
+                  alt="Circular Menu"
                 />
                 <MenuItems>
                   {Object.entries(categories).map(([position, name]) => (
@@ -94,7 +94,7 @@ const MyPage: React.FC<MyPageProps> = ({ userEmail, isPremiumUser }) => {
                               [editingCategory!]: tempCategoryName,
                             });
                             setEditingCategory(null);
-                            setTempCategoryName("");
+                            setTempCategoryName('');
                           }}
                           autoFocus
                         />
@@ -107,19 +107,19 @@ const MyPage: React.FC<MyPageProps> = ({ userEmail, isPremiumUser }) => {
                 </MenuItems>
                 <CenterButton onClick={handleCenterButtonClick}>
                   {/* centerButton 이미지도 수정 모드에 따라 변경 */}
-                  <img 
-                    src={isEditing ? "/iconbutton_edit.svg" : "/iconbutton.svg"} 
-                    alt="Edit Button" 
+                  <img
+                    src={isEditing ? '/iconbutton_edit.svg' : '/iconbutton.svg'}
+                    alt="Edit Button"
                   />
                 </CenterButton>
               </CircularMenu>
 
               <IconButtons>
-                <IconButton onClick={() => router.push("./myPage/account")}>
+                <IconButton onClick={() => router.push('./myPage/account')}>
                   <img src="/icon_profile.svg" alt="계정 아이콘" />
                   <span>계정</span>
                 </IconButton>
-                <IconButton onClick={() => router.push("./myPage/plan")}>
+                <IconButton onClick={() => router.push('./myPage/plan')}>
                   <img src="/icon_card.svg" alt="플랜 아이콘" />
                   <span>플랜</span>
                 </IconButton>
@@ -175,7 +175,7 @@ const MyPageContainer = styled.div`
   transition: transform 0.3s ease-in-out;
 
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
@@ -234,14 +234,11 @@ const MenuItem = styled.div<{ position: string }>`
   font-size: 14px;
   cursor: pointer;
 
+  ${({ position }) => position === 'top' && 'top: 20px; left: 50%; transform: translateX(-50%);'}
+  ${({ position }) => position === 'right' && 'right: 10px; top: 50%; transform: translateY(-50%);'}
   ${({ position }) =>
-    position === "top" && "top: 20px; left: 50%; transform: translateX(-50%);"}
-  ${({ position }) =>
-    position === "right" && "right: 10px; top: 50%; transform: translateY(-50%);"}
-  ${({ position }) =>
-    position === "bottom" && "bottom: 20px; left: 50%; transform: translateX(-50%);"}
-  ${({ position }) =>
-    position === "left" && "left: 10px; top: 50%; transform: translateY(-50%);"}
+    position === 'bottom' && 'bottom: 20px; left: 50%; transform: translateX(-50%);'}
+  ${({ position }) => position === 'left' && 'left: 10px; top: 50%; transform: translateY(-50%);'}
 `;
 
 /* 저장된(비편집) 상태에서 보여줄 텍스트 (최대 2줄까지 표시, 초과시 말줄임표 처리) */
@@ -261,7 +258,7 @@ const DisplayText = styled.span`
 /* 편집 시 사용하는 입력창: 길이 제한 없이 입력할 수 있음 */
 const EditingInput = styled.textarea`
   font-family: 'SUIT-Regular';
-  color: #EDCA85;
+  color: #edca85;
   font-size: 14px;
   font-weight: 600;
   border: none;
@@ -310,10 +307,10 @@ const IconButton = styled.div`
   padding: 8px 16px;
   gap: 16px;
   cursor: pointer;
-  border-radius: 40px;         
+  border-radius: 40px;
 
   &:hover {
-    background-color: white; 
+    background-color: white;
   }
 
   & > img,

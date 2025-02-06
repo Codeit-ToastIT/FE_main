@@ -1,8 +1,8 @@
 /**
- * 파일명: body.tsx
+ * 파일명: HomeBody.tsx
  * 작성일: 2025-02-06
  * 작성자: 이서연
- * 설명: body 컴포넌트
+ * 설명: HomeBody 컴포넌트
  */
 
 // 💖 표시된 부분 SaveToast로 활성화된 메모 id 전달을 위해 수정한 부분
@@ -22,7 +22,6 @@ import BasicToast from './BasicToast';
 import DeleteModal from './DeleteModal';
 
 import { API_BASE_URL } from '../../api/api';
-// import { AUTH_TOKEN } from '../../api/api';
 import { useAuth } from '../../api/AuthContext';
 
 interface BodyProps {
