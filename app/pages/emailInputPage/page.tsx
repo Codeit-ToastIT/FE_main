@@ -4,9 +4,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useEmail } from '../../context/EmailContext';
 import styled from 'styled-components';
+import { API_BASE_URL } from '../../api/api';
 
 import SubmitButton from '../../components/common/SubmitButton';
-
 
 const Whole = styled.div`
   display: inline-flex;
@@ -37,7 +37,7 @@ const Input = styled.input`
   color: #e5dcca;
   padding-left: 1rem;
   overflow: hidden;
-  color: var(--ivory, #E5DCCA);
+  color: var(--ivory, #e5dcca);
   text-overflow: ellipsis;
   white-space: nowrap;
   font-family: SUIT;
@@ -45,7 +45,6 @@ const Input = styled.input`
   font-style: normal;
   font-weight: 600;
   line-height: normal;
-
 `;
 
 const ErrorMessage = styled.div`
@@ -68,8 +67,8 @@ const EmailInputPage = () => {
 
   // 입력 필드 포커싱
 
-  const [email, setEmail] = useState(""); // 이메일 상태
-  const [error, setError] = useState(""); // 오류 메시지 상태
+  const [email, setEmail] = useState(''); // 이메일 상태
+  const [error, setError] = useState(''); // 오류 메시지 상태
   const isEmailNotEmpty = email.length > 0; // 이메일 입력 여부 확인
   const router = useRouter();
   const { setEmail: setEmailContext } = useEmail(); // EmailContext에서 setEmail 가져오기
@@ -116,7 +115,6 @@ const EmailInputPage = () => {
           throw new Error('Network response was not ok');
         }
 
-
         const data = await response.json(); // 응답 데이터 파싱
 
         // 이메일 존재 여부에 따라 라우팅
@@ -152,10 +150,7 @@ const EmailInputPage = () => {
           autoComplete="off"
         />
         {error && <ErrorMessage>{error}</ErrorMessage>} {/* 오류 메시지 표시 */}
-
-        <SubmitButton 
-          isActive={isEmailNotEmpty} 
-        />
+        <SubmitButton isActive={isEmailNotEmpty} />
       </Form>
     </Whole>
   );
