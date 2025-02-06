@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { Hint, HintBold } from '@/app/components/SaveToast';
+import { Hint, HintBold } from '../../components/SaveToast';
 import plateImage from '../../assets/load/plate.svg';
 import ToastImg from '../../assets/load/toasts/burnt1.png';
 
