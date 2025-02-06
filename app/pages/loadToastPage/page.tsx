@@ -2,15 +2,20 @@
 
 import React, { useState } from 'react';
 import styled from 'styled-components';
+
+import Toast from '@/app/components/common/Toast';
+import SearchBarComponent from '@/app/components/common/SearchBarComponent';
+import BreadBox from '../../assets/load/breadbox.svg';
+
 import Toast from '../../components/common/toast';
 import SearchBarComponent from '../../components/common/SearchBarComponent';
-import BreadBox from '../../../public/Group 7.svg';
-import Image from 'next/image.js';
-// import { PiCaretCircleUpDownFill } from 'react-icons/pi';
-// import { renderToStaticMarkup } from 'react-dom/server';
 
-// const iconString = encodeURIComponent(renderToStaticMarkup(<PiCaretCircleUpDownFill size={150} />));
-// const iconDataUrl = `data:image/svg+xml,${iconString}`;
+import Image from 'next/image.js';
+import { PiCaretCircleUpDownFill } from 'react-icons/pi';
+import { renderToStaticMarkup } from 'react-dom/server';
+
+const iconString = encodeURIComponent(renderToStaticMarkup(<PiCaretCircleUpDownFill size={150} />));
+const iconDataUrl = `data:image/svg+xml,${iconString}`;
 
 interface ToastType {
   title: string;
@@ -27,6 +32,9 @@ const UserToasts = {
         '이제 filterToast를 <TextBody>로 감싸서 렌더링할 수 있습니다. TextBody 컴포넌트는 flex 레이아웃을 사용하여 자식 요소들을 세로로 나열하고, 각 요소 간의 간격을 설정합니다.',
       date: new Date('2025-01-01'),
     },
+    { title: '제목', content: '어쩌구', date: new Date('2025-01-01') },
+    { title: '제목', content: '어쩌구', date: new Date('2025-01-01') },
+    { title: '제목', content: '어쩌구', date: new Date('2025-01-01') },
     { title: '제목', content: '어쩌구', date: new Date('2025-01-01') },
     { title: '제목', content: '어쩌구', date: new Date('2025-01-01') },
     { title: '제목', content: '어쩌구', date: new Date('2025-01-01') },
@@ -51,34 +59,36 @@ const LoadToastPage = () => {
       <SearchBarComponent searchToast={searchToast} onChange={onChange} />
       <Title>{UserToasts.Category}</Title>
       <Body>
-        {filterToast.length > 0 ? (
-          <TextBody>
-            {filterToast.map((toast, index) => (
-              <Toast key={index} index={index} title={toast.title} content={toast.content} />
-            ))}
-          </TextBody>
-        ) : (
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          >
+        <ScrollBar>
+          {filterToast.length > 0 ? (
+            <TextBody>
+              {filterToast.map((toast, index) => (
+                <Toast key={index} index={index} title={toast.title} content={toast.content} />
+              ))}
+            </TextBody>
+          ) : (
             <div
               style={{
                 display: 'flex',
-                flexDirection: 'column',
                 justifyContent: 'center',
                 alignItems: 'center',
-                gap: '10px',
               }}
             >
-              <Image src={BreadBox} alt="bread box" />
-              <NoneText>브레드 박스가 비었어요.</NoneText>
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                  gap: '10px',
+                }}
+              >
+                <Image src={BreadBox} alt="bread box" />
+                <NoneText>브레드 박스가 비었어요.</NoneText>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+        </ScrollBar>
       </Body>
     </BackGround>
   );
@@ -131,23 +141,23 @@ const NoneText = styled.div`
   color: #e5dcca;
 `;
 
-// const ScrollBar = styled.div`
-//   width: 100%;
-//   overflow-y: scroll;
+const ScrollBar = styled.div`
+  width: 100%;
+  overflow-y: scroll;
 
-//   &::-webkit-scrollbar {
-//     width: 30px;
-//   }
+  &::-webkit-scrollbar {
+    width: 30px;
+  }
 
-//   &::-webkit-scrollbar-thumb {
-//     height: 30%;
-//     background: url(${iconDataUrl}) no-repeat;
-//     background-size: contain;
-//     border-radius: 20px;
-//   }
+  &::-webkit-scrollbar-thumb {
+    height: 30%;
+    background: url(${iconDataUrl}) no-repeat;
+    background-size: contain;
+    border-radius: 20px;
+  }
 
-//   &::-webkit-scrollbar-track {
-//     background: white;
-//     border-radius: 10px;
-//   }
-// `;
+  &::-webkit-scrollbar-track {
+    background: white;
+    border-radius: 10px;
+  }
+`;
