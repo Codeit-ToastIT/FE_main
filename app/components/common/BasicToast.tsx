@@ -78,6 +78,17 @@ const MemoTitleDisplay = styled.div`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+
+  overflow: hidden;
+  color: var(--black, #171612);
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: SUIT;
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: 20px; /* 125% */
 `;
 
 const MemoDisplay = styled.div`
