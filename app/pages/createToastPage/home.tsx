@@ -6,12 +6,12 @@
  */
 
 // 💖 표시된 부분 SaveToast로 활성화된 메모 id 전달을 위해 수정한 부분
+'use client';
 
 import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import styled from 'styled-components';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 
 import Header from '../../components/layout/header';
 import Body from '../../components/common/body';
@@ -27,7 +27,6 @@ interface HomeProps {
 
 // 💖 onActiveMemoChange 추가
 export default function Home({ onHelpClick, onActiveMemoChange }: HomeProps) {
-  const router = useRouter();
   const searchParams = useSearchParams();
 
   // ✅ myPage를 열고 닫는 상태 추가
@@ -64,8 +63,13 @@ export default function Home({ onHelpClick, onActiveMemoChange }: HomeProps) {
     }
   }, [searchParams]);
 
+  const handleParentTouchMove = (e: React.TouchEvent) => {
+    e.preventDefault(); // ✅ 부모 요소가 `touchmove`를 막지 않도록 방지
+    e.stopPropagation();
+  };
+
   return (
-    <div>
+    <Container onTouchMove={handleParentTouchMove}>
       <StyledHeader title="TOAST IT" onHelpClick={onHelpClick} onProfileClick={onProfileClick} />
       <IconAdd src={iconAdd} alt="Add" />
 
@@ -76,10 +80,14 @@ export default function Home({ onHelpClick, onActiveMemoChange }: HomeProps) {
       <MyPageOverlay isOpen={isMyPageOpen} onClick={onCloseMyPage}>
         <StyledMyPage onClick={(e) => e.stopPropagation()} isOpen={isMyPageOpen} />
       </MyPageOverlay>
-
-    </div>
+    </Container>
   );
 }
+
+const Container = styled.div`
+  touch-action: none; // ✅ 부모 요소에서도 터치 동작을 막지 않도록 설정
+  user-select: none;
+`;
 
 const StyledHeader = styled(Header)`
   width: 375px;
@@ -131,7 +139,7 @@ const MyPageOverlay = styled.div<{ isOpen: boolean }>`
   top: 0;
   left: 0;
   width: 100%;
-  height: 100vh;
+  height: 89vh;
   background-color: ${({ isOpen }) => (isOpen ? 'rgba(0, 0, 0, 0.5)' : 'transparent')};
   display: ${({ isOpen }) => (isOpen ? 'flex' : 'none')};
   justify-content: flex-end;
@@ -145,7 +153,7 @@ const StyledMyPage = styled(MyPage)<{ isOpen: boolean }>`
   top: 0;
   right: 0;
   width: 320px;
-  height: 100vh;
+  height: 89vh;
   background-color: rgba(255, 255, 255, 0.9);
   backdrop-filter: blur(10px);
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);

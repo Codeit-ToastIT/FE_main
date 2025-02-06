@@ -9,7 +9,7 @@ interface ToastProps {
   content: string;
 }
 
-const Toast: React.FC<ToastProps> = ({ index, title, content }) => {
+const BurntToast: React.FC<ToastProps> = ({ index, title, content }) => {
   return (
     <ImageWrapper key={index}>
       <Image src={burnt1} alt="burnt" layout="fixed" width={145} height={145} objectFit="cover" />
@@ -21,7 +21,7 @@ const Toast: React.FC<ToastProps> = ({ index, title, content }) => {
   );
 };
 
-export default Toast;
+export default BurntToast;
 
 const ImageWrapper = styled.div`
   position: relative;

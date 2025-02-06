@@ -500,7 +500,7 @@ const Container = styled.div`
   touch-action: none; /* 기본 터치 동작(스크롤, 확대 등) 방지 */
 `;
 
-const Hint = styled.div`
+export const Hint = styled.div`
   position: absolute;
   top: 148px;
   left: calc(50% - 125.5px);
@@ -521,7 +521,7 @@ const Hint = styled.div`
   white-space: nowrap;
 `;
 
-const HintBold = styled.span`
+export const HintBold = styled.span`
   font-weight: 800;
 `;
 

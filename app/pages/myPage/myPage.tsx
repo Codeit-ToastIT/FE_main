@@ -37,7 +37,7 @@ const MyPageContainer = styled.div<{ isOpen: boolean }>`
   background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(4px);
   width: 320px;
-  height: 100vh;
+  height: 89vh;
   flex-shrink: 0;
   display: flex;
   flex-direction: column;
