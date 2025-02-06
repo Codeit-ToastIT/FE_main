@@ -11,7 +11,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 
 import Header from '../../components/layout/header';
-import Body from '../../components/common/body';
+import Body from '../../components/common/HomeBody';
 import { useRouter } from 'next/navigation';
 
 interface MyPageProps {
