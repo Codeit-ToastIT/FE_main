@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import Toast from '@/app/components/common/Toast';
 import SearchBarComponent from '@/app/components/common/SearchBarComponent';
-import BreadBox from '../../../public/Group 7.svg';
+import BreadBox from '../../assets/load/breadbox.svg';
 import Image from 'next/image.js';
 import { PiCaretCircleUpDownFill } from 'react-icons/pi';
 import { renderToStaticMarkup } from 'react-dom/server';
