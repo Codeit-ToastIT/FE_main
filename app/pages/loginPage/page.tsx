@@ -118,9 +118,9 @@ const LoginPage = () => {
         inputRef.current.focus(); // 입력 필드에 포커스
       }
     }, 100);
-
+    console.log("현재 이메일:", email); // 이메일 값을 콘솔에 출력
     return () => clearTimeout(timeoutId);
-  }, []);
+  }, [email]);
 
   const handleMouseDown = (event: React.MouseEvent) => {
     event.preventDefault(); // 기본 동작 방지
@@ -137,12 +137,14 @@ const LoginPage = () => {
     router.back(); // 이전 페이지로 이동
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault(); // 기본 동작 방지
     if (!pw) {
       setError("비밀번호를 입력해주세요.");
       return;
-    }
+    } 
 
+    
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
@@ -153,6 +155,7 @@ const LoginPage = () => {
       });
 
       const data = await response.json();
+      console.log(data);
 
       if (response.ok) {
         console.log("로그인 성공:", data);
@@ -181,7 +184,7 @@ const LoginPage = () => {
         <Title>로그인</Title>
       </Header>
       <Container>
-        <Form noValidate>
+        <Form noValidate  onSubmit={handleSubmit}>
           <div style={{ position: 'relative' }}>
             <Input 
               type={showPw ? "text" : "password"} 
@@ -201,9 +204,8 @@ const LoginPage = () => {
         
           {error && <div style={{ color: 'red', fontSize: '0.875rem', marginTop: '0.5rem' }}>{error}</div>}
           <SubmitButton 
-            isActive={isPwNotEmpty} 
-            onClick={handleSubmit} // 클릭 시 처리
-          />
+          isActive={isPwNotEmpty} 
+        />
         </Form>
         <Link onClick={handleLinkClick}>비밀번호를 잊어버렸나요?</Link>
       </Container>

@@ -75,13 +75,15 @@ const EmailInputPage = () => {
   // 컴포넌트 마운트 시 이메일 입력 필드에 포커스
 
   useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (inputRef.current) {
-        inputRef.current.focus(); // 포커스 설정
-      }
-    }, 100);
-
-    return () => clearTimeout(timeoutId); // 정리 함수
+    if (typeof window !== 'undefined') {
+      const timeoutId = setTimeout(() => {
+        if (inputRef.current) {
+          inputRef.current.focus();
+        }
+      }, 100);
+  
+      return () => clearTimeout(timeoutId);
+    }
   }, []);
 
   // 마우스 클릭 시 입력 필드 포커스
@@ -111,7 +113,7 @@ const EmailInputPage = () => {
         body: JSON.stringify({ email }), // 요청 바디 수정
       });
       
-      console.log(API_BASE_URL)
+      
       if (!response.ok) {
         const errorData = await response.json(); // 오류 메시지 파싱
         setError(errorData.message); // 오류 메시지 설정
@@ -120,6 +122,7 @@ const EmailInputPage = () => {
 
       const data = await response.json(); // 응답 데이터 파싱
 
+      console.log(data);
       // 이메일 존재 여부에 따라 라우팅
       if (data.exists) {
         router.push('/pages/loginPage');

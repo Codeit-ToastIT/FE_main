@@ -172,21 +172,21 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ onSuccess }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          message: {
-            email: email, // 이메일을 포함
-          },
+          email: email, 
         }),
       });
 
       if (!response.ok) {
+        const errorData = await response.json();
+        console.error("서버 응답:", errorData);
         throw new Error('이메일 전송에 실패했습니다.');
       }
 
-      const data = await response.json();
-      console.log(`이메일 ${data.email}로 인증번호를 전송했습니다.`);
-    } catch (error) {
-      console.error(error);
-    }
+      const data = await response.json(); // 응답 데이터 파싱
+    console.log(`서버 메시지: ${data.message}`); // 서버로부터 받은 메시지 출력
+  } catch (error) {
+    console.error(error);
+  }
   };
 
    // 컴포넌트 마운트 시 이메일 전송
@@ -201,9 +201,9 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ onSuccess }) => {
         return prev - 1;
       });
     }, 1000);
-
+    console.log("현재 이메일:", email); // 이메일 값을 콘솔에 출력
     return () => clearInterval(timer);
-  }, []);
+  }, [email]);
 
 
   // BackIcon 클릭 시 이전 화면으로 이동

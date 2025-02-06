@@ -1,6 +1,5 @@
 "use client";
 
-import axios from "axios"; 
 import { styled } from "styled-components";
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
@@ -158,38 +157,55 @@ const SignupPage = () => {
   // 회원가입 요청 
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // 기본 폼 제출 방지
-
+  
+    if (pw.length < 8) {
+      setErrorMessage("비밀번호는 8자 이상이어야 합니다.");
+      return; // 비밀번호가 유효하지 않으면 함수 종료
+    }
+  
     if (pw !== pwCheck) {
       setErrorMessage("비밀번호가 서로 달라요.");
-      return;
+      return; // 비밀번호가 다르면 함수 종료
     }
-
+  
     try {
-      const response = await axios.post(`${API_BASE_URL}/api/auth/signup`, {
-        email, 
-        password: pw,
-        confirmPassword: pwCheck,
+      const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          password: pw,
+          confirmPassword: pwCheck,
+        }),
       });
-
-      // 회원가입 성공 시 토큰 저장 및 로그인 상태 업데이트
-      if (response.data.token) {
-        login(response.data.token); // AuthContext의 login 함수 호출
-        setSuccessMessage(response.data.message);
-        console.log(successMessage);
-        router.push("/pages/createToastPage"); // 홈 페이지로 이동
+  
+      if (!response.ok) {
+        const errorData = await response.json();
+        setErrorMessage(errorData.message || "회원가입에 실패했습니다.");
+        return; // 에러 발생 시 함수 종료
       }
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        if (error.response && error.response.data.message) {
-          setErrorMessage(error.response.data.message);
-        } else {
-          setErrorMessage("회원가입에 실패했습니다.");
-        }
-      } else {
-        setErrorMessage("회원가입에 실패했습니다.");
-      }
+  
+      const data = await response.json(); // 응답 데이터 파싱
+      console.log(data);
+  
+      // 회원가입 성공 시 사용자 정보를 사용하여 로그인 처리
+    if (data.user) {
+      // 로그인 상태 업데이트 (예: Context API 사용)
+      login(data.user); // AuthContext의 login 함수 호출
+      setSuccessMessage(data.message);
+      router.push("/pages/createToastPage"); // 홈 페이지로 이동
+    } else {
+      setErrorMessage("사용자 정보가 없습니다."); // 사용자 정보가 없는 경우 처리
     }
-  };
+  } catch (error) {
+    setErrorMessage("회원가입에 실패했습니다."); // 일반적인 오류 처리
+    console.error(error);
+  }
+};
+  
+  
   
   return (
     <Whole onMouseDown={handleMouseDown}>
