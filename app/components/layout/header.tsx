@@ -18,19 +18,21 @@ interface HeaderProps {
   onProfileClick: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ title, onHelpClick, onProfileClick }) => {
+export default function Header({ title, onHelpClick, onProfileClick }: HeaderProps) {
   return (
     <HeaderContainer>
       <Logo>{title}</Logo>
       <IconWrapper>
-        <IconHelp src={iconHelp} alt="Help" onClick={onHelpClick} />
-        <IconProfile src={iconProfile} alt="Profile" onClick={onProfileClick} />
+        <Icon onClick={onHelpClick}>
+          <Image src={iconHelp} alt="Help" width={24} height={24} />
+        </Icon>
+        <Icon onClick={onProfileClick}>
+          <Image src={iconProfile} alt="Profile" width={24} height={24} />
+        </Icon>
       </IconWrapper>
     </HeaderContainer>
   );
-};
-
-export default Header;
+}
 
 const HeaderContainer = styled.header`
   display: flex;
@@ -39,23 +41,14 @@ const HeaderContainer = styled.header`
   padding: 16px 16px 16px 24px;
   width: 375px;
   height: 56px;
-  background: var(
-    --black,
-    linear-gradient(0deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.2) 100%),
-    linear-gradient(0deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.2) 100%),
-    linear-gradient(0deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.2) 100%),
-    linear-gradient(0deg, rgba(0, 0, 0, 0.2) 0%, rgba(0, 0, 0, 0.2) 100%),
-    #171612
-  );
+  background: #171612;
 `;
 
 const Logo = styled.div`
-  color: var(--ivory, #e5dcca);
+  color: #e5dcca;
   font-family: SUIT;
   font-size: 24px;
-  font-style: normal;
   font-weight: 800;
-  line-height: 24px; /* 100% */
 `;
 
 const IconWrapper = styled.div`
@@ -63,22 +56,9 @@ const IconWrapper = styled.div`
   gap: 16px;
 `;
 
-const IconHelp = styled(Image)`
+const Icon = styled.div`
   cursor: pointer;
   display: flex;
   width: 24px;
   height: 24px;
-  justify-content: center;
-  align-items: center;
-  flex-shrink: 0;
-`;
-
-const IconProfile = styled(Image)`
-  cursor: pointer;
-  display: flex;
-  width: 24px;
-  height: 24px;
-  justify-content: center;
-  align-items: center;
-  flex-shrink: 0;
 `;

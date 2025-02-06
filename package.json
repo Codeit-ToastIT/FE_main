@@ -2,6 +2,7 @@
   "name": "toastit",
   "version": "0.1.0",
   "private": true,
+  "proxy": "http://3.34.1.110:8000",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",
@@ -9,6 +10,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@svgr/webpack": "^8.1.0",
     "axios": "^1.7.9",
     "framer-motion": "^11.18.2",
     "next": "15.1.4",
@@ -18,7 +20,9 @@
     "react-image-file-resizer": "^0.4.8",
     "styled-components": "^6.1.14",
     "sweetalert2": "^11.6.13",
-    "swiper": "^11.2.1"
+    "swiper": "^11.2.1",
+    "swr": "^2.3.0",
+    "uuid": "^11.0.5"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3",
