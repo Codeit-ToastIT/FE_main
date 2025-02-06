@@ -19,6 +19,9 @@ body {
     'Helvetica Neue',
     sans-serif;
   background-color: #171612; /* 기본 배경색 */
+  overscroll-behavior: none; /* ✅ iOS에서 스크롤로 인한 터치 이벤트 차단 */
+  touch-action: none; /* ✅ 기본 터치 이벤트 방지 */
+  -webkit-overflow-scrolling: none; /* ✅ iOS Safari 스크롤 문제 해결 */
 }
 
 #__next {

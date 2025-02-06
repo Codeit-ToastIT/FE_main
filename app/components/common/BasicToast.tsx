@@ -1,15 +1,15 @@
 /**
  * 파일명: BasicToast.tsx
- * 작성일: 2025-01-26
+ * 작성일: 2025-02-06
  * 작성자: 이서연
- * 설명: 기본 toast 컴포넌트 구현.
+ * 설명: 메모 작성 기능 관련 수정.
  */
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { v4 as uuidv4 } from 'uuid';
 
 import Toast1 from '../../../public/toasts/toast1.png';
 import Toast2 from '../../../public/toasts/toast2.png';
@@ -27,26 +27,16 @@ interface ToastProps {
 
 export default function BasicToast({ toastid, title, content }: ToastProps) {
   const router = useRouter();
-  const [toastId] = useState(toastid || uuidv4()); // 기존 ID 없으면 새로 생성
   const [toastNumber, setToastNumber] = useState<string>(toastImages[0].src);
-  // const [memoTitle, setMemoTitle] = useState<string>('');
-  // const [memo, setMemo] = useState<string>('');
 
   useEffect(() => {
     // 랜덤으로 토스트 이미지 선택
     const randomToast = toastImages[Math.floor(Math.random() * toastImages.length)];
     setToastNumber(randomToast.src);
-
-    // // 해당 Toast ID에 대한 메모 데이터 불러오기
-    // const savedTitle = localStorage.getItem(`memoTitle_${toastId}`);
-    // const savedMemo = localStorage.getItem(`memo_${toastId}`);
-
-    // if (savedTitle) setMemoTitle(savedTitle);
-    // if (savedMemo) setMemo(savedMemo);
   }, []);
 
   const handleToastClick = () => {
-    router.push(`/pages/memoInput?id=${toastId}`); // ✅ ID 포함하여 이동
+    router.push(`/pages/memoInput?id=${toastid}`); // ✅ ID 포함하여 이동
   };
 
   return (

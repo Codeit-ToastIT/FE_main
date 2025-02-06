@@ -1,19 +1,25 @@
 /**
  * 파일명: EditingToast.tsx
- * 작성일: 2025-01-27
+ * 작성일: 2025-02-06
  * 작성자: 이서연
- * 설명: editing 메모 화면 body 부분(메모 작성 area) UI 설계.
+ * 설명: editing 메모 화면 body 부분(메모 작성 area) UI 수정.
  */
 
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { API_BASE_URL } from '../../api/api';
+import { useAuth } from '../../api/AuthContext';
 
 interface EditingToastProps {
-  toastId: string; // 고유한 toastId를 props로 받음
+  toastId: string;
+  title: string;
+  content: string;
+  setContent: (content: string) => void;
 }
 
-export default function EditingToast({ toastId }: EditingToastProps) {
+export default function EditingToast({ toastId, title, content, setContent }: EditingToastProps) {
   const [text, setText] = useState('');
+  const { token } = useAuth();
 
   useEffect(() => {
     if (toastId) {
@@ -22,10 +28,32 @@ export default function EditingToast({ toastId }: EditingToastProps) {
     }
   }, [toastId]);
 
-  const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleTextChange = async (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newText = e.target.value;
     setText(newText);
-    localStorage.setItem(`memo_${toastId}`, newText); // ID별로 저장
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/memos/${toastId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ title, content: newText }), // ✅ 현재 제목도 함께 업데이트
+      });
+
+      if (!response.ok) {
+        throw new Error('메모 수정 실패');
+      }
+
+      const data = await response.json();
+      console.log('✅ 메모 본문 수정 성공:', data);
+
+      // ✅ 서버에서 수정된 최신 데이터 반영
+      setText(data.note.content);
+    } catch (error) {
+      console.error('❌ 메모 본문 수정 요청 오류:', error);
+    }
   };
 
   return (

@@ -8,7 +8,6 @@ import { API_BASE_URL } from '../../api/api';
 
 import SubmitButton from '../../components/common/SubmitButton';
 
-
 const Whole = styled.div`
   display: inline-flex;
   flex-direction: column;
@@ -38,7 +37,7 @@ const Input = styled.input`
   color: #e5dcca;
   padding-left: 1rem;
   overflow: hidden;
-  color: var(--ivory, #E5DCCA);
+  color: var(--ivory, #e5dcca);
   text-overflow: ellipsis;
   white-space: nowrap;
   font-family: SUIT;
@@ -46,7 +45,6 @@ const Input = styled.input`
   font-style: normal;
   font-weight: 600;
   line-height: normal;
-
 `;
 
 const ErrorMessage = styled.div`
@@ -69,8 +67,8 @@ const EmailInputPage = () => {
 
   // 입력 필드 포커싱
 
-  const [email, setEmail] = useState(""); // 이메일 상태
-  const [error, setError] = useState(""); // 오류 메시지 상태
+  const [email, setEmail] = useState(''); // 이메일 상태
+  const [error, setError] = useState(''); // 오류 메시지 상태
   const isEmailNotEmpty = email.length > 0; // 이메일 입력 여부 확인
   const router = useRouter();
   const { setEmail: setEmailContext } = useEmail(); // EmailContext에서 setEmail 가져오기
@@ -105,6 +103,7 @@ const EmailInputPage = () => {
       setEmailContext(email); // 이메일 상태 업데이트
 
       // 이메일 등록 여부 확인 API 호출
+
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/check-email`, { // API 경로 수정
         method: 'POST',
@@ -154,10 +153,7 @@ const EmailInputPage = () => {
           autoComplete="off"
         />
         {error && <ErrorMessage>{error}</ErrorMessage>} {/* 오류 메시지 표시 */}
-
-        <SubmitButton 
-          isActive={isEmailNotEmpty} 
-        />
+        <SubmitButton isActive={isEmailNotEmpty} />
       </Form>
     </Whole>
   );
