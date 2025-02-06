@@ -23,7 +23,7 @@ import DeleteModal from './DeleteModal';
 
 import { API_BASE_URL } from '../../api/api';
 // import { AUTH_TOKEN } from '../../api/api';
-import { useAuth } from '../../api/AuthContext';
+//import { useAuth } from '../../api/AuthContext';
 
 interface BodyProps {
   deletedMemoId?: string; // ✅ 삭제된 메모 ID를 props로 받음
@@ -107,7 +107,7 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
   }, []);
 
   //Authorization token 불러오는 로직 구현
-  const { token } = useAuth();
+  //const { token } = useAuth();
 
   //----------------
 
