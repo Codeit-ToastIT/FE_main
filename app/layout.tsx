@@ -1,8 +1,8 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import StyledComponentsRegistry from '../registry';
-import { AuthProvider } from './context/AuthContext'; 
-import { EmailProvider } from './context/EmailContext'; 
+import { AuthProvider } from './context/AuthContext';
+import { EmailProvider } from './context/EmailContext';
 
 export const metadata: Metadata = {
   title: 'Toast-it',
@@ -39,8 +39,12 @@ export default function RootLayout({
         }}
       >
         <StyledComponentsRegistry>
-          <AuthProvider> {/* AuthProvider로 감싸기 */}
-            <EmailProvider> {/* EmailProvider로 감싸기 */}
+          <AuthProvider>
+            {' '}
+            {/* AuthProvider로 감싸기 */}
+            <EmailProvider>
+              {' '}
+              {/* EmailProvider로 감싸기 */}
               <div
                 style={{
                   width: '375px', // 아이폰 13 미니 너비
@@ -53,6 +57,7 @@ export default function RootLayout({
                   display: 'flex',
                   flexDirection: 'column',
                   backgroundColor: '#171612', // 💡 앱 배경색 추가
+                  overflow: 'hidden',
                 }}
               >
                 {children}
