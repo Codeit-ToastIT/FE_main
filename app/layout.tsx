@@ -33,6 +33,7 @@ export default function RootLayout({
           justifyContent: 'center', // 💡 중앙 정렬
           alignItems: 'center', // 💡 중앙 정렬
           backgroundColor: '#E5DCCA',
+          overflow: 'hidden',
         }}
       >
         <StyledComponentsRegistry>
@@ -48,6 +49,7 @@ export default function RootLayout({
               display: 'flex',
               flexDirection: 'column',
               backgroundColor: '#171612', // 💡 앱 배경색 추가
+              overflow: 'hidden',
             }}
           >
             {children}
