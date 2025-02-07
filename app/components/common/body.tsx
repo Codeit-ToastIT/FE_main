@@ -1,16 +1,16 @@
 /**
- * 파일명: body.tsx
- * 작성일: 2025-01-
+ * 파일명: HomeBody.tsx
+ * 작성일: 2025-02-06
  * 작성자: 이서연
- * 설명: body 컴포넌트
+ * 설명: HomeBody 컴포넌트
  */
 
 // 💖 표시된 부분 SaveToast로 활성화된 메모 id 전달을 위해 수정한 부분
+'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
-import { useRouter } from 'next/navigation';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
@@ -22,7 +22,6 @@ import BasicToast from './BasicToast';
 import DeleteModal from './DeleteModal';
 
 import { API_BASE_URL } from '../../api/api';
-// import { AUTH_TOKEN } from '../../api/api';
 import { useAuth } from '../../api/AuthContext';
 
 interface BodyProps {
@@ -30,7 +29,14 @@ interface BodyProps {
   // 💖 활성 메모 id를 상위로 전달할 콜백 prop 추가
   onActiveMemoChange?: (id: string) => void;
 }
-
+interface Memo {
+  id: string;
+  categoryId: string;
+  title: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+}
 
 // 💖 onActiveMemoChange 추가
 export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
@@ -38,12 +44,10 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
 
   const [showPlus, setShowPlus] = useState(false);
 
-  const router = useRouter();
-
   const [slides, setSlides] = useState<number[]>([1, 2, 3]);
   const [selectedSlide, setSelectedSlide] = useState<number | null>(slides[0]);
   const [showModal, setShowModal] = useState(false);
-  const [swiperKey, setSwiperKey] = useState(0); // ✅ Swiper 리렌더링을 위한 Key 추가
+  const [_swiperKey, setSwiperKey] = useState(0); // ✅ Swiper 리렌더링을 위한 Key 추가
 
   const [showToastMessage, setShowToastMessage] = useState(false);
   const [showDeleteMessage, setShowDeleteMessage] = useState(false);
@@ -104,6 +108,24 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
       const updatedSlides = [...storedMemos, ...prevSlides]; // ✅ 기존 값 유지
       return updatedSlides.length > 3 ? updatedSlides.slice(0, 3) : updatedSlides; // ✅ 최대 3개 유지
     });
+  }, []);
+
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setMemos((prevMemos) =>
+        prevMemos.map((memo) => ({
+          ...memo,
+          title: localStorage.getItem(`memoTitle_${memo.id}`) || memo.title,
+          content: localStorage.getItem(`memo_${memo.id}`) || memo.content,
+        })),
+      );
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
   }, []);
 
   //Authorization token 불러오는 로직 구현
@@ -187,12 +209,40 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
 
   //-------------------------------🍞토스트 삭제 로직 구현 완료🍞-------------------------------
 
-  //-------------------------------🍞새로운 토스트 추가 로직 구현 완료🍞-------------------------------
+  //-------------------------------🍞새로운 토스트 추가 로직 구현 완료🍞(터치이벤트, 마우스 이벤트 순서)-------------------------------
+
+  //✅ 카테고리 목록 가져오기
+  const [lastCategoryId, setLastCategoryId] = useState('');
+
+  const fetchCategories = async () => {
+    try {
+      console.log(`🔗 요청 URL: ${API_BASE_URL}/api/categories/$${userId}`); // userid props로 받아오기
+
+      const response = await fetch(`${API_BASE_URL}/api/categories/$${userId}`, {
+        method: 'GET',
+      });
+
+      console.log(`📩 응답 상태 코드: ${response.status}`);
+
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error(`❌ 서버 응답 오류: ${errorData}`);
+        throw new Error('❌ 메모 카테고리 목록 불러오기 실패');
+      }
+
+      const data = await response.json();
+      console.log('✅ 메모 카테고리 목록 가져오기 성공:', data);
+
+      setLastCategoryId(data.categories[4]);
+    } catch (error) {
+      console.error('❌ 메모 카테고리 목록 불러오기 오류:', error);
+    }
+  };
 
   // ✅ 백엔드에서 카테고리 지정 안된 최신 메모(가장 마지막 카테고리) 가져오기
   const fetchMemos = async () => {
     try {
-      const lastCategoryId = '67a06ebcfd6e18260a03987d'; // ✅ 마지막 카테고리 ID 가져오기
+      fetchCategories();
 
       console.log(`🔗 요청 URL: ${API_BASE_URL}/api/categories/${lastCategoryId}/memos`);
 
@@ -268,6 +318,7 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!dragging) return;
+    e.stopPropagation(); // ✅ Swiper에서 발생한 터치 이벤트 방지
 
     const deltaX = e.touches[0].clientX - offsetXRef.current;
 
@@ -275,17 +326,17 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
     if (isSwiperActive) return;
 
     // ✅ 드래그 거리가 50px 이상이어야 실제로 "드래그 중" 상태로 인식
-    if (Math.abs(deltaX) > 50) {
+    if (Math.abs(deltaX) > 150) {
       setDragging(true);
     }
-    setShowPlus(deltaX > 240);
+    setShowPlus(deltaX > 200);
 
     if (bodyRef.current) {
       bodyRef.current.style.transform = `translateX(${Math.max(0, deltaX)}px)`;
     }
   };
 
-  // ✅ "오른쪽으로 드래그" 시 새로운 메모 생성
+  // ✅ "오른쪽으로 드래그" 시 새로운 메모 생성(터치이벤트)
   const handleTouchEnd = async () => {
     // ✅ Swiper에서 발생한 터치 이벤트거나 충분히 드래그되지 않았다면 실행 안 함.
     if (!showPlus || isSwiperActive || !dragging) return;
@@ -342,7 +393,6 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
     }
   };
 
-
   useEffect(() => {
     const bodyElement = bodyRef.current;
     if (!bodyElement) return;
@@ -353,10 +403,111 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
       }
     };
 
-    bodyElement.addEventListener('touchmove', handleNativeTouchMove);
+    bodyElement.addEventListener('touchmove', handleNativeTouchMove, { passive: false });
 
     return () => {
       bodyElement.removeEventListener('touchmove', handleNativeTouchMove);
+    };
+  }, [dragging]);
+
+  // ✅ 새로운 토스트 추가 모션 로직 (마우스 이벤트)
+  const handleMouseDown = (e: React.MouseEvent) => {
+    setDragging(true); // 클릭 시 바로 이동하지 않도록 초기화
+    offsetXRef.current = e.clientX;
+  };
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!dragging) return;
+    e.preventDefault();
+    e.stopPropagation();
+
+    const deltaX = e.clientX - offsetXRef.current;
+
+    if (isSwiperActive) return;
+
+    // ✅ 드래그 거리가 50px 이상이어야 실제로 "드래그 중" 상태로 인식
+    if (Math.abs(deltaX) > 50) {
+      setDragging(true);
+    } else {
+      if (!dragging) return; // 아직 드래그 인식 전이면 위치 이동 안 함
+    }
+    setShowPlus(deltaX > 200);
+
+    if (bodyRef.current) {
+      requestAnimationFrame(() => {
+        // ✅ 강제로 transform 업데이트 적용
+        bodyRef.current!.style.transform = `translateX(${Math.max(0, deltaX)}px)`;
+      });
+    }
+  };
+
+  // ✅ "오른쪽으로 드래그" 시 새로운 메모 생성 (마우스 이벤트)
+  const handleMouseUp = async () => {
+    // ✅ Swiper에서 발생한 터치 이벤트거나 충분히 드래그되지 않았다면 실행 안 함.
+    if (!showPlus || isSwiperActive || !dragging) return;
+
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/memos`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title: new Date().toISOString().split('T')[0], // ✅ 오늘 날짜로 제목 설정
+          content: '새로운 영감을 적어볼까요?', // ✅ 기본 내용 설정
+        }),
+      });
+
+      // ✅ 확인용 콘솔 코드
+      console.log(`📩 응답 상태 코드: ${response.status}`);
+
+      const data = await response.json();
+
+      if (response.ok) {
+        console.log('✅ 새 메모 생성 성공:', data);
+
+        if (data.memo) {
+          setMemos((prevMemos) => {
+            const newMemos = [data.memo, ...prevMemos].slice(0, 3);
+            return newMemos;
+          });
+
+          setSlides((prevSlides) => {
+            const newSlides = [data.memo.id, ...prevSlides];
+            return newSlides.length > 3 ? newSlides.slice(0, 3) : newSlides;
+          });
+
+          setTimeout(() => fetchMemos(), 500);
+          setShowToastMessage(true);
+        }
+      } else {
+        console.error('❌ 메모 생성 실패:', data.message);
+      }
+    } catch (error) {
+      console.error('❌ 메모 생성 요청 오류:', error);
+    } finally {
+      setDragging(false);
+      setShowPlus(false);
+      if (bodyRef.current) {
+        bodyRef.current.style.transition = 'transform 0.3s ease-out';
+        bodyRef.current.style.transform = 'translateX(0px)';
+      }
+      setTimeout(() => bodyRef.current && (bodyRef.current.style.transition = ''), 300);
+    }
+  };
+
+  // ✅ 이벤트 리스너를 추가하는 방식
+  useEffect(() => {
+    const handleMouseUpGlobal = () => {
+      if (dragging) {
+        handleMouseUp();
+      }
+    };
+
+    window.addEventListener('mouseup', handleMouseUpGlobal);
+    return () => {
+      window.removeEventListener('mouseup', handleMouseUpGlobal);
     };
   }, [dragging]);
 
@@ -377,6 +528,9 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
+      onMouseDown={handleMouseDown}
+      onMouseMove={handleMouseMove}
+      onMouseUp={handleMouseUp}
     >
       <IconTrash
         src={iconTrash}
@@ -405,22 +559,13 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
           left: '50%',
           transform: 'translate(-50%, -50%)',
         }}
-        onSlideChange={handleSlideChange} // 💖 활성 슬라이드 변경 시 콜백 호출 (위의 주석처리된 부분은 handleSlideChange 안에 넣었습니다)
-
+        onSlideChange={handleSlideChange} // 💖 활성 슬라이드 변경 시 콜백 호출
         onTouchStart={() => setIsSwiperActive(true)}
         onTouchEnd={() => setIsSwiperActive(false)}
       >
         {memos.length > 0 ? (
           memos.map((memo) => (
-            <StyledSwiperSlide
-              key={memo.id}
-              onClick={() => {
-                if (memoToEditing + 1 === selectedSlide) {
-                  // ✅ notes 배열의 인덱스 +1 값과 비교
-                  router.push(`/memoInput?id=${memo.id}`);
-                }
-              }} // ✅ 현재 활성화된 토스트만 클릭 가능
-            >
+            <StyledSwiperSlide key={memo.id}>
               <StyledBasicToast toastid={memo.id} title={memo.title} content={memo.content} />
             </StyledSwiperSlide>
           ))
@@ -454,10 +599,11 @@ const Container = styled.div`
   justify-content: center;
   background-color: #ffffff;
   border-radius: 40px 0 0 40px;
-  height: 80vh;
+  height: 82.7vh;
   position: relative;
   overflow: hidden;
-  touch-action: none;
+  touch-action: none; /* ✅ 터치 이벤트를 스크롤이 아닌 드래그로 인식하도록 설정 */
+  user-select: none; /* ✅ 텍스트 선택 방지 */
 `;
 
 const IconTrash = styled(Image)`

@@ -4,6 +4,7 @@ import { styled } from "styled-components";
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import SubmitButton from '../../components/common/SubmitButton';
+import { API_BASE_URL } from "../../api/api";
 
 const Whole = styled.div`
 display: inline-flex;
@@ -154,7 +155,7 @@ const ResetPasswordForm = () => {
     try {
       const token = "YOUR_BEARER_TOKEN"; // 실제 Bearer Token으로 교체
 
-      const response = await fetch('/api/auth/password/reset', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/password/reset`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

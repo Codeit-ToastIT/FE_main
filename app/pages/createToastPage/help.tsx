@@ -1,8 +1,8 @@
 /**
- * 파일명: body.tsx
+ * 파일명: help.tsx
  * 작성일: 2025-01-30
  * 작성자: 이서연
- * 설명: body 컴포넌트
+ * 설명: help 컴포넌트
  */
 
 import React, { useState, useEffect } from 'react';
