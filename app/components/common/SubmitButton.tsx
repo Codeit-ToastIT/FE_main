@@ -17,6 +17,7 @@ const StyledButton = styled.input.withConfig({
   font-style: normal;
   font-weight: 800;
   line-height: normal;
+  cursor: pointer;
 `;
 
 interface SubmitButtonProps {
