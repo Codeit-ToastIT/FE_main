@@ -2,16 +2,13 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
-import { Hint, HintBold } from '../../components/SaveToast';
+import { Hint, HintBold } from './SaveToast';
 import plateImage from '../../assets/load/plate.svg';
 import ToastImg from '../../assets/load/toasts/burnt1.png';
 
 interface LoadToastProps {
   onClose: (category: string) => void; // 모달 닫기 함수, 인자 추가
   onSave: (category: string) => void; // 저장 콜백 함수
-  memoId: string; // 메모 ID
-  title: string | null; // 제목
-  content: string | null; // 내용
 }
 
 const LoadToast: React.FC<LoadToastProps> = ({ onClose, onSave }) => {
