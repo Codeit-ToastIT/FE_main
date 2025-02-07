@@ -2,7 +2,6 @@
 
 import React, { useState } from 'react';
 import styled from 'styled-components';
-
 import Toast from '../../components/common/BurntToast';
 import SearchBarComponent from '../../components/common/SearchBarComponent';
 import BreadBox from '../../assets/load/breadbox.svg';

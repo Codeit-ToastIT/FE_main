@@ -10,6 +10,7 @@
 import React, { useEffect, useState } from 'react';
 import styled from 'styled-components';
 import SaveToast from '../../components/SaveToast';
+import LoadToast from '../../components/LoadToast';
 
 import Home from './home';
 import Help from './help';
@@ -33,6 +34,20 @@ export default function CreateToastPage() {
 
   // 활성 메모 id 상태 추가 (상위에서 관리)
   const [activeMemoId, setActiveMemoId] = useState<string>('1');
+
+  const [isDoubleClick, setIsDoubleClick] = useState(false);
+
+  // 더블클릭 이벤트 핸들러
+  const handleDoubleClick = () => {
+    console.log('더블클릭 이벤트 발생');
+    setIsDoubleClick(true);
+    setShowSaveMessage('더블클릭으로 저장되었습니다!');
+
+    // 일정 시간 후 더블클릭 상태 초기화
+    setTimeout(() => {
+      setIsDoubleClick(false);
+    }, 2000); // 2초 후 초기화
+  };
 
   // 메모 ID, 제목, 내용 상태
   const [memoId] = useState(() => '1');
@@ -99,6 +114,11 @@ export default function CreateToastPage() {
             content={content}
             onClick={(e) => e.stopPropagation()} // SaveToast 내부 클릭 시 닫히지 않도록 막기
           />
+        </SaveToastWrapper>
+      )}
+      {isDoubleClick && (
+        <SaveToastWrapper onDoubleClick={handleDoubleClick}>
+          <LoadToast onClose={handleCloseSaveToast} onSave={handleSave} />
         </SaveToastWrapper>
       )}
       {showSaveMessage && (
