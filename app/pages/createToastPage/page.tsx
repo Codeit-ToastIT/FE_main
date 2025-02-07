@@ -18,20 +18,20 @@ import Help from './help';
 import { useAuth } from '../../context/AuthContext';
 
 export default function CreateToastPage() {
-  const { token } = useAuth();
-  const router = useRouter();
-  const [loading, setLoading] = useState(true);
+  // const { token } = useAuth();
+  // const router = useRouter();
+  // const [loading, setLoading] = useState(true);
 
-  // ✅ useEffect로 token이 변경될 때만 실행
-  useEffect(() => {
-    if (!token) {
-      console.warn('토큰이 존재하지 않습니다. 이메일 입력 페이지로 이동하세요.');
-      router.push('/pages/emailInputPage'); // 이메일 입력 페이지로 리디렉트
-    } else {
-      setLoading(false);
-    }
-  }, [token, router]);
-  //
+  // // ✅ useEffect로 token이 변경될 때만 실행
+  // useEffect(() => {
+  //   if (!token) {
+  //     console.warn('토큰이 존재하지 않습니다. 이메일 입력 페이지로 이동하세요.');
+  //     router.push('/pages/emailInputPage'); // 이메일 입력 페이지로 리디렉트
+  //   } else {
+  //     setLoading(false);
+  //   }
+  // }, [token, router]);
+  // //
 
   const [showOnboarding, setShowOnboarding] = useState(false);
 
