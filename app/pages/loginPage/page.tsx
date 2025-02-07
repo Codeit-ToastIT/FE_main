@@ -106,7 +106,7 @@ const LoginPage = () => {
   const [showPw, setShowPw] = useState(false);
   const [error, setError] = useState('');
   const { email } = useEmail();
-  const { login } = useAuth();
+  const { login, loginUser } = useAuth();
 
   // 입력 필드 포커싱
   useEffect(() => {
@@ -157,6 +157,7 @@ const LoginPage = () => {
         console.log('로그인 성공:', data);
         // 로그인 성공 후 토큰 저장 및 홈 페이지로 이동
         login(data.token); // 토큰 저장
+        loginUser(data.user.id); // userId 저장
         router.push('/pages/createToastPage'); // 홈 페이지로 이동
       } else {
         setError('비밀번호를 확인해주세요.');

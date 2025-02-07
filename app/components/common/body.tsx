@@ -41,7 +41,7 @@ interface Memo {
 // 💖 onActiveMemoChange 추가
 export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
   //Authorization token 불러오는 로직 구현
-  const { token } = useAuth();
+  const { token, userId } = useAuth();
 
   const [memos, setMemos] = useState<Memo[]>([]); // ✅ MongoDB의 메모 리스트 저장
 
@@ -148,7 +148,7 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
     if (selectedSlide === null) return false;
     setLoading(true);
 
-    // ✅ selectedSlide 값으로 memos 리스트에서 해당 `memoId` 찾기 (index - 1 적용)
+    // ✅ 현재 선택된 슬라이드에서 메모 ID 찾기
     const memoToDelete = memos.find((_, index) => index + 1 === selectedSlide);
 
     if (!memoToDelete || !memoToDelete.id) {
@@ -173,22 +173,21 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
       if (response.ok) {
         console.log('✅ 토스트 삭제 성공:', data.message);
 
-        // ✅ 삭제된 메모를 상태에서 제거
+        // ✅ 상태에서 삭제된 메모 제거
         setMemos((prevMemos) => prevMemos.filter((memo) => memo.id !== memoToDelete.id));
 
-        // ✅ 삭제 후 최신 메모 목록 가져오기
-        await fetchMemos();
-
+        // ✅ 슬라이드 상태 업데이트
         setSlides((prevSlides) => {
-          let newSlides = prevSlides.filter((slide) => slide !== selectedSlide);
+          const newSlides = prevSlides.filter((slide) => slide !== selectedSlide);
 
-          if (newSlides.length === 0) {
-            newSlides = [selectedSlide + 1]; // ✅ 새 토스트 추가
-          }
-
-          setShowDeleteMessage(true);
-          return newSlides;
+          // ✅ 삭제 후 슬라이드가 비어 있다면 새로운 슬라이드 추가
+          return newSlides.length > 0 ? newSlides : [selectedSlide + 1];
         });
+
+        setShowDeleteMessage(true);
+
+        // ✅ 최신 메모 목록 다시 불러오기
+        fetchMemos(lastCategoryId);
 
         return true;
       } else {
@@ -203,7 +202,7 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
     } finally {
       setLoading(false);
       setShowModal(false);
-      setSwiperKey((prev) => prev + 1);
+      setSwiperKey((prev) => prev + 1); // ✅ Swiper 강제 리렌더링
     }
   };
 
@@ -211,15 +210,18 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
 
   //-------------------------------🍞새로운 토스트 추가 로직 구현 완료🍞(터치이벤트, 마우스 이벤트 순서)-------------------------------
 
-  //✅ 카테고리 목록 가져오기
+  // ✅ 카테고리 목록 가져오기
   const [lastCategoryId, setLastCategoryId] = useState('');
 
   const fetchCategories = async () => {
     try {
-      console.log(`🔗 요청 URL: ${API_BASE_URL}/api/categories/$${userId}`); // userid props로 받아오기
+      console.log(`🔗 요청 URL: ${API_BASE_URL}/api/categories/${userId}`);
 
-      const response = await fetch(`${API_BASE_URL}/api/categories/$${userId}`, {
+      const response = await fetch(`${API_BASE_URL}/api/categories/${userId}`, {
         method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
 
       console.log(`📩 응답 상태 코드: ${response.status}`);
@@ -233,20 +235,22 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
       const data = await response.json();
       console.log('✅ 메모 카테고리 목록 가져오기 성공:', data);
 
-      setLastCategoryId(data.categories[4]);
+      const categoryId = data.categories[4]?.id;
+      if (categoryId) {
+        setLastCategoryId(categoryId);
+        fetchMemos(categoryId); // ✅ 4번 인덱스 카테고리 ID로 메모 가져오기 실행
+      }
     } catch (error) {
       console.error('❌ 메모 카테고리 목록 불러오기 오류:', error);
     }
   };
 
-  // ✅ 백엔드에서 카테고리 지정 안된 최신 메모(가장 마지막 카테고리) 가져오기
-  const fetchMemos = async () => {
+  // ✅ 특정 카테고리의 메모 가져오기
+  const fetchMemos = async (categoryId: string) => {
     try {
-      fetchCategories();
+      console.log(`🔗 요청 URL: ${API_BASE_URL}/api/categories/${categoryId}/memos`);
 
-      console.log(`🔗 요청 URL: ${API_BASE_URL}/api/categories/${lastCategoryId}/memos`);
-
-      const response = await fetch(`${API_BASE_URL}/api/categories/${lastCategoryId}/memos`, {
+      const response = await fetch(`${API_BASE_URL}/api/categories/${categoryId}/memos`, {
         method: 'GET',
         headers: {
           Authorization: `Bearer ${token}`,
@@ -266,11 +270,8 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
 
       if (data.notes.length === 0) {
         console.log('⚠️ 불러온 메모가 없음 → 기본 메모 자동 생성');
-
-        // ✅ 기본 메모 자동 생성 (POST 요청)
-        await createDefaultMemo();
+        await createDefaultMemo(categoryId); // ✅ 기본 메모 생성
       } else {
-        // ✅ 최신 메모 3개만 저장
         setMemos(data.notes.slice(0, 3));
       }
     } catch (error) {
@@ -278,7 +279,8 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
     }
   };
 
-  const createDefaultMemo = async () => {
+  // ✅ 특정 카테고리에 기본 메모 생성
+  const createDefaultMemo = async (categoryId: string) => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/memos`, {
         method: 'POST',
@@ -289,6 +291,7 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
         body: JSON.stringify({
           title: new Date().toISOString().split('T')[0], // ✅ 오늘 날짜로 제목 설정
           content: '새로운 영감을 적어볼까요?', // ✅ 기본 내용 설정
+          categoryId, // ✅ 특정 카테고리에 저장
         }),
       });
 
@@ -298,10 +301,8 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
 
       if (response.ok) {
         console.log('✅ 기본 메모 생성 성공:', data);
-
-        // ✅ 생성된 기본 메모를 상태에 저장
-        setMemos([data.memo]);
-        fetchMemos();
+        setMemos((prevMemos) => [data.memo, ...prevMemos].slice(0, 3));
+        fetchMemos(categoryId); // ✅ 최신 메모 다시 가져오기
       } else {
         console.error('❌ 기본 메모 생성 실패:', data.message);
       }
@@ -336,9 +337,8 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
     }
   };
 
-  // ✅ "오른쪽으로 드래그" 시 새로운 메모 생성(터치이벤트)
+  // ✅ 새로운 메모 추가 (터치 이벤트)
   const handleTouchEnd = async () => {
-    // ✅ Swiper에서 발생한 터치 이벤트거나 충분히 드래그되지 않았다면 실행 안 함.
     if (!showPlus || isSwiperActive || !dragging) return;
 
     try {
@@ -349,34 +349,21 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          title: new Date().toISOString().split('T')[0], // ✅ 오늘 날짜로 제목 설정
-          content: '새로운 영감을 적어볼까요?', // ✅ 기본 내용 설정
+          title: new Date().toISOString().split('T')[0],
+          content: '새로운 영감을 적어볼까요?',
+          categoryId: lastCategoryId, // ✅ 현재 카테고리에 저장
         }),
       });
 
-      //✅ 확인용 콘솔 코드
       console.log(`📩 응답 상태 코드: ${response.status}`);
 
       const data = await response.json();
 
       if (response.ok) {
         console.log('✅ 새 메모 생성 성공:', data);
-
-        // ✅ data.memo가 정상적으로 존재하는지 확인 후 상태 업데이트
-        if (data.memo) {
-          setMemos((prevMemos) => {
-            const newMemos = [data.memo, ...prevMemos].slice(0, 3);
-            return newMemos;
-          });
-
-          setSlides((prevSlides) => {
-            const newSlides = [data.memo.id, ...prevSlides];
-            return newSlides.length > 3 ? newSlides.slice(0, 3) : newSlides;
-          });
-
-          setTimeout(() => fetchMemos(), 500);
-          setShowToastMessage(true);
-        }
+        setMemos((prevMemos) => [data.memo, ...prevMemos].slice(0, 3));
+        fetchMemos(lastCategoryId); // ✅ 최신 메모 다시 가져오기
+        setShowToastMessage(true);
       } else {
         console.error('❌ 메모 생성 실패:', data.message);
       }
@@ -384,7 +371,7 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
       console.error('❌ 메모 생성 요청 오류:', error);
     } finally {
       setDragging(false);
-      setShowPlus(false); // ✅ 터치 종료 후 초기화
+      setShowPlus(false);
       if (bodyRef.current) {
         bodyRef.current.style.transition = 'transform 0.3s ease-out';
         bodyRef.current.style.transform = 'translateX(0px)';
@@ -392,6 +379,11 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
       setTimeout(() => bodyRef.current && (bodyRef.current.style.transition = ''), 300);
     }
   };
+
+  // ✅ useEffect에서 카테고리 가져오기 실행
+  useEffect(() => {
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const bodyElement = bodyRef.current;
@@ -443,10 +435,15 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
 
   // ✅ "오른쪽으로 드래그" 시 새로운 메모 생성 (마우스 이벤트)
   const handleMouseUp = async () => {
-    // ✅ Swiper에서 발생한 터치 이벤트거나 충분히 드래그되지 않았다면 실행 안 함.
     if (!showPlus || isSwiperActive || !dragging) return;
 
     try {
+      // ✅ 카테고리 ID가 설정되지 않았다면 fetchCategories()를 실행
+      if (!lastCategoryId) {
+        console.warn('⚠️ lastCategoryId가 없음 → 카테고리 다시 불러오기');
+        await fetchCategories();
+      }
+
       const response = await fetch(`${API_BASE_URL}/api/memos`, {
         method: 'POST',
         headers: {
@@ -456,10 +453,10 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
         body: JSON.stringify({
           title: new Date().toISOString().split('T')[0], // ✅ 오늘 날짜로 제목 설정
           content: '새로운 영감을 적어볼까요?', // ✅ 기본 내용 설정
+          categoryId: lastCategoryId, // ✅ 마지막 카테고리에 저장
         }),
       });
 
-      // ✅ 확인용 콘솔 코드
       console.log(`📩 응답 상태 코드: ${response.status}`);
 
       const data = await response.json();
@@ -468,17 +465,11 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
         console.log('✅ 새 메모 생성 성공:', data);
 
         if (data.memo) {
-          setMemos((prevMemos) => {
-            const newMemos = [data.memo, ...prevMemos].slice(0, 3);
-            return newMemos;
-          });
+          // ✅ 상태 업데이트를 먼저 수행한 후 fetchMemos 실행
+          setMemos((prevMemos) => [data.memo, ...prevMemos].slice(0, 3));
+          setSlides((prevSlides) => [data.memo.id, ...prevSlides].slice(0, 3));
 
-          setSlides((prevSlides) => {
-            const newSlides = [data.memo.id, ...prevSlides];
-            return newSlides.length > 3 ? newSlides.slice(0, 3) : newSlides;
-          });
-
-          setTimeout(() => fetchMemos(), 500);
+          fetchMemos(lastCategoryId); // ✅ 최신 메모 다시 가져오기
           setShowToastMessage(true);
         }
       } else {
@@ -513,7 +504,7 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
 
   // 💖 Swiper 슬라이드 변경 시 활성 메모 id 전달
   const handleSlideChange = (swiper: any) => {
-    const activeId = uniqueSlides[swiper.realIndex];
+    const activeId = slides[swiper.realIndex];
     setSelectedSlide(activeId);
     if (onActiveMemoChange) {
       onActiveMemoChange(activeId.toString());
