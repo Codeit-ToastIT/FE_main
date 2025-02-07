@@ -40,10 +40,8 @@ export default function RootLayout({
       >
         <StyledComponentsRegistry>
           <AuthProvider>
-            {' '}
             {/* AuthProvider로 감싸기 */}
             <EmailProvider>
-              {' '}
               {/* EmailProvider로 감싸기 */}
               <div
                 style={{

@@ -22,8 +22,7 @@ import BasicToast from './BasicToast';
 import DeleteModal from './DeleteModal';
 
 import { API_BASE_URL } from '../../api/api';
-// import { AUTH_TOKEN } from '../../api/api';
-//import { useAuth } from '../../api/AuthContext';
+import { useAuth } from '../../api/AuthContext';
 
 interface BodyProps {
   deletedMemoId?: string; // ✅ 삭제된 메모 ID를 props로 받음
@@ -48,7 +47,7 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
   const [slides, setSlides] = useState<number[]>([1, 2, 3]);
   const [selectedSlide, setSelectedSlide] = useState<number | null>(slides[0]);
   const [showModal, setShowModal] = useState(false);
-  const [swiperKey, setSwiperKey] = useState(0); // ✅ Swiper 리렌더링을 위한 Key 추가
+  const [_swiperKey, setSwiperKey] = useState(0); // ✅ Swiper 리렌더링을 위한 Key 추가
 
   const [showToastMessage, setShowToastMessage] = useState(false);
   const [showDeleteMessage, setShowDeleteMessage] = useState(false);
@@ -130,7 +129,7 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
   }, []);
 
   //Authorization token 불러오는 로직 구현
-  //const { token } = useAuth();
+  const { token } = useAuth();
 
   //----------------
 
@@ -212,10 +211,38 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
 
   //-------------------------------🍞새로운 토스트 추가 로직 구현 완료🍞(터치이벤트, 마우스 이벤트 순서)-------------------------------
 
+  //✅ 카테고리 목록 가져오기
+  const [lastCategoryId, setLastCategoryId] = useState('');
+
+  const fetchCategories = async () => {
+    try {
+      console.log(`🔗 요청 URL: ${API_BASE_URL}/api/categories/$${userId}`); // userid props로 받아오기
+
+      const response = await fetch(`${API_BASE_URL}/api/categories/$${userId}`, {
+        method: 'GET',
+      });
+
+      console.log(`📩 응답 상태 코드: ${response.status}`);
+
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error(`❌ 서버 응답 오류: ${errorData}`);
+        throw new Error('❌ 메모 카테고리 목록 불러오기 실패');
+      }
+
+      const data = await response.json();
+      console.log('✅ 메모 카테고리 목록 가져오기 성공:', data);
+
+      setLastCategoryId(data.categories[4]);
+    } catch (error) {
+      console.error('❌ 메모 카테고리 목록 불러오기 오류:', error);
+    }
+  };
+
   // ✅ 백엔드에서 카테고리 지정 안된 최신 메모(가장 마지막 카테고리) 가져오기
   const fetchMemos = async () => {
     try {
-      const lastCategoryId = '67a06ebcfd6e18260a03987d'; // ✅ 마지막 카테고리 ID 가져오기
+      fetchCategories();
 
       console.log(`🔗 요청 URL: ${API_BASE_URL}/api/categories/${lastCategoryId}/memos`);
 

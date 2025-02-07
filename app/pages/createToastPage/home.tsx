@@ -14,7 +14,7 @@ import styled from 'styled-components';
 import Image from 'next/image';
 
 import Header from '../../components/layout/header';
-import Body from '../../components/common/HomeBody';
+import Body from '../../components/common/body';
 import MyPage from '../myPage/myPage'; // ✅ MyPage 컴포넌트 추가
 
 import iconAdd from '../../assets/icons/icon_add.svg';
