@@ -2,44 +2,22 @@
 
 import Image from 'next/image';
 import { styled } from "styled-components";
-import vector from "./assets/icons/Vector.svg";
-import ellipse7 from "./assets/icons/Ellipse 7.svg";
-import ellipse8 from "./assets/icons/Ellipse 8.svg";
-import bread from "./assets/icons/bread1.png";
 import { useRouter } from "next/navigation";
+import Error from "./assets/icons/404Error.png";
 
 const Whole = styled.div`
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
 `
 
-const ImageError = styled.div`
-  position: relative; // 자식 요소의 절대 위치 지정을 위해 relative 설정
-  width: 23.4375rem;
-  height: 39.6875rem;
-  flex-shrink: 0;
-`
-
-const Vector = styled(Image)`
+const ImageError = styled(Image)`
   position: absolute;
-  top: 13.26rem;
-  left: 6.06rem;
-`
-const Ellipse7 = styled(Image)`
-  position: absolute;
-  top: 13rem;
-  left: 9.3rem;
-`
-const Ellipse8 = styled(Image)`
-  position: absolute;
-  top: 13.75rem;
-  left: 10.13rem;
-`
-const Bread = styled(Image)`
-  position: absolute;
-  top: 13.86rem;
-  left: 10.32rem;
+  top: 12.5rem;
+  left: 5.5rem;
+  width: 12.5rem;
+  height: auto;
 `
 
 const P = styled.div`
@@ -90,12 +68,7 @@ export default function NotFound() {
   }
   return (
     <Whole>
-      <ImageError>
-        <Vector src={vector} alt="Vector" objectFit="contain" />
-        <Ellipse7 src={ellipse7} alt="Ellipse 7" layout="fixed" objectFit="contain" />
-        <Ellipse8 src={ellipse8} alt="Ellipse 8" layout="fixed" objectFit="contain" />
-        <Bread src={bread} alt="Bread" layout="fixed" objectFit="contain" />
-      </ImageError>
+      <ImageError src={Error} alt="404Error"/>
       <Container>
       <P>존재하지 않는 주소를 입력했거나,</P>
       <P>요청한 페이지의 주소가</P>
