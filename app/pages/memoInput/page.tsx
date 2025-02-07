@@ -11,7 +11,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useSearchParams } from 'next/navigation';
 import { API_BASE_URL } from '../../api/api';
-import { useAuth } from '../../api/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 
 import MemoHeader from '../../components/layout/MemoHeader';
 import MemoBody from '../../components/common/EditingToast';
@@ -26,30 +26,32 @@ export default function MemoInput() {
   const [content, setContent] = useState('');
 
   // ✅ 처음 로드될 때 서버에서 기존 데이터를 가져오기
-  useEffect(() => {
-    const fetchMemo = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/memos/${toastId}`, {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+  useEffect(() => {}, [toastId, token]);
 
-        if (!response.ok) throw new Error('메모 불러오기 실패');
-        const data = await response.json();
+  // ✅ 메모 수정하기
+  const fetchMemo = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/memos/${toastId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      });
 
-        setTitle(data.note.title);
-        setContent(data.note.content);
-      } catch (error) {
-        console.error('❌ 메모 불러오기 오류:', error);
-      }
-    };
+      if (!response.ok) throw new Error('메모 수정 실패');
+      const data = await response.json();
 
-    if (toastId) {
-      fetchMemo();
+      setTitle(data.note.title);
+      setContent(data.note.content);
+    } catch (error) {
+      console.error('❌ 메모 수정 오류:', error);
     }
-  }, [toastId, token]);
+  };
+
+  if (toastId) {
+    fetchMemo();
+  }
 
   return (
     <Container>

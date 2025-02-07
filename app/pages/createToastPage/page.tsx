@@ -8,13 +8,31 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
 import SaveToast from '../../components/SaveToast';
+import LoadToast from '../../components/LoadToast';
 
 import Home from './home';
 import Help from './help';
+import { useAuth } from '../../context/AuthContext';
 
 export default function CreateToastPage() {
+  // const { token } = useAuth();
+  // const router = useRouter();
+  // const [loading, setLoading] = useState(true);
+
+  // // ✅ useEffect로 token이 변경될 때만 실행
+  // useEffect(() => {
+  //   if (!token) {
+  //     console.warn('토큰이 존재하지 않습니다. 이메일 입력 페이지로 이동하세요.');
+  //     router.push('/pages/emailInputPage'); // 이메일 입력 페이지로 리디렉트
+  //   } else {
+  //     setLoading(false);
+  //   }
+  // }, [token, router]);
+  // //
+
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
@@ -33,6 +51,20 @@ export default function CreateToastPage() {
 
   // 활성 메모 id 상태 추가 (상위에서 관리)
   const [activeMemoId, setActiveMemoId] = useState<string>('1');
+
+  const [isDoubleClick, setIsDoubleClick] = useState(false);
+
+  // 더블클릭 이벤트 핸들러
+  const handleDoubleClick = () => {
+    console.log('더블클릭 이벤트 발생');
+    setIsDoubleClick(true);
+    setShowSaveMessage('더블클릭으로 저장되었습니다!');
+
+    // 일정 시간 후 더블클릭 상태 초기화
+    setTimeout(() => {
+      setIsDoubleClick(false);
+    }, 2000); // 2초 후 초기화
+  };
 
   // 메모 ID, 제목, 내용 상태
   const [memoId] = useState(() => '1');
@@ -101,6 +133,11 @@ export default function CreateToastPage() {
           />
         </SaveToastWrapper>
       )}
+      {isDoubleClick && (
+        <SaveToastWrapper onDoubleClick={handleDoubleClick}>
+          <LoadToast onClose={handleCloseSaveToast} onSave={handleSave} />
+        </SaveToastWrapper>
+      )}
       {showSaveMessage && (
         <SaveMessage>
           <SaveBold>{showSaveMessage.split('에 저장되었어요.')[0]}</SaveBold>에 저장되었어요.
@@ -123,7 +160,7 @@ const SaveToastWrapper = styled.div`
   z-index: 9999;
 `;
 
-const SaveMessage = styled.div`
+export const SaveMessage = styled.div`
   position: absolute;
   bottom: 148px;
   left: calc(50% - 125.5px);

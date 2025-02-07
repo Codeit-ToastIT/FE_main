@@ -8,7 +8,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { API_BASE_URL } from '../../api/api';
-import { useAuth } from '../../api/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 
 interface EditingToastProps {
   toastId: string;

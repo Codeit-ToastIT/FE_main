@@ -1,15 +1,12 @@
 'use client';
 
-import { styled } from 'styled-components';
-import React, { useEffect, useRef, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import SubmitButton from '../../components/common/SubmitButton';
-import iconEyeOpen from '../../assets/icons/icon_eye_closed.svg';
-import iconEyeClosed from '../../assets/icons/icon_eye_open.svg';
-import { useEmail } from '../../context/EmailContext';
-import { useAuth } from '../../context/AuthContext';
-import { API_BASE_URL } from '../../api/api';
+import React, { useEffect, useRef, useState } from "react";
+import styled from "styled-components";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import SubmitButton from "../../../../components/common/SubmitButton";
+import iconEyeOpen from "../../../../assets/icons/icon_eye_closed.svg";
+import iconEyeClosed from "../../../../assets/icons/icon_eye_open.svg";
 
 const Whole = styled.div`
   display: inline-flex;
@@ -29,7 +26,8 @@ const Header = styled.div`
 const Title = styled.div`
   width: 20.5rem;
   color: var(--ivory, #e5dcca);
-  margin-left: 35%;
+  margin-right: 7%;
+  text-align: center;
   font-family: SUIT;
   font-size: 1rem;
   font-style: normal;
@@ -55,17 +53,15 @@ const Input = styled.input`
   background: rgba(255, 255, 255, 0.2);
   border: none;
   outline: none;
-  color: #e5dcca;
   padding-left: 1rem;
   overflow: hidden;
-  color: var(--ivory, #e5dcca);
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: var(--ivory, #E5DCCA);
   font-family: SUIT;
   font-size: 1rem;
   font-style: normal;
   font-weight: 600;
-  line-height: normal;
 `;
 
 const Link = styled.div`
@@ -86,90 +82,78 @@ const BackIcon = styled.svg`
   width: 1.5rem;
   height: 1.5rem;
   flex-shrink: 0;
+  cursor: pointer;
 `;
 
 const IconEye = styled(Image)`
   width: 1.5rem;
   height: 1.5rem;
   position: absolute;
-  right: 1rem; /* 오른쪽 여백 */
+  right: 1rem;
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
 `;
 
-const LoginPage = () => {
+const CurrentPasswordPage = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [pw, setPw] = useState('');
+  const [pw, setPw] = useState("");
   const isPwNotEmpty = pw.length > 0;
   const router = useRouter();
   const [showPw, setShowPw] = useState(false);
-  const [error, setError] = useState('');
-  const { email } = useEmail();
-  const { login, loginUser } = useAuth();
 
   // 입력 필드 포커싱
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (inputRef.current) {
-        inputRef.current.focus(); // 입력 필드에 포커스
+        inputRef.current.focus();
       }
     }, 100);
-    console.log('현재 이메일:', email); // 이메일 값을 콘솔에 출력
     return () => clearTimeout(timeoutId);
-  }, [email]);
+  }, []);
 
   const handleMouseDown = (event: React.MouseEvent) => {
-    event.preventDefault(); // 기본 동작 방지
-    inputRef.current?.focus(); // 입력 필드에 포커스
+    event.preventDefault();
+    inputRef.current?.focus();
   };
 
-  // 비밀번호 입력 시 상태 업데이트
   const handlePwChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPw(e.target.value);
   };
 
-  // BackIcon 클릭 시 이전 화면으로 이동
   const handleBackClick = () => {
-    router.back(); // 이전 페이지로 이동
+    router.back();
   };
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // 기본 동작 방지
-    if (!pw) {
-      setError('비밀번호를 입력해주세요.');
-      return;
-    }
-
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password: pw }),
-      });
-
-      const data = await response.json();
-      console.log(data);
+  const handleSubmit = async (e: React.FormEvent) => {
+     e.preventDefault(); // 기본 폼 제출 방지
+     try {
+        const token = "YOUR_BEARER_TOKEN"; // 실제 Bearer Token으로 교체
+        const response = await fetch("/api/auth/password/change", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`,
+          },
+          body: JSON.stringify({ currentPassword: pw }),
+        });
 
       if (response.ok) {
-        console.log('로그인 성공:', data);
-        // 로그인 성공 후 토큰 저장 및 홈 페이지로 이동
-        login(data.token); // 토큰 저장
-        loginUser(data.user.id); // userId 저장
-        router.push('/pages/createToastPage'); // 홈 페이지로 이동
+        // API 호출 성공 시, 새 비밀번호 설정 페이지로 이동
+        router.push("../changePassword");
       } else {
-        setError('비밀번호를 확인해주세요.');
+        // 실패 시 에러 메시지 출력
+        const errorMsg = await response.text();
+        console.error("비밀번호 변경 API 실패:", errorMsg);
+        // 필요하다면 사용자에게 에러 알림 처리
       }
     } catch (error) {
-      setError('로그인 중 오류가 발생했습니다.');
-      console.error('로그인 오류:', error);
+      console.error("비밀번호 변경 API 호출 중 에러 발생:", error);
     }
   };
 
   const handleLinkClick = () => {
-    router.push('/pages/resetPasswordPage'); // 비밀번호 재설정 페이지로 이동
+    router.push("/pages/resetPasswordPage");
   };
 
   return (
@@ -189,35 +173,32 @@ const LoginPage = () => {
             strokeLinejoin="round"
           />
         </BackIcon>
-        <Title>로그인</Title>
+        <Title>기존 비밀번호 입력</Title>
       </Header>
       <Container>
-        <Form noValidate onSubmit={handleSubmit}>
-          <div style={{ position: 'relative' }}>
+        <Form noValidate>
+          <div style={{ position: "relative" }}>
             <Input
-              type={showPw ? 'text' : 'password'}
+              type={showPw ? "text" : "password"}
               name="password"
               placeholder="비밀번호를 입력해주세요."
               ref={inputRef}
               value={pw}
-              onChange={handlePwChange} // 비밀번호 상태 업데이트
+              onChange={handlePwChange}
               autoComplete="off"
             />
             <IconEye
-              src={showPw ? iconEyeClosed : iconEyeOpen} // 상태에 따라 아이콘 변경
-              alt={showPw ? '비밀번호 숨기기' : '비밀번호 보이기'} // 대체 텍스트 추가
+              src={showPw ? iconEyeOpen : iconEyeClosed}
+              alt={showPw ? "비밀번호 숨기기" : "비밀번호 보이기"}
               onClick={() => setShowPw((prev) => !prev)}
             />
           </div>
-
-          {error && (
-            <div style={{ color: 'red', fontSize: '0.875rem', marginTop: '0.5rem' }}>{error}</div>
-          )}
-          <SubmitButton isActive={isPwNotEmpty} />
+          <SubmitButton isActive={isPwNotEmpty} onClick={handleSubmit} />
         </Form>
         <Link onClick={handleLinkClick}>비밀번호를 잊어버렸나요?</Link>
       </Container>
     </Whole>
   );
 };
-export default LoginPage;
+
+export default CurrentPasswordPage;
