@@ -7,6 +7,9 @@ import { useEmail } from "../../context/EmailContext";
 import { useAuth } from '../../context/AuthContext';
 import SubmitButton from '../../components/common/SubmitButton';
 import { API_BASE_URL } from "../../api/api";
+import Image from 'next/image';
+import iconEyeOpen from '../../assets/icons/icon_eye_open.png';
+import iconEyeClosed from '../../assets/icons/icon_eye_closed.svg';
 
 const Whole = styled.div`
   display: inline-flex;
@@ -72,7 +75,7 @@ line-height: 0.875rem;
 padding-left: 1rem;
 `;
 
-const EyeIcon = styled.svg`
+const EyeIcon = styled(Image)`
   width: 1.5rem;
   height: 1.5rem;
   position: absolute;
@@ -246,9 +249,10 @@ const SignupPage = () => {
               onChange={handlePwChange} // 비밀번호 상태 업데이트
               autoComplete="off"
             />
-            <EyeIcon onClick={() => setShowPw(prev => !prev)} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M20.4 19.5L5.40002 4.5M10.2 10.4416C9.82661 10.8533 9.60002 11.394 9.60002 11.9863C9.60002 13.2761 10.6745 14.3217 12 14.3217C12.6112 14.3217 13.169 14.0994 13.5927 13.7334M20.4388 14.3217C21.265 13.0848 21.6 12.0761 21.6 12.0761C21.6 12.0761 19.4154 5.1 12 5.1C11.5837 5.1 11.1839 5.12199 10.8 5.16349M17.4 17.3494C16.0226 18.2281 14.2494 18.8495 12 18.8127C4.67695 18.693 2.40002 12.0761 2.40002 12.0761C2.40002 12.0761 3.45788 8.69808 6.60002 6.64332" stroke="#E5DCCA" strokeWidth="2" strokeLinecap="round"/>
-            </EyeIcon>
+            <EyeIcon 
+              onClick={() => setShowPw(prev => !prev)} 
+              src={showPw ? iconEyeOpen : iconEyeClosed}
+              alt={showPw ? "비밀번호 보이기" : "비밀번호 숨기기"} />
           </div>
           <div style={{ position: 'relative' }}>
             <Input 
@@ -260,9 +264,10 @@ const SignupPage = () => {
               onChange={handlePwCheckChange}
               autoComplete="off"
             />
-            <EyeIcon onClick={() => setShowPwCheck(prev => !prev)} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M20.4 19.5L5.40002 4.5M10.2 10.4416C9.82661 10.8533 9.60002 11.394 9.60002 11.9863C9.60002 13.2761 10.6745 14.3217 12 14.3217C12.6112 14.3217 13.169 14.0994 13.5927 13.7334M20.4388 14.3217C21.265 13.0848 21.6 12.0761 21.6 12.0761C21.6 12.0761 19.4154 5.1 12 5.1C11.5837 5.1 11.1839 5.12199 10.8 5.16349M17.4 17.3494C16.0226 18.2281 14.2494 18.8495 12 18.8127C4.67695 18.693 2.40002 12.0761 2.40002 12.0761C2.40002 12.0761 3.45788 8.69808 6.60002 6.64332" stroke="#E5DCCA" strokeWidth="2" strokeLinecap="round"/>
-            </EyeIcon>
+            <EyeIcon 
+              onClick={() => setShowPwCheck(prev => !prev)} 
+              src={showPwCheck ? iconEyeOpen : iconEyeClosed}
+              alt={showPwCheck ? "비밀번호 보이기" : "비밀번호 숨기기"} />
           </div>
           {!isPwValid && <ErrorMessage>아직 8자리가 아니에요.</ErrorMessage>} {/* 오류 메시지 조건부 렌더링 */}
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>} {/* 오류 메시지 표시 */}
