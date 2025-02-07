@@ -1,19 +1,16 @@
 /**
  * 파일명: MemoHeader.tsx
- * 작성일: 2025-02-06
+ * 작성일: 2025-02-07
  * 작성자: 이서연
- * 설명: 메모 삭제 로직 수정
+ * 설명: 메모 작성 기능 구현
  */
 
 import React, { useState, useEffect } from 'react';
-import { useCallback } from 'react';
-import { debounce } from 'lodash';
 import styled from 'styled-components';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { API_BASE_URL } from '../../api/api';
 import { useAuth } from '../../context/AuthContext';
-import { useMemoContext } from '../../context/MemoContext';
 
 import iconBack from '../../assets/icons/icon_back.svg';
 import iconTrash from '../../assets/icons/icon_trash.svg';
@@ -33,35 +30,32 @@ export default function MemoHeader({ toastId, title, setTitle, content }: MemoHe
   const [_loading, setLoading] = useState(false);
   const { token } = useAuth();
 
-  const handleTitleChange = useCallback(
-    debounce(async (e: React.ChangeEvent<HTMLInputElement>) => {
-      const newTitle = e.target.value;
-      setTitle(newTitle);
-      try {
-        console.log('📌 PATCH 요청 전 확인:', { toastId, title, content });
+  const handleTitleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTitle = e.target.value;
+    setTitle(newTitle);
+    try {
+      console.log('📌 PATCH 요청 전 확인:', { toastId, title, content });
 
-        const response = await fetch(`${API_BASE_URL}/api/memos/${toastId}`, {
-          method: 'PATCH',
-          headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-          body: JSON.stringify({ newTitle, content }),
-        });
+      const response = await fetch(`${API_BASE_URL}/api/memos/${toastId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ title: newTitle, content: content }),
+      });
 
-        const data = await response.json();
+      const data = await response.json();
 
-        if (!response.ok) {
-          console.error('❌ 서버 응답 상태:', response.status);
-          console.error('❌ 서버 응답 메시지:', data);
-          throw new Error(`메모 제목 수정 실패: ${data.message || '알 수 없는 오류'}`);
-        }
-
-        // setTitle(data.note.title);
-        console.log('✅ 메모 제목 수정 성공:', data);
-      } catch (error) {
-        console.error('❌ 메모 제목 수정 요청 오류:', error);
+      if (!response.ok) {
+        console.error('❌ 서버 응답 상태:', response.status);
+        console.error('❌ 서버 응답 메시지:', data);
+        throw new Error(`메모 제목 수정 실패: ${data.message || '알 수 없는 오류'}`);
       }
-    }, 500), // ✅ 0.5초 대기 후 실행
-    [toastId, content, token],
-  );
+
+      // setTitle(data.note.title);
+      console.log('✅ 메모 제목 수정 성공:', data);
+    } catch (error) {
+      console.error('❌ 메모 제목 수정 요청 오류:', error);
+    }
+  };
 
   const handleBackClick = () => {
     router.push('/pages/createToastPage');

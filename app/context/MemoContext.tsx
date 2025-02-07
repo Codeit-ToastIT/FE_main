@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import { API_BASE_URL } from '../api/api';
 import { useAuth } from '../context/AuthContext';
 
@@ -33,6 +33,13 @@ export function MemoProvider({ children }: { children: React.ReactNode }) {
   const [memos, setMemos] = useState<Memo[]>([]);
 
   const fetchMemos = async (categoryId: string) => {
+    if (!categoryId) {
+      console.warn('⚠️ fetchMemos 호출 중단: categoryId가 없음');
+      return;
+    }
+
+    console.log(`🚀 fetchMemos 실행됨: categoryId=${categoryId}`);
+
     try {
       console.log(`🔗 요청 URL: ${API_BASE_URL}/api/categories/${categoryId}/memos`);
 
@@ -48,8 +55,9 @@ export function MemoProvider({ children }: { children: React.ReactNode }) {
       }
 
       const data: ApiResponse = await response.json(); // ✅ `ApiResponse` 타입 적용
-      console.log('✅ 메모 가져오기 성공:', data);
+      console.log('✅ 메모 list 가져오기 성공:', data);
 
+      console.log('📌 memos 상태 업데이트 완료:', data.notes);
       // ✅ `notes` 배열이 존재하면, 그 데이터를 `memos` 상태로 저장
       if (data.notes && Array.isArray(data.notes)) {
         setMemos(data.notes); // ✅ 최대 3개만 저장하고 싶다면: `data.notes.slice(0, 3);`

@@ -1,15 +1,14 @@
 /**
  * 파일명: EditingToast.tsx
- * 작성일: 2025-02-06
+ * 작성일: 2025-02-07
  * 작성자: 이서연
- * 설명: editing 메모 화면 body 부분(메모 작성 area) UI 수정.
+ * 설명: 메모 작성 기능 구현
  */
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import { API_BASE_URL } from '../../api/api';
 import { useAuth } from '../../context/AuthContext';
-// import { useMemoContext } from '../../context/MemoContext';
 
 interface EditingToastProps {
   toastId: string;
@@ -22,8 +21,8 @@ export default function EditingToast({ toastId, title, content, setContent }: Ed
   const { token } = useAuth();
 
   const handleTextChange = async (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    const newText = e.target.value;
-    setContent(newText);
+    const newContent = e.target.value;
+    setContent(newContent);
 
     try {
       console.log('📌 PATCH 요청 전 확인:', { toastId, title, content });
@@ -34,7 +33,7 @@ export default function EditingToast({ toastId, title, content, setContent }: Ed
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ title, newText }), // ✅ 현재 제목도 함께 업데이트
+        body: JSON.stringify({ title: title, content: newContent }), // ✅ 현재 제목도 함께 업데이트
       });
 
       const data = await response.json();
@@ -64,7 +63,8 @@ export default function EditingToast({ toastId, title, content, setContent }: Ed
 
 const StyledTextArea = styled.textarea`
   width: 100%;
-  height: 100vh;
+  min-height: 610px;
+
   flex: 1 0 0;
   align-self: stretch;
   color: var(--brown, #473728);
