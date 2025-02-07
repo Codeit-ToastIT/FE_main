@@ -25,7 +25,8 @@ import { API_BASE_URL } from '../../api/api';
 import { useAuth } from '../../context/AuthContext';
 
 interface BodyProps {
-  deletedMemoId?: string; // ✅ 삭제된 메모 ID를 props로 받음
+  // deletedMemoId?: string; // ✅ 삭제된 메모 ID를 props로 받음
+  // deleteSuccess: boolean;
   // 💖 활성 메모 id를 상위로 전달할 콜백 prop 추가
   onActiveMemoChange?: (id: string) => void;
 }
@@ -39,8 +40,7 @@ interface Memo {
 }
 
 // 💖 onActiveMemoChange 추가
-export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
-  //Authorization token 불러오는 로직 구현
+export default function Body({ onActiveMemoChange }: BodyProps) {
   const { token, userId } = useAuth();
 
   const [memos, setMemos] = useState<Memo[]>([]); // ✅ MongoDB의 메모 리스트 저장
@@ -57,15 +57,28 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
   const [showDeleteErrorMessage, setShowDeleteErrorMessage] = useState(false); // ❌ 삭제 실패 메시지 추가
 
   const [isSwiperActive, setIsSwiperActive] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [_loading, setLoading] = useState(false);
 
   const [dragging, setDragging] = useState(false);
   const offsetXRef = useRef(0);
   const bodyRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => {
-    fetchMemos();
-  }, []);
+  // // ✅ localStorage에 저장된 삭제된 메모 반영
+  // useEffect(() => {
+  //   if (deletedMemoId) {
+  //     setMemos((prevMemos) => prevMemos.filter((memo) => memo.id !== deletedMemoId));
+
+  //     // ✅ 삭제 성공 시 메시지 표시
+  //     if (deleteSuccess) {
+  //       setShowDeleteMessage(true);
+  //       setTimeout(() => setShowDeleteMessage(false), 2000);
+  //     }
+
+  //     // ✅ localStorage 초기화 (다음번 실행 시 중복되지 않도록)
+  //     localStorage.removeItem('deletedMemoId');
+  //     localStorage.removeItem('deleteSuccess');
+  //   }
+  // }, [deletedMemoId, deleteSuccess]);
 
   useEffect(() => {
     if (showToastMessage) {
@@ -89,51 +102,30 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
   }, [showDeleteErrorMessage]);
 
   // ✅ editing 화면에서 삭제버튼 클릭 시 삭제 확인하는 로직(임시)
+  //    localStorage에서 삭제된 메모 ID 확인 후 필터링
   useEffect(() => {
-    // ✅ localStorage에서 삭제된 메모 ID 가져오기
-    const memoId = localStorage.getItem('deletedMemoId');
-    if (memoId) {
-      setSlides((prevSlides) => prevSlides.filter((slide) => slide.toString() !== memoId));
-      localStorage.removeItem('deletedMemoId'); // ✅ 삭제 후 상태 초기화
+    const deletedMemoId = localStorage.getItem('deletedMemoId');
+    const deleteSuccess = localStorage.getItem('deleteSuccess');
+
+    if (deletedMemoId) {
+      setMemos((prevMemos) => prevMemos.filter((memo) => memo.id !== deletedMemoId));
+
+      // ✅ 삭제 성공 여부에 따라 메시지 표시
+      if (deleteSuccess === 'true') {
+        setShowDeleteMessage(true);
+        setTimeout(() => setShowDeleteMessage(false), 2000);
+      } else if (deleteSuccess === 'false') {
+        setShowDeleteErrorMessage(true);
+        setTimeout(() => setShowDeleteErrorMessage(false), 2000);
+      }
+
+      // ✅ localStorage 초기화
+      localStorage.removeItem('deletedMemoId');
+      localStorage.removeItem('deleteSuccess');
     }
-
-    // ✅ 삭제 실패 상태 확인
-    if (localStorage.getItem('deleteError') === 'true') {
-      setShowDeleteErrorMessage(true);
-      localStorage.removeItem('deleteError'); // ✅ 삭제 후 상태 초기화
-    }
   }, []);
 
-  useEffect(() => {
-    const storedMemos = JSON.parse(localStorage.getItem('memos') || '[]');
-
-    setSlides((prevSlides) => {
-      const updatedSlides = [...storedMemos, ...prevSlides]; // ✅ 기존 값 유지
-      return updatedSlides.length > 3 ? updatedSlides.slice(0, 3) : updatedSlides; // ✅ 최대 3개 유지
-    });
-  }, []);
-
-  useEffect(() => {
-    const handleStorageChange = () => {
-      setMemos((prevMemos) =>
-        prevMemos.map((memo) => ({
-          ...memo,
-          title: localStorage.getItem(`memoTitle_${memo.id}`) || memo.title,
-          content: localStorage.getItem(`memo_${memo.id}`) || memo.content,
-        })),
-      );
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-
-    return () => {
-      window.removeEventListener('storage', handleStorageChange);
-    };
-  }, []);
-
-  //----------------
-
-  const memoToEditing = memos.find((_, index) => index + 1 === selectedSlide);
+  //-------------------------------------------------------------
 
   //-------------------------------🍞토스트 삭제 로직 구현 완료🍞-------------------------------
 
@@ -391,7 +383,7 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
 
     const handleNativeTouchMove = (e: TouchEvent) => {
       if (dragging) {
-        e.preventDefault(); // ✅ 이제 필요 없을 수도 있음 → 제거 가능
+        e.preventDefault();
       }
     };
 
@@ -404,7 +396,7 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
 
   // ✅ 새로운 토스트 추가 모션 로직 (마우스 이벤트)
   const handleMouseDown = (e: React.MouseEvent) => {
-    setDragging(true); // 클릭 시 바로 이동하지 않도록 초기화
+    setDragging(true);
     offsetXRef.current = e.clientX;
   };
 

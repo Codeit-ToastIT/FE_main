@@ -9,6 +9,7 @@ import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { API_BASE_URL } from '../../api/api';
 import { useAuth } from '../../context/AuthContext';
+// import { useMemoContext } from '../../context/MemoContext';
 
 interface EditingToastProps {
   toastId: string;
@@ -18,39 +19,34 @@ interface EditingToastProps {
 }
 
 export default function EditingToast({ toastId, title, content, setContent }: EditingToastProps) {
-  const [text, setText] = useState('');
   const { token } = useAuth();
-
-  useEffect(() => {
-    if (toastId) {
-      const savedMemo = localStorage.getItem(`memo_${toastId}`);
-      if (savedMemo) setText(savedMemo);
-    }
-  }, [toastId]);
 
   const handleTextChange = async (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const newText = e.target.value;
-    setText(newText);
+    setContent(newText);
 
     try {
+      console.log('📌 PATCH 요청 전 확인:', { toastId, title, content });
+
       const response = await fetch(`${API_BASE_URL}/api/memos/${toastId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ title, content: newText }), // ✅ 현재 제목도 함께 업데이트
+        body: JSON.stringify({ title, newText }), // ✅ 현재 제목도 함께 업데이트
       });
 
+      const data = await response.json();
+
       if (!response.ok) {
-        throw new Error('메모 수정 실패');
+        console.error('❌ 서버 응답 상태:', response.status);
+        console.error('❌ 서버 응답 메시지:', data);
+        throw new Error(`메모 본문 수정 실패: ${data.message || '알 수 없는 오류'}`);
       }
 
-      const data = await response.json();
+      // setContent(data.note.content);
       console.log('✅ 메모 본문 수정 성공:', data);
-
-      // ✅ 서버에서 수정된 최신 데이터 반영
-      setText(data.note.content);
     } catch (error) {
       console.error('❌ 메모 본문 수정 요청 오류:', error);
     }
@@ -58,14 +54,17 @@ export default function EditingToast({ toastId, title, content, setContent }: Ed
 
   return (
     <div>
-      <StyledTextArea value={text} onChange={handleTextChange}></StyledTextArea>
+      <StyledTextArea
+        value={content} // ✅ memo에서 가져온 값 사용
+        onChange={handleTextChange}
+      ></StyledTextArea>
     </div>
   );
 }
 
 const StyledTextArea = styled.textarea`
   width: 100%;
-  min-height: 310px;
+  height: 100vh;
   flex: 1 0 0;
   align-self: stretch;
   color: var(--brown, #473728);

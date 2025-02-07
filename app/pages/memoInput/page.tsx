@@ -10,8 +10,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useSearchParams } from 'next/navigation';
-import { API_BASE_URL } from '../../api/api';
-import { useAuth } from '../../context/AuthContext';
+import { useMemoContext } from '../../context/MemoContext';
 
 import MemoHeader from '../../components/layout/MemoHeader';
 import MemoBody from '../../components/common/EditingToast';
@@ -19,39 +18,14 @@ import MemoBody from '../../components/common/EditingToast';
 export default function MemoInput() {
   const searchParams = useSearchParams();
   const toastId = searchParams.get('id') || '';
-  const { token } = useAuth();
+  const { memos } = useMemoContext();
+
+  // ✅ 현재 toastId에 해당하는 메모 찾기
+  const memo = memos.find((memo) => memo.id === toastId);
 
   // ✅ 제목과 본문을 부모에서 상태로 관리
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-
-  // ✅ 처음 로드될 때 서버에서 기존 데이터를 가져오기
-  useEffect(() => {}, [toastId, token]);
-
-  // ✅ 메모 수정하기
-  const fetchMemo = async () => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/memos/${toastId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (!response.ok) throw new Error('메모 수정 실패');
-      const data = await response.json();
-
-      setTitle(data.note.title);
-      setContent(data.note.content);
-    } catch (error) {
-      console.error('❌ 메모 수정 오류:', error);
-    }
-  };
-
-  if (toastId) {
-    fetchMemo();
-  }
+  const [title, setTitle] = useState(memo ? memo.title : '');
+  const [content, setContent] = useState(memo ? memo.content : '');
 
   return (
     <Container>
@@ -84,7 +58,7 @@ const StyledMemoBody = styled(MemoBody)`
   position: relative;
   display: flex;
   width: 100%;
-  height: 374px;
+  height: 575px;
   padding: 32px;
   flex-direction: column;
   justify-content: flex-end;

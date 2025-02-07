@@ -44,24 +44,36 @@ export default function Home({ onHelpClick, onActiveMemoChange }: HomeProps) {
 
   const [showDeletedMessage, setShowDeletedMessage] = useState(false);
   const [showDeleteErrorMessage, setShowDeleteErrorMessage] = useState(false);
-  const [deletedMemoId, setDeletedMemoId] = useState<string | null>(null); // ✅ 삭제된 메모 ID 상태 추가
+  // const [deletedMemoId, setDeletedMemoId] = useState<string | null>(null); // ✅ 삭제된 메모 ID 상태 추가
+  // const [deleteSuccess, setDeleteSuccess] = useState(false);
 
-  useEffect(() => {
-    if (searchParams.get('deleted') === 'true') {
-      setShowDeletedMessage(true);
-      setTimeout(() => setShowDeletedMessage(false), 2000);
-    }
-    if (searchParams.get('deletedError') === 'true') {
-      setShowDeleteErrorMessage(true);
-      setTimeout(() => setShowDeleteErrorMessage(false), 2000);
-    }
+  // useEffect(() => {
+  //   // ✅ localStorage에서 삭제된 메모 ID 가져오기
+  //   const memoId = localStorage.getItem('deletedMemoId');
+  //   const deleteStatus = localStorage.getItem('deleteSuccess');
 
-    // ✅ 삭제된 메모 ID 가져오기
-    const memoId = searchParams.get('deletedMemoId');
-    if (memoId) {
-      setDeletedMemoId(memoId);
-    }
-  }, [searchParams]);
+  //   if (memoId) {
+  //     setDeletedMemoId(memoId);
+  //   }
+
+  //   if (deleteStatus === 'true') {
+  //     setDeleteSuccess(true);
+  //     setShowDeletedMessage(true);
+  //     setTimeout(() => {
+  //       setShowDeletedMessage(false);
+  //     }, 2000);
+  //   } else if (deleteStatus === 'false') {
+  //     setDeleteSuccess(false);
+  //     setShowDeleteErrorMessage(true);
+  //     setTimeout(() => {
+  //       setShowDeleteErrorMessage(false);
+  //     }, 2000);
+  //   }
+
+  //   // ✅ localStorage 초기화 (중복 방지)
+  //   localStorage.removeItem('deletedMemoId');
+  //   localStorage.removeItem('deleteSuccess');
+  // }, []);
 
   const handleParentTouchMove = (e: React.TouchEvent) => {
     e.preventDefault(); // ✅ 부모 요소가 `touchmove`를 막지 않도록 방지
@@ -74,7 +86,13 @@ export default function Home({ onHelpClick, onActiveMemoChange }: HomeProps) {
       <IconAdd src={iconAdd} alt="Add" />
 
       {/* // 💖 onActiveMemoChange 콜백 전달 추가*/}
-      <StyledBody deletedMemoId={deletedMemoId} onActiveMemoChange={onActiveMemoChange} />
+      <StyledBody
+        // deletedMemoId={deletedMemoId}
+        // deleteSuccess={deleteSuccess}
+        onActiveMemoChange={onActiveMemoChange}
+      />
+
+      {showDeletedMessage && <DeletedMessage>토스트 하나를 버렸어요.</DeletedMessage>}
 
       {/* ✅ MyPage 컴포넌트가 오른쪽에서 왼쪽으로 슬라이드되며 나타남 */}
       <MyPageOverlay isOpen={isMyPageOpen} onClick={onCloseMyPage}>
@@ -119,10 +137,6 @@ const DeletedMessage = styled.div`
   font-size: 14px;
   z-index: 1000;
   animation: fadeInOut 2s ease-in-out;
-`;
-
-const ErrorMessageBox = styled.div`
-  background: rgba(255, 0, 0, 0.8);
 `;
 
 const StyledBody = styled(Body)`
