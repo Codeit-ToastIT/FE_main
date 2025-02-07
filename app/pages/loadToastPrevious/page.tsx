@@ -14,18 +14,12 @@ interface LoadToastProps {
   content: string | null; // 내용
 }
 
-const LoadToast: React.FC<LoadToastProps> = ({ onClose, onSave, memoId, title, content }) => {
+const LoadToast: React.FC<LoadToastProps> = ({ onClose, onSave }) => {
   const [position, setPosition] = useState({ x: 0, y: 0 }); // 식빵 위치
   const [activeSlice, setActiveSlice] = useState<number | null>(null); // 활성화된 조각 (0~3)
   const [isDragging, setIsDragging] = useState(false); // 드래그 상태 확인
   const [showHint, setShowHint] = useState(false); // 힌트 표시 여부
-  const [initialPosition, setInitialPosition] = useState({ x: 0, y: 0 }); // 초기 위치
-  const prevMousePosition = useRef({ x: 0, y: 0 }); // 이전 마우스 위치
   let inactivityTimeout: NodeJS.Timeout;
-
-  useEffect(() => {
-    console.log('Memo Info:', { memoId, title, content });
-  }, [memoId, title, content]);
 
   // 카테고리 이름. 추후 api로 교체 필요
   const categoryNames = ['카테고리 1', '카테고리 2', '카테고리 3', '카테고리 4'];
@@ -38,10 +32,12 @@ const LoadToast: React.FC<LoadToastProps> = ({ onClose, onSave, memoId, title, c
 
     // 초기 위치 설정
     const { clientX, clientY } = e;
-    const direction = clientY > prevMousePosition.current.y ? 'down' : 'up';
-    const initialY = direction === 'down' ? -window.innerHeight / 2 : window.innerHeight / 2;
-    setInitialPosition({ x: clientX - window.innerWidth / 2, y: initialY });
-    setPosition({ x: clientX - window.innerWidth / 2, y: initialY });
+    setPosition({
+      x: clientX - window.innerWidth / 2,
+      y: clientY - window.innerHeight / 2,
+    });
+
+    checkCollision(clientX, clientY);
   };
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -53,79 +49,12 @@ const LoadToast: React.FC<LoadToastProps> = ({ onClose, onSave, memoId, title, c
       x: clientX - window.innerWidth / 2,
       y: clientY - window.innerHeight / 2,
     });
-
-    checkCollision(clientX - window.innerWidth / 2, clientY - window.innerHeight / 2);
   };
 
   const handleMouseUp = () => {
     setIsDragging(false); // 드래그 종료
     if (activeSlice !== null) {
       const selectedCategory = categoryNames[activeSlice];
-
-      // 제목이 null인 경우 현재 날짜로 설정
-      const now = new Date();
-      const currentTitle =
-        title ||
-        `${now.getFullYear()}년 ${String(now.getMonth() + 1).padStart(2, '0')}월 ${String(now.getDate()).padStart(2, '0')}일`;
-
-      console.log({
-        memoId,
-        category: selectedCategory,
-        title: currentTitle,
-        content,
-      });
-
-      onSave(selectedCategory); // 선택된 카테고리 전달
-      onClose(selectedCategory); // 선택된 카테고리 전달
-    }
-    setPosition({ x: 0, y: 0 });
-    setActiveSlice(null);
-  };
-
-  // 터치 이벤트
-  const handleTouchStart = (e: React.TouchEvent) => {
-    setIsDragging(true); // 드래그 시작
-    setShowHint(false); // 힌트 숨김
-    e.preventDefault();
-
-    // 초기 위치 설정
-    const touch = e.touches[0];
-    const direction = touch.clientY > prevMousePosition.current.y ? 'down' : 'up';
-    const initialY = direction === 'down' ? -window.innerHeight / 2 : window.innerHeight / 2;
-    setInitialPosition({ x: touch.clientX - window.innerWidth / 2, y: initialY });
-    setPosition({ x: touch.clientX - window.innerWidth / 2, y: initialY });
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!isDragging) return;
-
-    const touch = e.touches[0];
-    setPosition({
-      x: touch.clientX - window.innerWidth / 2,
-      y: touch.clientY - window.innerHeight / 2,
-    });
-
-    checkCollision(touch.clientX - window.innerWidth / 2, touch.clientY - window.innerHeight / 2);
-  };
-
-  const handleTouchEnd = () => {
-    setIsDragging(false); // 드래그 종료
-    if (activeSlice !== null) {
-      const selectedCategory = categoryNames[activeSlice];
-
-      // 제목이 null인 경우 현재 날짜로 설정
-      const now = new Date();
-      const currentTitle =
-        title ||
-        `${now.getFullYear()}년 ${String(now.getMonth() + 1).padStart(2, '0')}월 ${String(now.getDate()).padStart(2, '0')}일`;
-
-      console.log({
-        memoId,
-        category: selectedCategory,
-        title: currentTitle,
-        content,
-      });
-
       onSave(selectedCategory); // 선택된 카테고리 전달
       onClose(selectedCategory); // 선택된 카테고리 전달
     }
@@ -134,29 +63,24 @@ const LoadToast: React.FC<LoadToastProps> = ({ onClose, onSave, memoId, title, c
   };
 
   const checkCollision = (x: number, y: number) => {
-    const threshold = 20;
-    let closestSlice: number | null = null;
-    let minDistance = Infinity;
+    let selectedCategory: number | null = null;
+    const centerX = window.innerWidth / 2;
+    const centerY = window.innerHeight / 2;
 
-    const slices = [
-      { id: 0, dx: 0, dy: -threshold }, // 상단 조각
-      { id: 1, dx: threshold, dy: 0 }, // 오른쪽 조각
-      { id: 2, dx: 0, dy: threshold }, // 하단 조각
-      { id: 3, dx: -threshold, dy: 0 }, // 왼쪽 조각
-    ];
-
-    // 각 조각과의 거리 계산
-    for (const slice of slices) {
-      const distance = Math.sqrt((x - slice.dx) ** 2 + (y - slice.dy) ** 2);
-      if (distance < minDistance && distance <= threshold) {
-        minDistance = distance;
-        closestSlice = slice.id;
-      }
+    if (y < centerY && Math.abs(y - centerY) > Math.abs(x - centerX)) {
+      selectedCategory = 0; // 북쪽 - 카테고리 1
+    } else if (x > centerX && Math.abs(x - centerX) > Math.abs(y - centerY)) {
+      selectedCategory = 1; // 동쪽 - 카테고리 2
+    } else if (y > centerY && Math.abs(y - centerY) > Math.abs(x - centerX)) {
+      selectedCategory = 2; // 남쪽 - 카테고리 3
+    } else if (x < centerX && Math.abs(x - centerX) > Math.abs(y - centerY)) {
+      selectedCategory = 3; // 서쪽 - 카테고리 4
     }
-
-    setActiveSlice(closestSlice); // 가장 가까운 조각만 활성화
+    setActiveSlice(selectedCategory); // 가장 가까운 조각만 활성화
   };
 
+
+  //힌트 표시 
   const resetInactivityTimeout = () => {
     clearTimeout(inactivityTimeout);
     setShowHint(false); // 힌트 숨김
@@ -166,7 +90,6 @@ const LoadToast: React.FC<LoadToastProps> = ({ onClose, onSave, memoId, title, c
   };
 
   useEffect(() => {
-    // 마우스 움직임 및 클릭 이벤트 리스너 추가
     window.addEventListener('mousemove', resetInactivityTimeout);
     window.addEventListener('mousedown', resetInactivityTimeout);
 
@@ -183,13 +106,8 @@ const LoadToast: React.FC<LoadToastProps> = ({ onClose, onSave, memoId, title, c
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseUp}
-      onTouchStart={handleTouchStart}
-      onTouchMove={handleTouchMove}
-      onTouchEnd={handleTouchEnd}
     >
       <ModalOverlay>
-        {/* 힌트 메시지 */}
         {showHint && (
           <Hint>
             <HintBold>꾹 누른 채로 이동</HintBold>
@@ -269,7 +187,6 @@ const CategoryText = styled.div`
   font-weight: 800;
   font-size: 12px;
   line-height: 14px;
-  /* or 117% */
   display: flex;
   align-items: center;
   text-align: center;
