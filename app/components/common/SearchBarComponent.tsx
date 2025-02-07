@@ -34,7 +34,7 @@ const SearchContainer = styled.div`
   .glasses {
     color: #e5dcca;
     position: absolute;
-    right: 9em;
+    right: 2em;
   }
 `;
 

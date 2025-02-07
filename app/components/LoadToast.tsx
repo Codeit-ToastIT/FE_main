@@ -3,8 +3,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
 import { Hint, HintBold } from './SaveToast';
-import plateImage from '../../assets/load/plate.svg';
-import ToastImg from '../../assets/load/toasts/burnt1.png';
+import plateImage from '../assets/load/plate.svg';
+import ToastImg from '../assets/load/toasts/burnt1.png';
 
 interface LoadToastProps {
   onClose: (category: string) => void; // 모달 닫기 함수, 인자 추가
