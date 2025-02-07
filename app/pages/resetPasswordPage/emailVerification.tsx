@@ -234,7 +234,7 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ onSuccess }) => {
     e.preventDefault();
   
     try {
-      const response = await fetch('/api/auth/password/reset/verify-code', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/password/reset/verify-code`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
