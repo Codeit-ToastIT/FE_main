@@ -1,6 +1,6 @@
 /**
  * 파일명: memoInput/page.tsx
- * 작성일: 2025-02-06
+ * 작성일: 2025-02-07
  * 작성자: 이서연
  * 설명: 메모 작성 기능 구현
  */
@@ -10,6 +10,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { useSearchParams } from 'next/navigation';
+import { useMemoContext } from '../../context/MemoContext';
 import { API_BASE_URL } from '../../api/api';
 import { useAuth } from '../../context/AuthContext';
 
@@ -19,39 +20,62 @@ import MemoBody from '../../components/common/EditingToast';
 export default function MemoInput() {
   const searchParams = useSearchParams();
   const toastId = searchParams.get('id') || '';
-  const { token } = useAuth();
+  const { memos, fetchMemos } = useMemoContext();
+  const { token, userId } = useAuth();
+
+  // ✅ toastId에 해당하는 메모 찾기
+  const memo = memos.find((memo) => memo.id === toastId);
 
   // ✅ 제목과 본문을 부모에서 상태로 관리
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
-  // ✅ 처음 로드될 때 서버에서 기존 데이터를 가져오기
-  useEffect(() => {}, [toastId, token]);
+  // ✅ memos가 업데이트될 때, title과 content도 갱신
+  useEffect(() => {
+    if (memo) {
+      setTitle(memo.title);
+      setContent(memo.content);
+    }
+  }, [memo]);
 
-  // ✅ 메모 수정하기
-  const fetchMemo = async () => {
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  // ✅ fetchMemos에 원하는 카테고리를 전달하기 위해 작성한 코드
+  const [_lastCategoryId, setLastCategoryId] = useState('');
+
+  const fetchCategories = async () => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/memos/${toastId}`, {
-        method: 'PATCH',
+      console.log(`🔗 요청 URL: ${API_BASE_URL}/api/categories/${userId}`);
+
+      const response = await fetch(`${API_BASE_URL}/api/categories/${userId}`, {
+        method: 'GET',
         headers: {
-          'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
       });
 
-      if (!response.ok) throw new Error('메모 수정 실패');
-      const data = await response.json();
+      console.log(`📩 응답 상태 코드: ${response.status}`);
 
-      setTitle(data.note.title);
-      setContent(data.note.content);
+      if (!response.ok) {
+        const errorData = await response.text();
+        console.error(`❌ 서버 응답 오류: ${errorData}`);
+        throw new Error('❌ 메모 카테고리 목록 불러오기 실패');
+      }
+
+      const data = await response.json();
+      console.log('✅ 메모 카테고리 목록 가져오기 성공:', data);
+
+      const categoryId = data.categories[4]?.id;
+      if (categoryId) {
+        setLastCategoryId(categoryId);
+        fetchMemos(categoryId); // ✅ 4번 인덱스 카테고리 ID로 메모 가져오기 실행
+      }
     } catch (error) {
-      console.error('❌ 메모 수정 오류:', error);
+      console.error('❌ 메모 카테고리 목록 불러오기 오류:', error);
     }
   };
-
-  if (toastId) {
-    fetchMemo();
-  }
 
   return (
     <Container>
@@ -84,7 +108,7 @@ const StyledMemoBody = styled(MemoBody)`
   position: relative;
   display: flex;
   width: 100%;
-  height: 374px;
+  height: 575px;
   padding: 32px;
   flex-direction: column;
   justify-content: flex-end;

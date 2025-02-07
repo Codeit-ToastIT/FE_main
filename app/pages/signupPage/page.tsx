@@ -1,15 +1,17 @@
-"use client";
+'use client';
 
-import { styled } from "styled-components";
-import React, { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import { useEmail } from "../../context/EmailContext";
+import { styled } from 'styled-components';
+import React, { useEffect, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useEmail } from '../../context/EmailContext';
 import { useAuth } from '../../context/AuthContext';
 import SubmitButton from '../../components/common/SubmitButton';
+
 import { API_BASE_URL } from "../../api/api";
 import Image from 'next/image';
 import iconEyeOpen from '../../assets/icons/icon_eye_open.png';
 import iconEyeClosed from '../../assets/icons/icon_eye_closed.svg';
+
 
 const Whole = styled.div`
   display: inline-flex;
@@ -28,13 +30,13 @@ const Header = styled.div`
 
 const Title = styled.div`
   width: 20.5rem;
-  color: var(--ivory, #E5DCCA);
+  color: var(--ivory, #e5dcca);
   margin-left: 35%;
   font-family: SUIT;
   font-size: 1rem;
   font-style: normal;
   font-weight: 600;
-  line-height: 1.5rem; 
+  line-height: 1.5rem;
 `;
 
 const Container = styled.div`
@@ -55,10 +57,10 @@ const Input = styled.input`
   background: rgba(255, 255, 255, 0.2);
   border: none;
   outline: none;
-  color: #E5DCCA;
+  color: #e5dcca;
   padding-left: 1rem;
   font-weight: 600;
-`
+`;
 
 const BackIcon = styled.svg`
   width: 1.5rem;
@@ -67,12 +69,12 @@ const BackIcon = styled.svg`
 `;
 
 const ErrorMessage = styled.div`
-color: #FF5151;
-font-family: SUIT;
-font-size: 0.75rem;
-font-weight: 400;
-line-height: 0.875rem;
-padding-left: 1rem;
+  color: #ff5151;
+  font-family: SUIT;
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 0.875rem;
+  padding-left: 1rem;
 `;
 
 const EyeIcon = styled(Image)`
@@ -86,54 +88,54 @@ const EyeIcon = styled(Image)`
 `;
 
 const SignupPage = () => {
-
   const inputRef1 = useRef<HTMLInputElement | null>(null);
   const inputRef2 = useRef<HTMLInputElement | null>(null);
+
   const { email } = useEmail();  
   const { login, loginUser, token } = useAuth();
   const [pw, setPw] = useState(""); 
   const [pwCheck, setPwCheck] = useState(""); 
   const [errorMessage, setErrorMessage] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+
   const isPwValid = pw.length >= 8; // 비밀번호 유효성 체크
   const router = useRouter();
   const [showPw, setShowPw] = useState(false); // 비밀번호 보이기 상태
   const [showPwCheck, setShowPwCheck] = useState(false); // 비밀번호 확인 보이기 상태
 
-
-  // 입력 필드 포커싱 
+  // 입력 필드 포커싱
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (inputRef1.current) {
         inputRef1.current.focus(); // 첫 번째 입력 필드에 포커스
       }
     }, 100);
-    
+
     return () => clearTimeout(timeoutId);
   }, []);
-    
+
   const handleMouseDown = (event: React.MouseEvent<HTMLInputElement>) => {
     event.preventDefault(); // 기본 동작 방지
     (event.target as HTMLInputElement).focus(); // 클릭한 입력 필드에 포커스
   };
-  
+
   // 비밀번호 입력 시 상태 업데이트
   const handlePwChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newPw = e.target.value;
-    setPw(newPw); 
+    setPw(newPw);
 
     // 비밀번호가 8자리를 초과하는 경우 영소문자와 숫자 조합 체크
     if (newPw.length > 8) {
       const hasLowerCase = /[a-z]/.test(newPw);
       const hasNumber = /\d/.test(newPw);
-      
+
       if (!hasLowerCase || !hasNumber) {
-        setErrorMessage("영소문자와 숫자 조합을 입력해주세요."); // 오류 메시지 설정
+        setErrorMessage('영소문자와 숫자 조합을 입력해주세요.'); // 오류 메시지 설정
       } else {
-        setErrorMessage(""); // 오류 메시지 초기화
+        setErrorMessage(''); // 오류 메시지 초기화
       }
     } else {
-      setErrorMessage(""); // 비밀번호가 8자리가 안 될 경우 오류 메시지 초기화
+      setErrorMessage(''); // 비밀번호가 8자리가 안 될 경우 오류 메시지 초기화
     }
   };
 
@@ -145,9 +147,9 @@ const SignupPage = () => {
     // 비밀번호 확인 입력이 시작될 때부터 확인
     if (newPwCheck.length > 0) {
       if (newPwCheck !== pw) {
-        setErrorMessage("비밀번호가 서로 달라요."); // 비밀번호 불일치 오류 메시지 설정
+        setErrorMessage('비밀번호가 서로 달라요.'); // 비밀번호 불일치 오류 메시지 설정
       } else {
-        setErrorMessage(""); // 비밀번호가 같을 때 오류 메시지 초기화
+        setErrorMessage(''); // 비밀번호가 같을 때 오류 메시지 초기화
       }
     }
   };
@@ -156,21 +158,21 @@ const SignupPage = () => {
   const handleBackClick = () => {
     router.back(); // 이전 페이지로 이동
   };
-  
-  // 회원가입 요청 
+
+  // 회원가입 요청
   const handleSignup = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault(); // 기본 폼 제출 방지
-  
+
     if (pw.length < 8) {
-      setErrorMessage("비밀번호는 8자 이상이어야 합니다.");
+      setErrorMessage('비밀번호는 8자 이상이어야 합니다.');
       return; // 비밀번호가 유효하지 않으면 함수 종료
     }
-  
+
     if (pw !== pwCheck) {
-      setErrorMessage("비밀번호가 서로 달라요.");
+      setErrorMessage('비밀번호가 서로 달라요.');
       return; // 비밀번호가 다르면 함수 종료
     }
-  
+
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
         method: 'POST',
@@ -183,13 +185,13 @@ const SignupPage = () => {
           confirmPassword: pwCheck,
         }),
       });
-  
+
       if (!response.ok) {
         const errorData = await response.json();
-        setErrorMessage(errorData.message || "회원가입에 실패했습니다.");
+        setErrorMessage(errorData.message || '회원가입에 실패했습니다.');
         return; // 에러 발생 시 함수 종료
       }
-  
+
       const data = await response.json(); // 응답 데이터 파싱
       console.log(data);
 
@@ -221,27 +223,32 @@ const SignupPage = () => {
     } else {
       setErrorMessage("사용자 정보가 없습니다."); // 사용자 정보가 없는 경우 처리
     }
-  } catch (error) {
-    setErrorMessage("회원가입에 실패했습니다."); // 일반적인 오류 처리
-    console.error(error);
-  }
-};
-  
-  
-  
+  };
+
   return (
     <Whole onMouseDown={handleMouseDown}>
       <Header>
-        <BackIcon onClick={handleBackClick} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-        <path d="M14.4 16.7998L9.59998 11.9998L14.4 7.19981" stroke="#E5DCCA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <BackIcon
+          onClick={handleBackClick}
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+        >
+          <path
+            d="M14.4 16.7998L9.59998 11.9998L14.4 7.19981"
+            stroke="#E5DCCA"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </BackIcon>
         <Title>회원가입</Title>
       </Header>
       <Container>
         <Form noValidate onSubmit={handleSignup}>
           <div style={{ position: 'relative' }}>
-            <Input 
-              type={showPw ? "text" : "password"} // 비밀번호 타입 전환
+            <Input
+              type={showPw ? 'text' : 'password'} // 비밀번호 타입 전환
               name="password"
               placeholder="8자리 이상의 비밀번호를 입력해주세요."
               ref={inputRef1}
@@ -255,8 +262,8 @@ const SignupPage = () => {
               alt={showPw ? "비밀번호 보이기" : "비밀번호 숨기기"} />
           </div>
           <div style={{ position: 'relative' }}>
-            <Input 
-              type={showPwCheck ? "text" : "password"} // 비밀번호 확인 타입 전환
+            <Input
+              type={showPwCheck ? 'text' : 'password'} // 비밀번호 확인 타입 전환
               name="passwordCheck"
               placeholder="비밀번호를 한 번 더 입력해주세요."
               ref={inputRef2}
@@ -269,11 +276,10 @@ const SignupPage = () => {
               src={showPwCheck ? iconEyeOpen : iconEyeClosed}
               alt={showPwCheck ? "비밀번호 보이기" : "비밀번호 숨기기"} />
           </div>
-          {!isPwValid && <ErrorMessage>아직 8자리가 아니에요.</ErrorMessage>} {/* 오류 메시지 조건부 렌더링 */}
+          {!isPwValid && <ErrorMessage>아직 8자리가 아니에요.</ErrorMessage>}{' '}
+          {/* 오류 메시지 조건부 렌더링 */}
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>} {/* 오류 메시지 표시 */}
-          <SubmitButton 
-          isActive={isPwValid && pw === pwCheck} 
-          />
+          <SubmitButton isActive={isPwValid && pw === pwCheck} />
         </Form>
       </Container>
     </Whole>

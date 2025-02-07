@@ -69,6 +69,7 @@ const MemoTitleDisplay = styled.div`
   background: transparent;
   border: none;
   outline: none;
+
   display: flex;
   width: 280px;
   height: 24px;
@@ -79,11 +80,9 @@ const MemoTitleDisplay = styled.div`
   text-overflow: ellipsis;
   white-space: nowrap;
 
-  overflow: hidden;
   color: var(--black, #171612);
   text-align: center;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+
   font-family: SUIT;
   font-size: 16px;
   font-style: normal;
@@ -99,28 +98,33 @@ const MemoDisplay = styled.div`
   background: transparent;
   border: none;
   outline: none;
-  display: flex;
+
   width: 296px;
-  height: 320px;
+  height: 295px;
   padding: 40px 44px;
   flex-direction: column;
   align-items: flex-start;
   gap: 10px;
   flex-shrink: 0;
+
   flex: 1 0 0;
   align-self: stretch;
-  overflow: hidden;
+
   display: -webkit-box;
-  -webkit-line-clamp: 16; /* 최대 16줄 표시 */
+  -webkit-line-clamp: 14;
   -webkit-box-orient: vertical;
-  text-overflow: ellipsis;
-  white-space: normal;
+
+  overflow: hidden;
   color: var(--caramel, #974b00);
   text-overflow: ellipsis;
-  white-space: nowrap;
+  white-space: pre-wrap;
   font-family: SUIT;
   font-size: 12px;
   font-style: normal;
   font-weight: 600;
   line-height: 15px; /* 125% */
+
+  word-break: break-word; /* ✅ 단어가 길 경우 강제 줄바꿈 */
+  overflow-wrap: break-word; /* ✅ 긴 단어가 있을 때 줄바꿈 보장 */
+  align-items: center;
 `;
