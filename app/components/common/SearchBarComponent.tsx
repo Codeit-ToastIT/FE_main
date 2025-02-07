@@ -9,9 +9,12 @@ interface SearchComponentProps {
 }
 
 const SearchBarComponent: React.FC<SearchComponentProps> = ({ searchToast, onChange }) => {
+  const handleBackClick = () => {
+    window.history.back();
+  };
   return (
     <SearchContainer>
-      <BackButton>
+      <BackButton onClick={handleBackClick}>
         <IoIosArrowBack className="back" />
       </BackButton>
       <SearchBar placeholder="검색어를 입력해주세요" onChange={onChange} value={searchToast} />
