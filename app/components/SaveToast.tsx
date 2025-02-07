@@ -16,7 +16,7 @@ import categorySliceImage from '../assets/save/category.png'; // 카테고리 �
 import selectedCategoryImage from '../assets/save/selectedCategory.png'; // 선택된 카테고리 조각 이미지(css로 구현 or svg로 변경 필요)
 
 import { API_BASE_URL } from '../api/api';
-import { useAuth } from '../api/AuthContext';
+import { useAuth } from '../context/AuthContext';
 
 interface SaveToastProps {
   onClose: (category: string) => void; // 모달 닫기 함수, 인자 추가
