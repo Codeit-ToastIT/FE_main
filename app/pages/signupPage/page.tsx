@@ -87,7 +87,7 @@ const SignupPage = () => {
   const inputRef1 = useRef<HTMLInputElement | null>(null);
   const inputRef2 = useRef<HTMLInputElement | null>(null);
   const { email } = useEmail();  
-  const { login } = useAuth();
+  const { login, loginUser, token } = useAuth();
   const [pw, setPw] = useState(""); 
   const [pwCheck, setPwCheck] = useState(""); 
   const [errorMessage, setErrorMessage] = useState("");
@@ -189,13 +189,32 @@ const SignupPage = () => {
   
       const data = await response.json(); // 응답 데이터 파싱
       console.log(data);
-  
+
       // 회원가입 성공 시 사용자 정보를 사용하여 로그인 처리
     if (data.user) {
-      // 로그인 상태 업데이트 (예: Context API 사용)
-      login(data.user); // AuthContext의 login 함수 호출
-      setSuccessMessage(data.message);
-      router.push("/pages/createToastPage"); // 홈 페이지로 이동
+      // 로그인 상태 업데이트 (예: Context API 사용)     
+      try {
+            const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ email, password: pw }),
+            });
+      
+            const data = await response.json();
+      
+            if (response.ok) {
+              console.log('로그인 성공:', data);
+              // 로그인 성공 후 토큰 저장 및 홈 페이지로 이동
+              login(data.token); // 토큰 저장
+              loginUser(data.user.id); // userId 저장
+              router.push('/pages/createToastPage'); // 홈 페이지로 이동
+            }
+          } catch (error) {
+            console.error('로그인 오류:', error);
+          }
+
     } else {
       setErrorMessage("사용자 정보가 없습니다."); // 사용자 정보가 없는 경우 처리
     }
