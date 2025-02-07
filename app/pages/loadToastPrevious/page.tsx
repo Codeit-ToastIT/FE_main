@@ -17,7 +17,8 @@ interface LoadToastProps {
 const LoadToast: React.FC<LoadToastProps> = ({ onClose, onSave }) => {
   const [position, setPosition] = useState({ x: 0, y: 0 }); // 식빵 위치
   const [activeSlice, setActiveSlice] = useState<number | null>(null); // 활성화된 조각 (0~3)
-  const [isDragging, setIsDragging] = useState(false); // 드래그 상태 확인
+  const [isdragging, setIsdragging] = useState(false); // 드래그 상태 확인
+  const [ispressing, setIspressing] = useState(true);
   const [showHint, setShowHint] = useState(false); // 힌트 표시 여부
   let inactivityTimeout: NodeJS.Timeout;
 
@@ -26,33 +27,18 @@ const LoadToast: React.FC<LoadToastProps> = ({ onClose, onSave }) => {
 
   // 마우스 이벤트
   const handleMouseDown = (e: React.MouseEvent) => {
-    setIsDragging(true); // 드래그 시작
+    setIsdragging(true); // 드래그 시작
     setShowHint(false); // 힌트 숨김
+    setIspressing(true);
     e.preventDefault(); // 기본 동작 방지
 
-    // 초기 위치 설정
     const { clientX, clientY } = e;
-    setPosition({
-      x: clientX - window.innerWidth / 2,
-      y: clientY - window.innerHeight / 2,
-    });
-
     checkCollision(clientX, clientY);
   };
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!isDragging) return;
-
-    const { clientX, clientY } = e;
-
-    setPosition({
-      x: clientX - window.innerWidth / 2,
-      y: clientY - window.innerHeight / 2,
-    });
-  };
-
   const handleMouseUp = () => {
-    setIsDragging(false); // 드래그 종료
+    setIsdragging(false); // 드래그 종료
+    setIspressing(false);
     if (activeSlice !== null) {
       const selectedCategory = categoryNames[activeSlice];
       onSave(selectedCategory); // 선택된 카테고리 전달
@@ -79,8 +65,7 @@ const LoadToast: React.FC<LoadToastProps> = ({ onClose, onSave }) => {
     setActiveSlice(selectedCategory); // 가장 가까운 조각만 활성화
   };
 
-
-  //힌트 표시 
+  //힌트 표시
   const resetInactivityTimeout = () => {
     clearTimeout(inactivityTimeout);
     setShowHint(false); // 힌트 숨김
@@ -102,11 +87,7 @@ const LoadToast: React.FC<LoadToastProps> = ({ onClose, onSave }) => {
   }, []);
 
   return (
-    <Container
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-    >
+    <Container onMouseDown={handleMouseDown} onMouseUp={handleMouseUp}>
       <ModalOverlay>
         {showHint && (
           <Hint>
@@ -115,13 +96,12 @@ const LoadToast: React.FC<LoadToastProps> = ({ onClose, onSave }) => {
           </Hint>
         )}
         <RadialMenu>
-          <Plate src={plateImage.src} />
-          <Toast
-            isDragging={isDragging}
-            style={{ transform: `translate(${position.x}px, ${position.y}px)` }}
-            src={ToastImg.src}
-          />
-          {activeSlice !== null && <CategoryText>{categoryNames[activeSlice]}</CategoryText>}
+          <Plate src={plateImage.src} ispressing={ispressing} />
+          <Toast isdragging={isdragging} selectedCategory={activeSlice} src={ToastImg.src} />
+          {activeSlice !== null && (
+            <CategoryText ispressing={ispressing}>{categoryNames[activeSlice]}</CategoryText>
+          )}
+          <MiddleToast ispressing={ispressing} src={ToastImg.src} />
         </RadialMenu>
       </ModalOverlay>
     </Container>
@@ -162,26 +142,54 @@ const RadialMenu = styled.div`
   align-items: center;
 `;
 
-const Plate = styled.img`
+const Plate = styled.img<{ ispressing: boolean }>`
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
   user-select: none;
   z-index: 10;
+  width: ${({ ispressing }) =>
+    ispressing ? '120px' : '320px'}; // 예시: ispressing에 따라 너비 변경
+  height: ${({ ispressing }) =>
+    ispressing ? '120px' : '320px'}; // 예시: ispressing에 따라 너비 변경
 `;
 
-const Toast = styled.img<{ isDragging: boolean }>`
+const Toast = styled.img<{ isdragging: boolean; selectedCategory: number | null }>`
   position: absolute;
-  transform: translate(-50%, -50%) rotate(45deg); // Adjust the rotation angle as needed
-  width: 296px; // Adjust the width as needed
-  height: 320px; // Adjust the height as needed
+  top: ${({ selectedCategory }) => {
+    switch (selectedCategory) {
+      case 0:
+        return '-350px'; // 북쪽
+      case 1:
+        return '50%'; // 동쪽
+      case 2:
+        return '500px'; // 남쪽
+      case 3:
+        return '50%'; // 서쪽
+    }
+  }};
+  left: ${({ selectedCategory }) => {
+    switch (selectedCategory) {
+      case 0:
+        return '50%'; // 북쪽
+      case 1:
+        return '400px'; // 동쪽
+      case 2:
+        return '50%'; // 남쪽
+      case 3:
+        return '-120px'; // 서쪽
+    }
+  }};
+  transform: translate(-50%, -50%) rotate(270deg); // 90도 회전
+  width: 296px; // 너비 조정
+  height: 320px; // 높이 조정
   user-select: none;
   z-index: 20;
-  opacity: ${({ isDragging }) => (isDragging ? 1 : 0)};
+  opacity: ${({ isdragging }) => (isdragging ? 1 : 0)};
 `;
 
-const CategoryText = styled.div`
+const CategoryText = styled.div<{ ispressing: boolean }>`
   font-family: 'SUIT';
   font-style: normal;
   font-weight: 800;
@@ -192,4 +200,15 @@ const CategoryText = styled.div`
   text-align: center;
   color: black;
   z-index: 50;
+  opacity: ${({ ispressing }) => (ispressing ? 1 : 0)};
+`;
+
+const MiddleToast = styled.img<{ ispressing: boolean }>`
+  position: absolute;
+  width: 148px; // 너비 조정
+  height: 160px; // 높이 조정
+  z-index: 20;
+  top: 20%;
+  left: 25%;
+  opacity: ${({ ispressing }) => (!ispressing ? 1 : 0)};
 `;
