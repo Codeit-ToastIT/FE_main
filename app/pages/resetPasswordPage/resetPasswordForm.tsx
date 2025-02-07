@@ -5,6 +5,7 @@ import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import SubmitButton from '../../components/common/SubmitButton';
 import { API_BASE_URL } from "../../api/api";
+import { useAuth } from "../../context/AuthContext";
 
 const Whole = styled.div`
 display: inline-flex;
@@ -91,7 +92,7 @@ const ResetPasswordForm = () => {
   const router = useRouter();
   const [showPw, setShowPw] = useState(false); // 비밀번호 보이기 상태
   const [showPwCheck, setShowPwCheck] = useState(false); // 비밀번호 확인 보이기 상태
-
+  const { token } = useAuth();
   // 입력 필드 포커싱 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -153,7 +154,7 @@ const ResetPasswordForm = () => {
     e.preventDefault(); // 기본 폼 제출 방지
 
     try {
-      const token = "YOUR_BEARER_TOKEN"; // 실제 Bearer Token으로 교체
+      
 
       const response = await fetch(`${API_BASE_URL}/api/auth/password/reset`, {
         method: 'POST',

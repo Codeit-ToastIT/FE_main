@@ -5,8 +5,8 @@ import styled from "styled-components";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import SubmitButton from "../../../../components/common/SubmitButton";
-import iconEyeOpen from "../../../../assets/icons/icon_eye_closed.svg";
-import iconEyeClosed from "../../../../assets/icons/icon_eye_open.svg";
+import iconEyeOpen from "../../../../assets/icons/icon_eye_open.png";
+import iconEyeClosed from "../../../../assets/icons/icon_eye_closed.svg";
 
 const Whole = styled.div`
   display: inline-flex;
@@ -176,7 +176,7 @@ const CurrentPasswordPage = () => {
         <Title>기존 비밀번호 입력</Title>
       </Header>
       <Container>
-        <Form noValidate>
+        <Form noValidate onSubmit={handleSubmit}>
           <div style={{ position: "relative" }}>
             <Input
               type={showPw ? "text" : "password"}
@@ -189,11 +189,11 @@ const CurrentPasswordPage = () => {
             />
             <IconEye
               src={showPw ? iconEyeOpen : iconEyeClosed}
-              alt={showPw ? "비밀번호 숨기기" : "비밀번호 보이기"}
+              alt={showPw ? "비밀번호 보이기" : "비밀번호 숨기기"}
               onClick={() => setShowPw((prev) => !prev)}
             />
           </div>
-          <SubmitButton isActive={isPwNotEmpty} onClick={handleSubmit} />
+          <SubmitButton isActive={isPwNotEmpty}  />
         </Form>
         <Link onClick={handleLinkClick}>비밀번호를 잊어버렸나요?</Link>
       </Container>
