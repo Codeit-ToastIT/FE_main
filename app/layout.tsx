@@ -41,12 +41,6 @@ export default function RootLayout({
       >
         <StyledComponentsRegistry>
           <Providers>
-            {' '}
-            {/* ✅ Providers.tsx로 감싸기 */}
-            {/* <AuthProvider> */}
-            {/* AuthProvider로 감싸기 */}
-            {/* <EmailProvider> */}
-            {/* EmailProvider로 감싸기 */}
             <div
               style={{
                 width: '375px', // 아이폰 13 미니 너비
@@ -64,8 +58,6 @@ export default function RootLayout({
             >
               {children}
             </div>
-            {/* </EmailProvider> */}
-            {/* </AuthProvider> */}
           </Providers>
         </StyledComponentsRegistry>
       </body>

@@ -40,6 +40,9 @@ interface Memo {
 
 // 💖 onActiveMemoChange 추가
 export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
+  //Authorization token 불러오는 로직 구현
+  const { token } = useAuth();
+
   const [memos, setMemos] = useState<Memo[]>([]); // ✅ MongoDB의 메모 리스트 저장
 
   const [showPlus, setShowPlus] = useState(false);
@@ -127,9 +130,6 @@ export default function Body({ deletedMemoId, onActiveMemoChange }: BodyProps) {
       window.removeEventListener('storage', handleStorageChange);
     };
   }, []);
-
-  //Authorization token 불러오는 로직 구현
-  const { token } = useAuth();
 
   //----------------
 

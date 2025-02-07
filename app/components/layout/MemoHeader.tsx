@@ -10,7 +10,7 @@ import styled from 'styled-components';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { API_BASE_URL } from '../../api/api';
-import { useAuth } from '../../api/AuthContext';
+import { useAuth } from '../../context/AuthContext';
 
 import iconBack from '../../assets/icons/icon_back.svg';
 import iconTrash from '../../assets/icons/icon_trash.svg';

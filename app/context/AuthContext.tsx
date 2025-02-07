@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 
 interface AuthContextType {
+  token: string | null;
   isLoggedIn: boolean;
   login: (token: string) => void;
   logout: () => void;
@@ -11,28 +12,42 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [token, setToken] = useState<string | null>(() => {
+    // ✅ 초기값을 localStorage에서 가져오기 (SSR 방지)
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('token');
+    }
+    return null;
+  });
+  const [isLoggedIn, setIsLoggedIn] = useState(!!token);
 
-  // 페이지 로드 시 토큰 확인
+  // ✅ localStorage에서 토큰을 가져와 상태 업데이트
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    if (token) {
+    const storedToken = localStorage.getItem('token');
+    if (storedToken && storedToken !== token) {
+      setToken(storedToken);
       setIsLoggedIn(true);
     }
-  }, []);
+  }, [token]);
 
-  const login = (token: string) => {
-    localStorage.setItem('token', token); // 토큰 저장
+  // ✅ 로그인 시 토큰 저장 및 상태 업데이트
+  const login = (newToken: string) => {
+    localStorage.setItem('token', newToken);
+    setToken(newToken);
     setIsLoggedIn(true);
   };
 
+  // ✅ 로그아웃 시 토큰 삭제 및 상태 초기화
   const logout = () => {
-    localStorage.removeItem('token'); // 토큰 삭제
+    localStorage.removeItem('token');
+    setToken(null);
     setIsLoggedIn(false);
   };
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, login, logout }}>{children}</AuthContext.Provider>
+    <AuthContext.Provider value={{ token, isLoggedIn, login, logout }}>
+      {children}
+    </AuthContext.Provider>
   );
 };
 
