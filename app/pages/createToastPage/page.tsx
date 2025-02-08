@@ -15,15 +15,16 @@ import LoadToast from '../../components/LoadToast';
 import Home from './home';
 import Help from './help';
 
+import { useAuth } from '../../context/AuthContext';
+
 export default function CreateToastPage() {
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const { message } = useAuth();
 
   useEffect(() => {
     // 최초 방문 여부 확인 후 온보딩 표시
-    const onboardingViewed = localStorage.getItem('onboardingViewed');
-    if (!onboardingViewed) {
+    if (message == '회원가입이 완료되었습니다.') {
       setShowOnboarding(true);
-      localStorage.setItem('onboardingViewed', 'true'); // 최초 방문 시 저장
     }
   }, []);
 
