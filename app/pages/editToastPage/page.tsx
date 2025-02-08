@@ -12,7 +12,7 @@ import { useAuth } from '../../context/AuthContext';
 import MemoHeader from '../../components/layout/MemoHeader';
 import MemoBody from '../../components/common/EditingToast';
 
-export default function MemoInput() {
+export default function EditToastPage() {
   const searchParams = useSearchParams();
   const toastId = searchParams.get('id') || '';
   const { memos, fetchMemos } = useMemoContext();
