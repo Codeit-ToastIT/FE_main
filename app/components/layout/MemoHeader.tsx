@@ -22,9 +22,16 @@ interface MemoHeaderProps {
   title: string;
   setTitle: (title: string) => void;
   content: string; // ✅ 본문도 함께 요청해야함
+  isBurnt: boolean;
 }
 
-export default function MemoHeader({ toastId, title, setTitle, content }: MemoHeaderProps) {
+export default function MemoHeader({
+  toastId,
+  title,
+  setTitle,
+  content,
+  isBurnt,
+}: MemoHeaderProps) {
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
   const [_loading, setLoading] = useState(false);
@@ -115,13 +122,13 @@ export default function MemoHeader({ toastId, title, setTitle, content }: MemoHe
   );
 }
 
-const HeaderContainer = styled.header`
+const HeaderContainer = styled.header<{ isBurnt: boolean }>`
   display: flex;
   height: 60px;
   padding: 12px 16px 8px 16px;
   justify-content: center;
   align-items: center;
-  background: #e5dcca;
+  background: ${({ isBurnt }) => (isBurnt ? '#e5dcca' : '#806952')};
 `;
 
 const IconBack = styled(Image)`

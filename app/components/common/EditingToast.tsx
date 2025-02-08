@@ -15,9 +15,16 @@ interface EditingToastProps {
   title: string;
   content: string;
   setContent: (content: string) => void;
+  isBurnt: boolean;
 }
 
-export default function EditingToast({ toastId, title, content, setContent }: EditingToastProps) {
+export default function EditingToast({
+  toastId,
+  title,
+  content,
+  setContent,
+  isBurnt,
+}: EditingToastProps) {
   const { token } = useAuth();
 
   const handleTextChange = async (e: React.ChangeEvent<HTMLTextAreaElement>) => {
@@ -56,18 +63,19 @@ export default function EditingToast({ toastId, title, content, setContent }: Ed
       <StyledTextArea
         value={content} // ✅ memo에서 가져온 값 사용
         onChange={handleTextChange}
+        isBurnt={isBurnt}
       ></StyledTextArea>
     </div>
   );
 }
 
-const StyledTextArea = styled.textarea`
+const StyledTextArea = styled.textarea<{ isBurnt: boolean }>`
   width: 100%;
   min-height: 610px;
 
   flex: 1 0 0;
   align-self: stretch;
-  color: var(--brown, #473728);
+  color: ${({ isBurnt }) => (!isBurnt ? 'var(--brown, #473728)' : '#E5DCCA')};
   font-family: SUIT;
   font-size: 16px;
   font-style: normal;
@@ -78,7 +86,7 @@ const StyledTextArea = styled.textarea`
   background: none;
   resize: none;
   padding: 0px 32px 32px 32px;
-  background: var(--ivory);
+  background: ${({ isBurnt }) => (!isBurnt ? '#e5dcca' : '#806952')};
 
   ::-webkit-scrollbar {
     display: none;
