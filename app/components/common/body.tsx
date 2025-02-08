@@ -45,7 +45,7 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
 
   const [showPlus, setShowPlus] = useState(false);
 
-  const [slides, setSlides] = useState<string[]>([]); // ✅ 초기값을 빈 배열로 설정
+  const [_slides, setSlides] = useState<string[]>([]); // ✅ 초기값을 빈 배열로 설정
 
   useEffect(() => {
     if (memos.length > 0) {
@@ -405,13 +405,13 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
 
     if (isSwiperActive) return;
 
-    // ✅ 드래그 거리가 240px 이상이면 클릭이 아닌 드래그로 간주
-    if (Math.abs(deltaX) > 240) {
+    // ✅ 드래그 거리가 100px 이상이면 클릭이 아닌 드래그로 간주
+    if (Math.abs(deltaX) > 100) {
       isClickRef.current = false;
     }
 
     // ✅ 드래그 거리가 100px 이상이어야 실제로 "드래그 중" 상태로 인식
-    if (Math.abs(deltaX) > 150) {
+    if (Math.abs(deltaX) > 100) {
       setDragging(true);
     } else {
       if (!dragging) return; // 아직 드래그 인식 전이면 위치 이동 안 함
@@ -487,19 +487,19 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
     }
   };
 
-  // ✅ 이벤트 리스너를 추가하는 방식
-  useEffect(() => {
-    const handleMouseUpGlobal = () => {
-      if (dragging) {
-        handleMouseUp();
-      }
-    };
+  // // ✅ 이벤트 리스너를 추가하는 방식
+  // useEffect(() => {
+  //   const handleMouseUpGlobal = () => {
+  //     if (dragging) {
+  //       handleMouseUp();
+  //     }
+  //   };
 
-    window.addEventListener('mouseup', handleMouseUpGlobal);
-    return () => {
-      window.removeEventListener('mouseup', handleMouseUpGlobal);
-    };
-  }, [dragging]);
+  //   window.addEventListener('mouseup', handleMouseUpGlobal);
+  //   return () => {
+  //     window.removeEventListener('mouseup', handleMouseUpGlobal);
+  //   };
+  // }, [dragging]);
 
   // 💖 Swiper 슬라이드 변경 시 활성 메모 id 전달 (02/08 초기 렌더링 메모 id 전달을 위해 수정된 부분)
   const handleSlideChange = (swiper: any) => {
