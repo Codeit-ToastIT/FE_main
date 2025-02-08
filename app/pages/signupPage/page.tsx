@@ -91,11 +91,10 @@ const SignupPage = () => {
   const inputRef2 = useRef<HTMLInputElement | null>(null);
 
   const { email } = useEmail();
-  const { login, loginUser, token } = useAuth();
+  const { login, loginUser } = useAuth();
   const [pw, setPw] = useState('');
   const [pwCheck, setPwCheck] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
-  const [successMessage, setSuccessMessage] = useState('');
 
   const isPwValid = pw.length >= 8; // 비밀번호 유효성 체크
   const router = useRouter();

@@ -19,7 +19,7 @@ const PlanPage = () => {
     <Container>
       <Header>
         <BackButton onClick={() => router.back()}>
-          <StyledImage src="/icon_back.svg" alt="뒤로 가기" />
+          <StyledImage src="/icon_back.svg" alt="뒤로 가기" width={40} height={40} />
         </BackButton>
         <TitleWrapper>
           <TitleContainer>

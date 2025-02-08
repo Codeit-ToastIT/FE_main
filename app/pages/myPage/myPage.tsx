@@ -170,20 +170,27 @@ const MyPage: React.FC<MyPageProps> = ({ isPremiumUser }) => {
                 ))}
               </MenuItems>
               <CenterButton onClick={handleCenterButtonClick}>
-                <StyledImage
+                <StyledIconEdit
                   src={isEditing ? '/iconbutton_edit.svg' : '/iconbutton.svg'}
                   alt="Edit Button"
+                  width={40}
+                  height={40}
                 />
               </CenterButton>
             </CircularMenu>
 
             <IconButtons>
               <IconButton onClick={() => router.push('./myPage/account')}>
-                <StyledImage src="/icon_profile.svg" alt="계정 아이콘" />
+                <StyledIconProfile
+                  src="/icon_profile.svg"
+                  alt="계정 아이콘"
+                  width={24}
+                  height={24}
+                />
                 <span>계정</span>
               </IconButton>
               <IconButton onClick={() => router.push('./myPage/plan')}>
-                <StyledImage src="/icon_card.svg" alt="플랜 아이콘" />
+                <StyledIconPlan src="/icon_card.svg" alt="플랜 아이콘" width={24} height={24} />
                 <span>플랜</span>
               </IconButton>
             </IconButtons>
@@ -387,6 +394,8 @@ const IconButton = styled.div`
   }
 `;
 
-const StyledImage = styled(Image)``;
+const StyledIconEdit = styled(Image)``;
+const StyledIconProfile = styled(Image)``;
+const StyledIconPlan = styled(Image)``;
 
 export default MyPage;

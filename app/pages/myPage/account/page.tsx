@@ -63,7 +63,7 @@ const AccountPage = () => {
     <Container>
       <Header>
         <BackButton onClick={() => router.back()}>
-          <StyledImage src="/icon_back.svg" alt="뒤로 가기" />
+          <StyledImage src="/icon_back.svg" alt="뒤로 가기" width={40} height={40} />
         </BackButton>
         <TitleWrapper>
           <TitleContainer>
@@ -77,7 +77,7 @@ const AccountPage = () => {
         <MenuItem onClick={() => router.push('./account/currentPassword')}>
           <Icon>
             <IconWrapper>
-              <StyledImage src="/icon_lock.svg" alt="비밀번호 변경" />
+              <StyledImage src="/icon_lock.svg" alt="비밀번호 변경" width={24} height={24} />
             </IconWrapper>
             <span>비밀번호 변경</span>
           </Icon>
@@ -85,7 +85,7 @@ const AccountPage = () => {
         <MenuItem onClick={() => setShowTermsOverlay(true)}>
           <Icon>
             <IconWrapper>
-              <StyledImage src="/icon_filecheck.svg" alt="이용 약관" />
+              <StyledImage src="/icon_filecheck.svg" alt="이용 약관" width={24} height={24} />
             </IconWrapper>
             <span>이용 약관</span>
           </Icon>
@@ -93,7 +93,7 @@ const AccountPage = () => {
         <MenuItem onClick={() => setShowLogoutModal(true)}>
           <Icon>
             <IconWrapper>
-              <StyledImage src="/icon_out.svg" alt="로그아웃" />
+              <StyledImage src="/icon_out.svg" alt="로그아웃" width={24} height={24} />
             </IconWrapper>
             <span>로그아웃</span>
           </Icon>
@@ -101,7 +101,7 @@ const AccountPage = () => {
         <MenuItem className="danger" onClick={() => setShowDeleteModal(true)}>
           <Icon>
             <IconWrapper>
-              <StyledImage src="/icon_profile_x.svg" alt="회원 탈퇴" />
+              <StyledImage src="/icon_profile_x.svg" alt="회원 탈퇴" width={24} height={24} />
             </IconWrapper>
             <span>회원 탈퇴</span>
           </Icon>
@@ -112,7 +112,7 @@ const AccountPage = () => {
         <TermsContainer show={showTermsOverlay}>
           <TermsOverlayHeader>
             <BackButton onClick={() => setShowTermsOverlay(false)}>
-              <StyledImage src="/icon_back.svg" alt="뒤로 가기" />
+              <StyledImage src="/icon_back.svg" alt="뒤로 가기" width={24} height={24} />
             </BackButton>
           </TermsOverlayHeader>
           <ScrollableContent>
