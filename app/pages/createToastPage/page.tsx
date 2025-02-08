@@ -31,6 +31,7 @@ export default function CreateToastPage() {
   const [isLongPress, setIsLongPress] = useState(false);
   const [pressTimeout, setPressTimeout] = useState<NodeJS.Timeout | null>(null);
   const [showSaveMessage, setShowSaveMessage] = useState<string | null>(null); // 저장 메시지 상태
+  const [showLoadMessage, setShowLoadMessage] = useState<string | null>(null); // 저장 메시지 상태
 
   // 활성 메모 id 상태 추가 (상위에서 관리)
   const [activeMemoId, setActiveMemoId] = useState<string>('1');

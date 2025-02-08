@@ -109,7 +109,7 @@ export default function MemoHeader({
   };
 
   return (
-    <HeaderContainer>
+    <HeaderContainer isBurnt={isBurnt}>
       <IconBack src={iconBack} alt="Back" onClick={handleBackClick} />
       <TitleInput type="text" placeholder={title} value={title} onChange={handleTitleChange} />
       <IconTrash src={iconTrash} alt="Trash" onClick={handleDeleteClick} />
@@ -128,7 +128,7 @@ const HeaderContainer = styled.header<{ isBurnt: boolean }>`
   padding: 12px 16px 8px 16px;
   justify-content: center;
   align-items: center;
-  background: ${({ isBurnt }) => (isBurnt ? '#e5dcca' : '#806952')};
+  background: ${({ isBurnt }) => (isBurnt ? '#806952' : '#e5dcca')};
 `;
 
 const IconBack = styled(Image)`
