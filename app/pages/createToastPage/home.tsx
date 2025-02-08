@@ -8,8 +8,7 @@
 // 💖 표시된 부분 SaveToast로 활성화된 메모 id 전달을 위해 수정한 부분
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
 
@@ -27,8 +26,6 @@ interface HomeProps {
 
 // 💖 onActiveMemoChange 추가
 export default function Home({ onHelpClick, onActiveMemoChange }: HomeProps) {
-  const searchParams = useSearchParams();
-
   // ✅ myPage를 열고 닫는 상태 추가
   const [isMyPageOpen, setIsMyPageOpen] = useState(false);
 
@@ -42,26 +39,7 @@ export default function Home({ onHelpClick, onActiveMemoChange }: HomeProps) {
     setIsMyPageOpen(false);
   };
 
-  const [showDeletedMessage, setShowDeletedMessage] = useState(false);
-  const [showDeleteErrorMessage, setShowDeleteErrorMessage] = useState(false);
-  const [deletedMemoId, setDeletedMemoId] = useState<string | null>(null); // ✅ 삭제된 메모 ID 상태 추가
-
-  useEffect(() => {
-    if (searchParams.get('deleted') === 'true') {
-      setShowDeletedMessage(true);
-      setTimeout(() => setShowDeletedMessage(false), 2000);
-    }
-    if (searchParams.get('deletedError') === 'true') {
-      setShowDeleteErrorMessage(true);
-      setTimeout(() => setShowDeleteErrorMessage(false), 2000);
-    }
-
-    // ✅ 삭제된 메모 ID 가져오기
-    const memoId = searchParams.get('deletedMemoId');
-    if (memoId) {
-      setDeletedMemoId(memoId);
-    }
-  }, [searchParams]);
+  const [showDeletedMessage, _setShowDeletedMessage] = useState(false);
 
   const handleParentTouchMove = (e: React.TouchEvent) => {
     e.preventDefault(); // ✅ 부모 요소가 `touchmove`를 막지 않도록 방지
@@ -74,7 +52,9 @@ export default function Home({ onHelpClick, onActiveMemoChange }: HomeProps) {
       <IconAdd src={iconAdd} alt="Add" />
 
       {/* // 💖 onActiveMemoChange 콜백 전달 추가*/}
-      <StyledBody deletedMemoId={deletedMemoId} onActiveMemoChange={onActiveMemoChange} />
+      <StyledBody onActiveMemoChange={onActiveMemoChange} />
+
+      {showDeletedMessage && <DeletedMessage>토스트 하나를 버렸어요.</DeletedMessage>}
 
       {/* ✅ MyPage 컴포넌트가 오른쪽에서 왼쪽으로 슬라이드되며 나타남 */}
       <MyPageOverlay isOpen={isMyPageOpen} onClick={onCloseMyPage}>
@@ -119,10 +99,6 @@ const DeletedMessage = styled.div`
   font-size: 14px;
   z-index: 1000;
   animation: fadeInOut 2s ease-in-out;
-`;
-
-const ErrorMessageBox = styled.div`
-  background: rgba(255, 0, 0, 0.8);
 `;
 
 const StyledBody = styled(Body)`

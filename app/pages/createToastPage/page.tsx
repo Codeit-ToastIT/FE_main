@@ -8,31 +8,14 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
 import SaveToast from '../../components/SaveToast';
 import LoadToast from '../../components/LoadToast';
 
 import Home from './home';
 import Help from './help';
-import { useAuth } from '../../context/AuthContext';
 
 export default function CreateToastPage() {
-  // const { token } = useAuth();
-  // const router = useRouter();
-  // const [loading, setLoading] = useState(true);
-
-  // // ✅ useEffect로 token이 변경될 때만 실행
-  // useEffect(() => {
-  //   if (!token) {
-  //     console.warn('토큰이 존재하지 않습니다. 이메일 입력 페이지로 이동하세요.');
-  //     router.push('/pages/emailInputPage'); // 이메일 입력 페이지로 리디렉트
-  //   } else {
-  //     setLoading(false);
-  //   }
-  // }, [token, router]);
-  // //
-
   const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
@@ -67,9 +50,9 @@ export default function CreateToastPage() {
   };
 
   // 메모 ID, 제목, 내용 상태
-  const [memoId] = useState(() => '1');
-  const [title, setTitle] = useState<string | null>(null);
-  const [content, setContent] = useState<string | null>(null);
+  const [_memoId] = useState(() => '1');
+  const [title, _setTitle] = useState<string | null>(null);
+  const [content, _setContent] = useState<string | null>(null);
 
   // 1초 이상 꾹 누르면 SaveToast 띄우기
   const handleMouseDown = (e: React.MouseEvent | React.TouchEvent) => {
