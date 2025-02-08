@@ -1,11 +1,18 @@
+"use client"; 
+
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import styled from 'styled-components';
-
 import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "../../api/api";
 import { useAuth } from '../../context/AuthContext';
 import { useEmail } from '../../context/EmailContext';
+import radial_default from '../../assets/save/4-radial_menu.svg';
+import radial_edit from '../../assets/save/4-radial_menu_edit.svg';
+import check from '../../assets/icons/icon_check.svg';
+import edit from '../../assets/icons/icon_edit.svg';
+import account from '../../assets/icons/icon_profile_b.svg';
+import plan from '../../assets/icons/icon_card_b.svg'
 
 interface MyPageProps {
   isPremiumUser: boolean;
@@ -13,94 +20,53 @@ interface MyPageProps {
 
 const MyPage: React.FC<MyPageProps> = ({ isPremiumUser }) => {
   const router = useRouter();
-  const { token, userId } = useAuth(); // AuthContext에서 토큰과 userId를 가져옴
+  const { token, userId } = useAuth();
+  const { email } = useEmail();
 
-  // 사용자 이메일 (초기값은 기본 이메일)
-  const { email } = useEmail(); 
-  const [userEmail, setUserEmail] = useState("test@example.com");
+  // 이메일은 EmailContext에서 가져오고, 없으면 localStorage에서 불러오도록 함
+  const [userEmail, setUserEmail] = useState(() => {
+    return localStorage.getItem("userEmail") || email || "test@example.com";
+  });
 
-  // 수정 모드 활성화 상태
+  useEffect(() => {
+    if (email) {
+      localStorage.setItem("userEmail", email);
+      setUserEmail(email);
+    }
+  }, [email]);
+
+  // 수정 모드 여부
   const [isEditing, setIsEditing] = useState(false);
 
-  // 카테고리 정보를 저장할 상태 (초기값은 빈 문자열)
-  const [categories, setCategories] = useState({
-    top: '',
-    right: '',
-    bottom: '',
-    left: '',
-  });
-  const [editingCategory, setEditingCategory] = useState<string | null>(null);
+  // 카테고리명을 배열로 관리 (기본값)
+  const [categories, setCategories] = useState<string[]>([
+    '카테고리 1',
+    '카테고리 2',
+    '카테고리 3',
+    '카테고리 4',
+  ]);
+  // 수정 중인 카테고리의 인덱스 (배열로 관리)
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [tempCategoryName, setTempCategoryName] = useState('');
 
-  useEffect(() => {
-    const fetchUserData = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-          },
-        });
-        if (response.ok) {
-          const data = await response.json();
-          // 응답 예시: { email: string, ... }
-          setUserEmail(data.email);
-        } else {
-          console.error("사용자 정보를 불러오지 못했습니다.");
-        }
-      } catch (error) {
-        console.error("사용자 API 호출 중 에러 발생:", error);
-      }
-    };
+  // 각 인덱스에 해당하는 위치 (스타일 적용용)
+  const positions = ["top", "right", "bottom", "left"];
 
-    fetchUserData();
-  }, [userId, token]);
-
-  // userId가 있을 경우, 해당 userId로 카테고리 정보를 불러옴
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/categories/${userId}`, {
-          method: 'GET',
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-          },
-        });
-        if (response.ok) {
-          const data = await response.json();
-          // data 형식 예시: { top: string, right: string, bottom: string, left: string }
-          const categoryId = data.categories[4]?.id;
-          if (categoryId) {
-            setCategories(categoryId);}
-            console.log("API 호출 성공", data);
-        } else {
-          console.error('카테고리 정보를 불러오지 못했습니다.');
-        }
-      } catch (error) {
-        console.error('카테고리 API 호출 중 에러 발생:', error);
-      }
-    };
-
-    fetchCategories();
-  }, [userId]);
-
-  // 특정 카테고리 이름을 업데이트하는 함수 (PATCH /api/categories/{categoryId})
-  const updateCategory = async (categoryId: string, newName: string) => {
+  // 카테고리 업데이트 API 호출 (필요하다면 유지)
+  const updateCategory = async (index: number, newName: string) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/categories/${categoryId}`, {
-        method: 'PATCH',
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({ name: newName }),
-      });
-      if (!response.ok) {
-        const errorMsg = await response.text();
-        console.error('카테고리 업데이트 실패:', errorMsg);
-      }
+      const response = await fetch(`${API_BASE_URL}/api/categories/${userId}`, {
+         method: 'PATCH',
+         headers: {
+           "Content-Type": "application/json",
+           "Authorization": `Bearer ${token}`
+         },
+         body: JSON.stringify({ name: newName }),
+     });
+       if (!response.ok) {
+         const errorMsg = await response.text();
+         console.error('카테고리 업데이트 실패:', errorMsg);
+       }
     } catch (error) {
       console.error('카테고리 업데이트 API 호출 중 에러 발생:', error);
     }
@@ -109,8 +75,7 @@ const MyPage: React.FC<MyPageProps> = ({ isPremiumUser }) => {
   // centerButton 클릭 시 수정 모드 토글
   const handleCenterButtonClick = () => {
     if (isEditing) {
-      // 수정 모드 종료: 입력 중인 내용은 반영하지 않고 취소
-      setEditingCategory(null);
+      setEditingIndex(null);
       setTempCategoryName('');
       setIsEditing(false);
     } else {
@@ -127,55 +92,56 @@ const MyPage: React.FC<MyPageProps> = ({ isPremiumUser }) => {
       <ContentContainer>
         <Overlay>
           <MyPageContainer onClick={(e) => e.stopPropagation()}>
-            <Email>{email}</Email>
+            <Email>{userEmail}</Email>
             <Plan>{userPlan}</Plan>
             <CircularMenu>
               <MenuImage
-                src={isEditing ? '/4-radial_menu_edit.svg' : '/4-radial_menu.svg'}
+                src={isEditing ? radial_edit.src : radial_default.src}
                 alt="Circular Menu"
               />
               <MenuItems>
-                {Object.entries(categories).map(([position, name]) => (
-                  <MenuItem
-                    key={position}
-                    position={position}
-                    onClick={() => {
-                      // 수정 모드일 때만 카테고리 수정 활성화
-                      if (isEditing) {
-                        setEditingCategory(position);
-                        setTempCategoryName(name);
-                      }
-                    }}
-                  >
-                    {editingCategory === position ? (
-                      <EditingInput
-                        value={tempCategoryName}
-                        onChange={(e) => setTempCategoryName(e.target.value)}
-                        onBlur={async () => {
-                          if (editingCategory) {
-                            await updateCategory(editingCategory, tempCategoryName);
-                            setCategories({
-                              ...categories,
-                              [editingCategory]: tempCategoryName,
-                            });
-                          }
-                          setEditingCategory(null);
-                          setTempCategoryName('');
-                        }}
-                        autoFocus
-                      />
-                    ) : (
-                      <DisplayText>{name}</DisplayText>
-                    )}
-                  </MenuItem>
-                ))}
+                {categories.map((name, index) => {
+                  const position = positions[index];
+                  return (
+                    <MenuItem
+                      key={position}
+                      position={position}
+                      onClick={() => {
+                        if (isEditing) {
+                          setEditingIndex(index);
+                          setTempCategoryName(name);
+                        }
+                      }}
+                    >
+                      {editingIndex === index ? (
+                        <EditingInput
+                          value={tempCategoryName}
+                          onChange={(e) => setTempCategoryName(e.target.value)}
+                          onBlur={async () => {
+                            if (editingIndex !== null) {
+                              await updateCategory(editingIndex, tempCategoryName);
+                              const newCategories = [...categories];
+                              newCategories[editingIndex] = tempCategoryName;
+                              setCategories(newCategories);
+                              setEditingIndex(null);
+                              setTempCategoryName('');
+                            }
+                          }}
+                          autoFocus
+                        />
+                      ) : (
+                        <DisplayText>{name}</DisplayText>
+                      )}
+                    </MenuItem>
+                  );
+                })}
               </MenuItems>
-              <CenterButton onClick={handleCenterButtonClick}>
+              <CenterButton onClick={handleCenterButtonClick} isEditing={isEditing}>
                 <StyledIconEdit
-                  src={isEditing ? '/iconbutton_edit.svg' : '/iconbutton.svg'}
+                  src={isEditing ? check.src : edit.src}
                   alt="Edit Button"
-                  width={40}
-                  height={40}
+                  width={24}  // 기존 40px에서 축소
+                  height={24} // 기존 40px에서 축소
                 />
               </CenterButton>
             </CircularMenu>
@@ -183,7 +149,7 @@ const MyPage: React.FC<MyPageProps> = ({ isPremiumUser }) => {
             <IconButtons>
               <IconButton onClick={() => router.push('./myPage/account')}>
                 <StyledIconProfile
-                  src="/icon_profile.svg"
+                  src= {account.src}
                   alt="계정 아이콘"
                   width={24}
                   height={24}
@@ -191,7 +157,7 @@ const MyPage: React.FC<MyPageProps> = ({ isPremiumUser }) => {
                 <span>계정</span>
               </IconButton>
               <IconButton onClick={() => router.push('./myPage/plan')}>
-                <StyledIconPlan src="/icon_card.svg" alt="플랜 아이콘" width={24} height={24} />
+                <StyledIconPlan src={plan.src} alt="플랜 아이콘" width={24} height={24} />
                 <span>플랜</span>
               </IconButton>
             </IconButtons>
@@ -201,10 +167,6 @@ const MyPage: React.FC<MyPageProps> = ({ isPremiumUser }) => {
     </PageContainer>
   );
 };
-
-//
-// styled-components (아래 코드는 그대로 사용)
-//
 
 const Overlay = styled.div`
   position: fixed;
@@ -308,11 +270,14 @@ const MenuItem = styled.div<{ position: string }>`
   font-size: 14px;
   cursor: pointer;
 
-  ${({ position }) => position === 'top' && 'top: 20px; left: 50%; transform: translateX(-50%);'}
-  ${({ position }) => position === 'right' && 'right: 10px; top: 50%; transform: translateY(-50%);'}
+  ${({ position }) =>
+    position === 'top' && 'top: 20px; left: 50%; transform: translateX(-50%);'}
+  ${({ position }) =>
+    position === 'right' && 'right: 10px; top: 50%; transform: translateY(-50%);'}
   ${({ position }) =>
     position === 'bottom' && 'bottom: 20px; left: 50%; transform: translateX(-50%);'}
-  ${({ position }) => position === 'left' && 'left: 10px; top: 50%; transform: translateY(-50%);'}
+  ${({ position }) =>
+    position === 'left' && 'left: 10px; top: 50%; transform: translateY(-50%);'}
 `;
 
 const DisplayText = styled.span`
@@ -351,12 +316,13 @@ const EditingInput = styled.textarea`
   word-break: break-all;
 `;
 
-const CenterButton = styled.button`
+/* CenterButton: 배경색을 isEditing prop에 따라 다르게 지정 */
+const CenterButton = styled.button<{ isEditing: boolean }>`
   position: absolute;
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #fff;
+  background: ${({ isEditing }) => (isEditing ? '#161712' : '#666')};
   border: none;
   display: flex;
   align-items: center;
