@@ -5,7 +5,7 @@
  * 설명: 메모 작성 기능 구현
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';

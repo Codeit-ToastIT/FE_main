@@ -8,8 +8,7 @@
 // 💖 표시된 부분 SaveToast로 활성화된 메모 id 전달을 위해 수정한 부분
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
 
@@ -27,8 +26,6 @@ interface HomeProps {
 
 // 💖 onActiveMemoChange 추가
 export default function Home({ onHelpClick, onActiveMemoChange }: HomeProps) {
-  const searchParams = useSearchParams();
-
   // ✅ myPage를 열고 닫는 상태 추가
   const [isMyPageOpen, setIsMyPageOpen] = useState(false);
 
@@ -42,38 +39,7 @@ export default function Home({ onHelpClick, onActiveMemoChange }: HomeProps) {
     setIsMyPageOpen(false);
   };
 
-  const [showDeletedMessage, setShowDeletedMessage] = useState(false);
-  const [showDeleteErrorMessage, setShowDeleteErrorMessage] = useState(false);
-  // const [deletedMemoId, setDeletedMemoId] = useState<string | null>(null); // ✅ 삭제된 메모 ID 상태 추가
-  // const [deleteSuccess, setDeleteSuccess] = useState(false);
-
-  // useEffect(() => {
-  //   // ✅ localStorage에서 삭제된 메모 ID 가져오기
-  //   const memoId = localStorage.getItem('deletedMemoId');
-  //   const deleteStatus = localStorage.getItem('deleteSuccess');
-
-  //   if (memoId) {
-  //     setDeletedMemoId(memoId);
-  //   }
-
-  //   if (deleteStatus === 'true') {
-  //     setDeleteSuccess(true);
-  //     setShowDeletedMessage(true);
-  //     setTimeout(() => {
-  //       setShowDeletedMessage(false);
-  //     }, 2000);
-  //   } else if (deleteStatus === 'false') {
-  //     setDeleteSuccess(false);
-  //     setShowDeleteErrorMessage(true);
-  //     setTimeout(() => {
-  //       setShowDeleteErrorMessage(false);
-  //     }, 2000);
-  //   }
-
-  //   // ✅ localStorage 초기화 (중복 방지)
-  //   localStorage.removeItem('deletedMemoId');
-  //   localStorage.removeItem('deleteSuccess');
-  // }, []);
+  const [showDeletedMessage, _setShowDeletedMessage] = useState(false);
 
   const handleParentTouchMove = (e: React.TouchEvent) => {
     e.preventDefault(); // ✅ 부모 요소가 `touchmove`를 막지 않도록 방지
@@ -86,11 +52,7 @@ export default function Home({ onHelpClick, onActiveMemoChange }: HomeProps) {
       <IconAdd src={iconAdd} alt="Add" />
 
       {/* // 💖 onActiveMemoChange 콜백 전달 추가*/}
-      <StyledBody
-        // deletedMemoId={deletedMemoId}
-        // deleteSuccess={deleteSuccess}
-        onActiveMemoChange={onActiveMemoChange}
-      />
+      <StyledBody onActiveMemoChange={onActiveMemoChange} />
 
       {showDeletedMessage && <DeletedMessage>토스트 하나를 버렸어요.</DeletedMessage>}
 

@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useState } from "react";
-import styled from "styled-components";
-import { useRouter } from "next/navigation";
+import React, { useState } from 'react';
+import Image from 'next/image';
+import styled from 'styled-components';
+import { useRouter } from 'next/navigation';
 
 // 계정 메뉴
 const AccountPage = () => {
@@ -14,47 +15,47 @@ const AccountPage = () => {
   // 로그아웃 처리 함수 (API 호출 포함)
   const handleLogout = async () => {
     try {
-      const token = "YOUR_BEARER_TOKEN";
-      const response = await fetch("/api/auth/logout", {
-        method: "POST",
+      const token = 'YOUR_BEARER_TOKEN';
+      const response = await fetch('/api/auth/logout', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
       });
 
       if (response.ok) {
-        localStorage.removeItem("authToken");
-        router.push("/");
+        localStorage.removeItem('authToken');
+        router.push('/');
       } else {
         const errorMsg = await response.text();
-        console.error("로그아웃 API 실패:", errorMsg);
+        console.error('로그아웃 API 실패:', errorMsg);
       }
     } catch (error) {
-      console.error("로그아웃 API 호출 중 에러 발생:", error);
+      console.error('로그아웃 API 호출 중 에러 발생:', error);
     }
   };
 
   // 회원 탈퇴 처리 함수 (비동기)
   const handleDeleteAccount = async () => {
     try {
-      const token = "YOUR_BEARER_TOKEN";
-      const response = await fetch("/api/deleteAccount", {
-        method: "DELETE",
+      const token = 'YOUR_BEARER_TOKEN';
+      const response = await fetch('/api/deleteAccount', {
+        method: 'DELETE',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           // 필요 시 인증 토큰 등을 헤더에 추가
         },
       });
 
       if (response.ok) {
-        localStorage.removeItem("authToken");
-        router.push("/");
+        localStorage.removeItem('authToken');
+        router.push('/');
       } else {
-        console.error("회원 탈퇴 실패");
+        console.error('회원 탈퇴 실패');
       }
     } catch (error) {
-      console.error("회원 탈퇴 중 에러 발생", error);
+      console.error('회원 탈퇴 중 에러 발생', error);
     }
   };
 
@@ -62,7 +63,7 @@ const AccountPage = () => {
     <Container>
       <Header>
         <BackButton onClick={() => router.back()}>
-          <img src="/icon_back.svg" alt="뒤로 가기" />
+          <StyledImage src="/icon_back.svg" alt="뒤로 가기" />
         </BackButton>
         <TitleWrapper>
           <TitleContainer>
@@ -73,10 +74,10 @@ const AccountPage = () => {
 
       <MenuContainer>
         {/* 비밀번호 변경 버튼: 클릭 시 지정된 페이지로 이동 (주소는 플레이스홀더) */}
-        <MenuItem onClick={() => router.push("./account/currentPassword")}>
+        <MenuItem onClick={() => router.push('./account/currentPassword')}>
           <Icon>
             <IconWrapper>
-              <img src="/icon_lock.svg" alt="비밀번호 변경" />
+              <StyledImage src="/icon_lock.svg" alt="비밀번호 변경" />
             </IconWrapper>
             <span>비밀번호 변경</span>
           </Icon>
@@ -84,7 +85,7 @@ const AccountPage = () => {
         <MenuItem onClick={() => setShowTermsOverlay(true)}>
           <Icon>
             <IconWrapper>
-              <img src="/icon_filecheck.svg" alt="이용 약관" />
+              <StyledImage src="/icon_filecheck.svg" alt="이용 약관" />
             </IconWrapper>
             <span>이용 약관</span>
           </Icon>
@@ -92,7 +93,7 @@ const AccountPage = () => {
         <MenuItem onClick={() => setShowLogoutModal(true)}>
           <Icon>
             <IconWrapper>
-              <img src="/icon_out.svg" alt="로그아웃" />
+              <StyledImage src="/icon_out.svg" alt="로그아웃" />
             </IconWrapper>
             <span>로그아웃</span>
           </Icon>
@@ -100,7 +101,7 @@ const AccountPage = () => {
         <MenuItem className="danger" onClick={() => setShowDeleteModal(true)}>
           <Icon>
             <IconWrapper>
-              <img src="/icon_profile_x.svg" alt="회원 탈퇴" />
+              <StyledImage src="/icon_profile_x.svg" alt="회원 탈퇴" />
             </IconWrapper>
             <span>회원 탈퇴</span>
           </Icon>
@@ -111,7 +112,7 @@ const AccountPage = () => {
         <TermsContainer show={showTermsOverlay}>
           <TermsOverlayHeader>
             <BackButton onClick={() => setShowTermsOverlay(false)}>
-              <img src="/icon_back.svg" alt="뒤로 가기" />
+              <StyledImage src="/icon_back.svg" alt="뒤로 가기" />
             </BackButton>
           </TermsOverlayHeader>
           <ScrollableContent>
@@ -119,30 +120,30 @@ const AccountPage = () => {
             <Clause>
               <ClauseNumber>제 1조 (목적)</ClauseNumber>
               <ClauseContent>
-                이 약관은 토스트잇의 이용 조건 및 절차, 회원과 서비스 제공자의
-                권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.
+                이 약관은 토스트잇의 이용 조건 및 절차, 회원과 서비스 제공자의 권리, 의무 및 책임
+                사항을 규정함을 목적으로 합니다.
               </ClauseContent>
             </Clause>
             <Clause>
               <ClauseNumber>제 2조 (정의)</ClauseNumber>
               <ClauseContent>
-                1. "서비스"란 [토스트잇 팀]이 제공하는 메모 관련 모바일 웹 서비스를
+                1. &quot;서비스&quot;란 [토스트잇 팀]이 제공하는 메모 관련 모바일 웹 서비스를
                 의미합니다.
               </ClauseContent>
               <ClauseContent>
-                2. "회원"이란 서비스에 가입하여 이 약관에 따라 서비스를 이용하는 자를
+                2. &quot;회원&quot;이란 서비스에 가입하여 이 약관에 따라 서비스를 이용하는 자를
                 의미합니다.
               </ClauseContent>
               <ClauseContent>
-                3. "유료 멤버십"이란 회원이 추가 요금을 지불하고 이용할 수 있는 프리미엄
+                3. &quot;유료 멤버십&quot;이란 회원이 추가 요금을 지불하고 이용할 수 있는 프리미엄
                 서비스 기능을 의미합니다.
               </ClauseContent>
               <ClauseContent>
-                4. "토스트"란 회원이 서비스에 저장한 메모 데이터를 의미합니다.
+                4. &quot;토스트&quot;란 회원이 서비스에 저장한 메모 데이터를 의미합니다.
               </ClauseContent>
               <ClauseContent>
-                5. "갤러리"란 회원이 서비스에 저장된 "토스트"가 카테고리 별로 분류되어있는,
-                열람이 가능한 창을 의미합니다.
+                5. &quot;갤러리&quot;란 회원이 서비스에 저장된 &quot;토스트&quot;가 카테고리 별로
+                분류되어있는, 열람이 가능한 창을 의미합니다.
               </ClauseContent>
             </Clause>
             <Clause>
@@ -150,35 +151,33 @@ const AccountPage = () => {
               <ClauseContent>
                 1. 회원가입은 이메일 및 비밀번호를 이용하거나 카카오톡 계정을 통해 가능합니다.
               </ClauseContent>
+              <ClauseContent>2. 만 14세 미만의 사용자는 회원가입이 제한됩니다.</ClauseContent>
               <ClauseContent>
-                2. 만 14세 미만의 사용자는 회원가입이 제한됩니다.
+                3. 회원은 정확하고 최신의 정보를 제공해야 하며, 이를 위반하여 발생한 불이익에 대한
+                책임은 회원에게 있습니다.
               </ClauseContent>
               <ClauseContent>
-                3. 회원은 정확하고 최신의 정보를 제공해야 하며, 이를 위반하여 발생한
-                불이익에 대한 책임은 회원에게 있습니다.
-              </ClauseContent>
-              <ClauseContent>
-                4. 계정 정보 관리 책임은 회원에게 있으며, 회원은 계정을 제3자와 공유하거나
-                양도할 수 없습니다.
+                4. 계정 정보 관리 책임은 회원에게 있으며, 회원은 계정을 제3자와 공유하거나 양도할 수
+                없습니다.
               </ClauseContent>
             </Clause>
             <Clause>
               <ClauseNumber>제 4조 (서비스 제공 및 변경)</ClauseNumber>
               <ClauseContent>
-                1. 서비스는 회원의 메모 작성, 저장, 카테고리화, 불러오기, 갤러리 열람
-                기능을 제공합니다.
+                1. 서비스는 회원의 메모 작성, 저장, 카테고리화, 불러오기, 갤러리 열람 기능을
+                제공합니다.
               </ClauseContent>
               <ClauseContent>
-                2. 서비스는 회원의 데이터를 저장하지만, 공유 기능은 지원하지 않으며,
-                복사/붙여넣기를 통해서만 메모를 외부로 공유할 수 있습니다.
+                2. 서비스는 회원의 데이터를 저장하지만, 공유 기능은 지원하지 않으며, 복사/붙여넣기를
+                통해서만 메모를 외부로 공유할 수 있습니다.
               </ClauseContent>
               <ClauseContent>
-                3. 유료 멤버십 구독 시 아래와 같은 추가 기능이 제공됩니다: 메모 제목이 없는
-                경우 AI 기반 자동 요약 기능, 메모 RECAP 기능, 8개의 방위로 구성된 카테고리 제공.
+                3. 유료 멤버십 구독 시 아래와 같은 추가 기능이 제공됩니다: 메모 제목이 없는 경우 AI
+                기반 자동 요약 기능, 메모 RECAP 기능, 8개의 방위로 구성된 카테고리 제공.
               </ClauseContent>
               <ClauseContent>
-                4. 서비스 내용은 운영상, 기술상의 필요에 따라 변경될 수 있으며, 변경 사항은
-                사전에 공지합니다.
+                4. 서비스 내용은 운영상, 기술상의 필요에 따라 변경될 수 있으며, 변경 사항은 사전에
+                공지합니다.
               </ClauseContent>
               <ClauseContent>
                 5. 서비스 종료 시, 남은 유료 멤버십 기간에 대한 비례 환불이 제공됩니다.
@@ -187,12 +186,12 @@ const AccountPage = () => {
             <Clause>
               <ClauseNumber>제 5조 (개인정보 보호)</ClauseNumber>
               <ClauseContent>
-                1. 회사는 회원의 개인정보를 "개인정보처리방침"에 따라 보호하며, 회원은
+                1. 회사는 회원의 개인정보를 &quot;개인정보처리방침&quot;에 따라 보호하며, 회원은
                 이를 확인할 수 있습니다.
               </ClauseContent>
               <ClauseContent>
-                2. 회원의 개인정보는 회원의 동의 없이 제3자에게 제공되지 않습니다. 단,
-                법률에 의거한 요청은 예외로 합니다.
+                2. 회원의 개인정보는 회원의 동의 없이 제3자에게 제공되지 않습니다. 단, 법률에 의거한
+                요청은 예외로 합니다.
               </ClauseContent>
               <ClauseContent>
                 3. 회원의 개인정보는 서비스 종료 또는 회원 탈퇴 시, 최대 90일 이내에 안전하게
@@ -204,50 +203,46 @@ const AccountPage = () => {
               <ClauseContent>
                 1. 회원은 서비스를 이용함에 있어 다음 행위를 해서는 안 됩니다:
               </ClauseContent>
-              <ClauseContent>
-                - 타인의 계정을 도용하거나 부정 이용하는 행위
-              </ClauseContent>
-              <ClauseContent>
-                - 서비스의 정상적인 운영을 방해하는 행위
-              </ClauseContent>
+              <ClauseContent>- 타인의 계정을 도용하거나 부정 이용하는 행위</ClauseContent>
+              <ClauseContent>- 서비스의 정상적인 운영을 방해하는 행위</ClauseContent>
               <ClauseContent>
                 - 악성 코드를 배포하거나 비정상적인 방식으로 서버에 과부하를 유발하는 행위
               </ClauseContent>
+              <ClauseContent>- 기타 법령 및 약관을 위반하는 행위</ClauseContent>
               <ClauseContent>
-                - 기타 법령 및 약관을 위반하는 행위
-              </ClauseContent>
-              <ClauseContent>
-                2. 회원은 서비스 이용 시 본인의 데이터를 정기적으로 백업해야 하며, 데이터 손실에 대한
-                책임은 회원에게 있습니다.
+                2. 회원은 서비스 이용 시 본인의 데이터를 정기적으로 백업해야 하며, 데이터 손실에
+                대한 책임은 회원에게 있습니다.
               </ClauseContent>
             </Clause>
             <Clause>
               <ClauseNumber>제 7조 (서비스 중단)</ClauseNumber>
               <ClauseContent>
-                1. 회사는 천재지변, 시스템 장애, 운영 상의 필요 등으로 서비스 제공을
-                일시적으로 중단할 수 있습니다.
+                1. 회사는 천재지변, 시스템 장애, 운영 상의 필요 등으로 서비스 제공을 일시적으로
+                중단할 수 있습니다.
               </ClauseContent>
               <ClauseContent>
                 2. 서비스 중단 시 회원에게 사전 공지하며, 불가피한 경우 사후 공지할 수 있습니다.
               </ClauseContent>
               <ClauseContent>
-                3. 서비스 중단으로 인해 회원이 입은 피해에 대해서는 회사의 고의 또는 중대한 과실이 없는 한
-                책임을 지지 않습니다.
+                3. 서비스 중단으로 인해 회원이 입은 피해에 대해서는 회사의 고의 또는 중대한 과실이
+                없는 한 책임을 지지 않습니다.
               </ClauseContent>
             </Clause>
             <Clause>
               <ClauseNumber>제 8조 (유료 멤버십 및 결제)</ClauseNumber>
               <ClauseContent>
-                1. 유료 멤버십 구독은 회원의 선택 사항이며, 결제는 사전에 명시된 방법에 따라 이루어집니다.
+                1. 유료 멤버십 구독은 회원의 선택 사항이며, 결제는 사전에 명시된 방법에 따라
+                이루어집니다.
               </ClauseContent>
               <ClauseContent>
-                2. 결제 취소 및 환불은 관련 법률 및 회사의 "결제 및 환불 정책"에 따릅니다.
+                2. 결제 취소 및 환불은 관련 법률 및 회사의 &quot;결제 및 환불 정책&quot;에 따릅니다.
               </ClauseContent>
               <ClauseContent>
                 3. 미성년자는 법정대리인의 동의 없이 유료 멤버십 구독이 불가능합니다.
               </ClauseContent>
               <ClauseContent>
-                4. 결제 실패 시, 회사는 회원에게 이를 통지하고, 지정된 기간 내에 결제 방법을 수정할 기회를 제공합니다.
+                4. 결제 실패 시, 회사는 회원에게 이를 통지하고, 지정된 기간 내에 결제 방법을 수정할
+                기회를 제공합니다.
               </ClauseContent>
             </Clause>
             <Clause>
@@ -259,7 +254,8 @@ const AccountPage = () => {
                 2. 회사는 회원의 귀책 사유로 발생한 손해에 대해 책임을 지지 않습니다.
               </ClauseContent>
               <ClauseContent>
-                3. 회사는 기술적 오류로 인한 데이터 손실에 대해 최대한 복구를 지원하나, 이를 보장하지는 않습니다.
+                3. 회사는 기술적 오류로 인한 데이터 손실에 대해 최대한 복구를 지원하나, 이를
+                보장하지는 않습니다.
               </ClauseContent>
             </Clause>
             <Clause>
@@ -268,14 +264,13 @@ const AccountPage = () => {
                 1. 이 약관과 관련하여 발생한 분쟁은 대한민국 법령을 따릅니다.
               </ClauseContent>
               <ClauseContent>
-                2. 회사와 회원 간 분쟁은 상호 협의하여 해결하며, 협의가 어려울 경우 관할 법원에 해결을 요청할 수 있습니다.
+                2. 회사와 회원 간 분쟁은 상호 협의하여 해결하며, 협의가 어려울 경우 관할 법원에
+                해결을 요청할 수 있습니다.
               </ClauseContent>
             </Clause>
             <Clause>
               <ClauseNumber>부칙</ClauseNumber>
-              <ClauseContent>
-                이 약관은 2025년 2월 15일부터 시행됩니다.
-              </ClauseContent>
+              <ClauseContent>이 약관은 2025년 2월 15일부터 시행됩니다.</ClauseContent>
             </Clause>
           </ScrollableContent>
         </TermsContainer>
@@ -287,9 +282,7 @@ const AccountPage = () => {
             <ModalTitle>로그아웃 할까요?</ModalTitle>
             <ModalDescription>로그아웃해도 메모는 남아있어요.</ModalDescription>
             <ModalActions>
-              <CancelButton onClick={() => setShowLogoutModal(false)}>
-                취소
-              </CancelButton>
+              <CancelButton onClick={() => setShowLogoutModal(false)}>취소</CancelButton>
               <LogoutButton onClick={handleLogout}>로그아웃</LogoutButton>
             </ModalActions>
           </ModalContent>
@@ -302,9 +295,7 @@ const AccountPage = () => {
             <ModalTitle>토스트잇에서 탈퇴할까요?</ModalTitle>
             <ModalDescription>탈퇴 시 모든 메모가 사라져요.</ModalDescription>
             <ModalActions>
-              <CancelButton onClick={() => setShowDeleteModal(false)}>
-                취소
-              </CancelButton>
+              <CancelButton onClick={() => setShowDeleteModal(false)}>취소</CancelButton>
               <DeleteButton onClick={handleDeleteAccount}>탈퇴</DeleteButton>
             </ModalActions>
           </ModalContent>
@@ -324,7 +315,7 @@ const TermsContainer = styled.div`
   background: rgba(0, 0, 0, 0.5);
   backdrop-filter: blur(4px);
   position: absolute;
-  top: ${({ show }) => (show ? "0" : "100%")};
+  top: ${({ show }) => (show ? '0' : '100%')};
   z-index: 10;
   display: flex;
   flex-direction: column;
@@ -344,7 +335,7 @@ const ScrollableContent = styled.div`
   width: 343px;
   overflow-y: auto;
   padding: 0 16px;
-  
+
   /* 스크롤바 숨기기 */
   -ms-overflow-style: none;
   scrollbar-width: none;
@@ -354,7 +345,7 @@ const ScrollableContent = styled.div`
 `;
 
 const TermsTitle = styled.h2`
-  color: var(--ivory, #E5DCCA);
+  color: var(--ivory, #e5dcca);
   font-family: SUIT;
   font-size: 20px;
   font-style: normal;
@@ -382,7 +373,7 @@ const ClauseContent = styled.div`
 const Container = styled.div`
   width: 100%;
   height: 100vh;
-  background-color: var(--ivory, #E5DCCA);
+  background-color: var(--ivory, #e5dcca);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -564,3 +555,5 @@ const DeleteButton = styled.button`
   font-weight: bold;
   cursor: pointer;
 `;
+
+const StyledImage = styled(Image)``;
