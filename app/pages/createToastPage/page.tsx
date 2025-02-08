@@ -1,8 +1,8 @@
 /**
  * 파일명: createToastPage/page.tsx
- * 작성일: 2025-01-25
+ * 작성일: 2025-02-08
  * 작성자: 이서연
- * 설명: PR 최종
+ * 설명: 회원가입 시 온보딩 1회 구현 완료
  */
 
 'use client';
@@ -22,11 +22,14 @@ export default function CreateToastPage() {
   const { message } = useAuth();
 
   useEffect(() => {
-    // 최초 방문 여부 확인 후 온보딩 표시
-    if (message == '회원가입이 완료되었습니다.') {
+    // localStorage에 "onboardingShown" 값이 없을 때만 온보딩을 표시
+    const onboardingShown = localStorage.getItem('onboardingShown');
+
+    if (message === '회원가입이 완료되었습니다.' && !onboardingShown) {
       setShowOnboarding(true);
+      localStorage.setItem('onboardingShown', 'true'); // 온보딩이 표시된 적 있음을 저장
     }
-  }, []);
+  }, [message]); // ✅ message 값이 변경될 때만 실행되도록 설정
 
   // ------------------------------------------------------------- 💖임사랑 - SaveToast 관련 추가되는 부분
   const [isLongPress, setIsLongPress] = useState(false);
