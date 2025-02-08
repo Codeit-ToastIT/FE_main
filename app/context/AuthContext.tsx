@@ -5,9 +5,11 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 interface AuthContextType {
   token: string | null;
   userId: string | null; // ✅ userId 추가
+  message: string | null;
   isLoggedIn: boolean;
   login: (token: string) => void;
   loginUser: (loginUserId: string) => void; // ✅ loginUser 추가
+  signupMessage: (signupMessage: string) => void;
   logout: () => void;
 }
 
@@ -26,6 +28,14 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // ✅ 초기값을 localStorage에서 가져오기 (SSR 방지)
     if (typeof window !== 'undefined') {
       return localStorage.getItem('userId');
+    }
+    return null;
+  });
+
+  const [message, setMessage] = useState<string | null>(() => {
+    // ✅ 초기값을 localStorage에서 가져오기 (SSR 방지)
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('message');
     }
     return null;
   });
@@ -50,6 +60,15 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     }
   }, [userId]);
 
+  // ✅ localStorage에서 message를 가져와 상태 업데이트
+  useEffect(() => {
+    const storedMessage = localStorage.getItem('message');
+    if (storedMessage && storedMessage !== message) {
+      setMessage(storedMessage);
+      setIsLoggedIn(true);
+    }
+  }, [message]);
+
   // ✅ 로그인 시 토큰 저장 및 상태 업데이트
   const login = (newToken: string) => {
     localStorage.setItem('token', newToken);
@@ -64,6 +83,13 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setIsLoggedIn(true);
   };
 
+  // ✅ 회원가입 시 message 저장 및 상태 업데이트
+  const signupMessage = (signupMessage: string) => {
+    localStorage.setItem('message', signupMessage);
+    setMessage(signupMessage);
+    setIsLoggedIn(true);
+  };
+
   // ✅ 로그아웃 시 토큰 및 userId 삭제
   const logout = () => {
     localStorage.removeItem('token');
@@ -74,7 +100,9 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ token, userId, isLoggedIn, login, loginUser, logout }}>
+    <AuthContext.Provider
+      value={{ token, userId, message, isLoggedIn, login, loginUser, signupMessage, logout }}
+    >
       {children}
     </AuthContext.Provider>
   );
