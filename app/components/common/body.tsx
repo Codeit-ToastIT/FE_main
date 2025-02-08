@@ -45,7 +45,14 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
 
   const [showPlus, setShowPlus] = useState(false);
 
-  const [slides, setSlides] = useState<number[]>([1, 2, 3]);
+  const [_slides, setSlides] = useState<string[]>([]); // ✅ 초기값을 빈 배열로 설정
+
+  useEffect(() => {
+    if (memos.length > 0) {
+      setSlides(memos.slice(0, 3).map((memo) => String(memo.id))); // ✅ 첫 3개의 메모 id를 slides에 저장
+    }
+  }, [memos]); // ✅ memos가 변경될 때만 실행
+
   const [selectedSlide, setSelectedSlide] = useState<string | null>('');
   const [showModal, setShowModal] = useState(false);
   const [_swiperKey, setSwiperKey] = useState(0); // ✅ Swiper 리렌더링을 위한 Key 추가
@@ -185,6 +192,11 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
   // ✅ 카테고리 목록 가져오기
   const [lastCategoryId, setLastCategoryId] = useState('');
 
+  // ✅ useEffect에서 카테고리 가져오기 실행
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
   const fetchCategories = async () => {
     try {
       console.log(`🔗 요청 URL: ${API_BASE_URL}/api/categories/${userId}`);
@@ -274,7 +286,7 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
       if (response.ok) {
         console.log('✅ 기본 메모 생성 성공(서연):', data);
         setMemos((prevMemos) => [data.memo, ...prevMemos].slice(0, 3));
-        fetchMemos(categoryId); // ✅ 최신 메모 다시 가져오기
+        await fetchMemos(categoryId); // ✅ 최신 메모 다시 가져오기
       } else {
         console.error('❌ 기본 메모 생성 실패(서연):', data.message);
       }
@@ -352,11 +364,6 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
     }
   };
 
-  // ✅ useEffect에서 카테고리 가져오기 실행
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
   useEffect(() => {
     const bodyElement = bodyRef.current;
     if (!bodyElement) return;
@@ -398,13 +405,13 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
 
     if (isSwiperActive) return;
 
-    // ✅ 드래그 거리가 240px 이상이면 클릭이 아닌 드래그로 간주
-    if (Math.abs(deltaX) > 240) {
+    // ✅ 드래그 거리가 100px 이상이면 클릭이 아닌 드래그로 간주
+    if (Math.abs(deltaX) > 100) {
       isClickRef.current = false;
     }
 
     // ✅ 드래그 거리가 100px 이상이어야 실제로 "드래그 중" 상태로 인식
-    if (Math.abs(deltaX) > 150) {
+    if (Math.abs(deltaX) > 100) {
       setDragging(true);
     } else {
       if (!dragging) return; // 아직 드래그 인식 전이면 위치 이동 안 함
@@ -479,20 +486,6 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
       setTimeout(() => bodyRef.current && (bodyRef.current.style.transition = ''), 300);
     }
   };
-
-  // ✅ 이벤트 리스너를 추가하는 방식
-  useEffect(() => {
-    const handleMouseUpGlobal = () => {
-      if (dragging) {
-        handleMouseUp();
-      }
-    };
-
-    window.addEventListener('mouseup', handleMouseUpGlobal);
-    return () => {
-      window.removeEventListener('mouseup', handleMouseUpGlobal);
-    };
-  }, [dragging]);
 
   // 💖 Swiper 슬라이드 변경 시 활성 메모 id 전달 (02/08 초기 렌더링 메모 id 전달을 위해 수정된 부분)
   const handleSlideChange = (swiper: any) => {

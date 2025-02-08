@@ -80,9 +80,21 @@ export default function MemoInput() {
   return (
     <Container>
       {/* ✅ 상태를 props로 전달 */}
-      <StyledMemoHeader toastId={toastId} title={title} setTitle={setTitle} content={content} isBurnt={false} />
+      <StyledMemoHeader
+        toastId={toastId}
+        title={title}
+        setTitle={setTitle}
+        content={content}
+        isBurnt={false}
+      />
       <HeaderBottomStyle />
-      <StyledMemoBody toastId={toastId} title={title} content={content} setContent={setContent} isBurnt={false} />
+      <StyledMemoBody
+        toastId={toastId}
+        title={title}
+        content={content}
+        setContent={setContent}
+        isBurnt={false}
+      />
     </Container>
   );
 }

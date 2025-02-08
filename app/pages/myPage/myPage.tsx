@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import styled from 'styled-components';
+
 import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "../../api/api";
 import { useAuth } from '../../context/AuthContext';
@@ -83,9 +84,7 @@ const MyPage: React.FC<MyPageProps> = ({ isPremiumUser }) => {
     }
   };
 
-  const userPlan = isPremiumUser
-    ? "메이플 시럽 버터 토스트 플랜 이용중"
-    : "토스트 플랜 이용중";
+  const userPlan = isPremiumUser ? '메이플 시럽 버터 토스트 플랜 이용중' : '토스트 플랜 이용중';
 
   return (
     <PageContainer>

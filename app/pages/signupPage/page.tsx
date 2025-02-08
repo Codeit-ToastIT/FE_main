@@ -91,7 +91,7 @@ const SignupPage = () => {
   const inputRef2 = useRef<HTMLInputElement | null>(null);
 
   const { email } = useEmail();
-  const { login, loginUser } = useAuth();
+  const { login, loginUser, signupMessage } = useAuth();
   const [pw, setPw] = useState('');
   const [pwCheck, setPwCheck] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
@@ -192,6 +192,7 @@ const SignupPage = () => {
 
       const data = await response.json(); // 응답 데이터 파싱
       console.log(data);
+      signupMessage(data.message);
 
       // 회원가입 성공 시 사용자 정보를 사용하여 로그인 처리
       if (data.user) {
