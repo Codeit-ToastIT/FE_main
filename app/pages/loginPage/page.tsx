@@ -204,8 +204,8 @@ const LoginPage = () => {
               autoComplete="off"
             />
             <IconEye
-              src={showPw ? iconEyeClosed : iconEyeOpen} // 상태에 따라 아이콘 변경
-              alt={showPw ? '비밀번호 숨기기' : '비밀번호 보이기'} // 대체 텍스트 추가
+              src={showPw ? iconEyeOpen : iconEyeClosed} // 상태에 따라 아이콘 변경
+              alt={showPw ? '비밀번호 보이기' : '비밀번호 숨기기'} // 대체 텍스트 추가
               onClick={() => setShowPw((prev) => !prev)}
             />
           </div>
