@@ -74,7 +74,7 @@ export default function EditingToast({
     };
 
     saveContent();
-  }, [debouncedContent]); // ✅ debouncedContent가 변경될 때만 PATCH 요청 실행
+  }, [title, toastId, token, debouncedContent]); // ✅ debouncedContent가 변경될 때 PATCH 요청 실행
 
   return (
     <div>

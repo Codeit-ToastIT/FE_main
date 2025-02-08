@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import styled from 'styled-components';
 
-import { useRouter } from "next/navigation";
-import { API_BASE_URL } from "../../api/api";
+import { useRouter } from 'next/navigation';
+import { API_BASE_URL } from '../../api/api';
 import { useAuth } from '../../context/AuthContext';
 import { useEmail } from '../../context/EmailContext';
 
@@ -16,8 +16,8 @@ const MyPage: React.FC<MyPageProps> = ({ isPremiumUser }) => {
   const { token, userId } = useAuth(); // AuthContext에서 토큰과 userId를 가져옴
 
   // 사용자 이메일 (초기값은 기본 이메일)
-  const { email } = useEmail(); 
-  const [userEmail, setUserEmail] = useState("test@example.com");
+  const { email } = useEmail();
+  const [userEmail, setUserEmail] = useState('test@example.com');
 
   // 수정 모드 활성화 상태
   const [isEditing, setIsEditing] = useState(false);
@@ -36,10 +36,10 @@ const MyPage: React.FC<MyPageProps> = ({ isPremiumUser }) => {
     const fetchUserData = async () => {
       try {
         const response = await fetch(`${API_BASE_URL}/api/auth/signup`, {
-          method: "POST",
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
           },
         });
         if (response.ok) {
@@ -47,10 +47,10 @@ const MyPage: React.FC<MyPageProps> = ({ isPremiumUser }) => {
           // 응답 예시: { email: string, ... }
           setUserEmail(data.email);
         } else {
-          console.error("사용자 정보를 불러오지 못했습니다.");
+          console.error('사용자 정보를 불러오지 못했습니다.');
         }
       } catch (error) {
-        console.error("사용자 API 호출 중 에러 발생:", error);
+        console.error('사용자 API 호출 중 에러 발생:', error);
       }
     };
 
@@ -64,8 +64,8 @@ const MyPage: React.FC<MyPageProps> = ({ isPremiumUser }) => {
         const response = await fetch(`${API_BASE_URL}/api/categories/${userId}`, {
           method: 'GET',
           headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
           },
         });
         if (response.ok) {
@@ -73,8 +73,9 @@ const MyPage: React.FC<MyPageProps> = ({ isPremiumUser }) => {
           // data 형식 예시: { top: string, right: string, bottom: string, left: string }
           const categoryId = data.categories[4]?.id;
           if (categoryId) {
-            setCategories(categoryId);}
-            console.log("API 호출 성공", data);
+            setCategories(categoryId);
+          }
+          console.log('API 호출 성공', data);
         } else {
           console.error('카테고리 정보를 불러오지 못했습니다.');
         }
@@ -84,7 +85,7 @@ const MyPage: React.FC<MyPageProps> = ({ isPremiumUser }) => {
     };
 
     fetchCategories();
-  }, [userId]);
+  }, [token, userId]);
 
   // 특정 카테고리 이름을 업데이트하는 함수 (PATCH /api/categories/{categoryId})
   const updateCategory = async (categoryId: string, newName: string) => {
@@ -92,8 +93,8 @@ const MyPage: React.FC<MyPageProps> = ({ isPremiumUser }) => {
       const response = await fetch(`${API_BASE_URL}/api/categories/${categoryId}`, {
         method: 'PATCH',
         headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ name: newName }),
       });
@@ -118,9 +119,7 @@ const MyPage: React.FC<MyPageProps> = ({ isPremiumUser }) => {
     }
   };
 
-  const userPlan = isPremiumUser
-    ? "메이플 시럽 버터 토스트 플랜 이용중"
-    : "토스트 플랜 이용중";
+  const userPlan = isPremiumUser ? '메이플 시럽 버터 토스트 플랜 이용중' : '토스트 플랜 이용중';
 
   return (
     <PageContainer>

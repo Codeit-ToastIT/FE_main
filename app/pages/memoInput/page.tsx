@@ -40,6 +40,7 @@ export default function MemoInput() {
 
   useEffect(() => {
     fetchCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ✅ fetchMemos에 원하는 카테고리를 전달하기 위해 작성한 코드
@@ -80,9 +81,21 @@ export default function MemoInput() {
   return (
     <Container>
       {/* ✅ 상태를 props로 전달 */}
-      <StyledMemoHeader toastId={toastId} title={title} setTitle={setTitle} content={content} isBurnt={false} />
+      <StyledMemoHeader
+        toastId={toastId}
+        title={title}
+        setTitle={setTitle}
+        content={content}
+        isBurnt={false}
+      />
       <HeaderBottomStyle />
-      <StyledMemoBody toastId={toastId} title={title} content={content} setContent={setContent} isBurnt={false} />
+      <StyledMemoBody
+        toastId={toastId}
+        title={title}
+        content={content}
+        setContent={setContent}
+        isBurnt={false}
+      />
     </Container>
   );
 }

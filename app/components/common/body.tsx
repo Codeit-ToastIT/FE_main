@@ -192,6 +192,12 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
   // ✅ 카테고리 목록 가져오기
   const [lastCategoryId, setLastCategoryId] = useState('');
 
+  // ✅ useEffect에서 카테고리 가져오기 실행
+  useEffect(() => {
+    fetchCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const fetchCategories = async () => {
     try {
       console.log(`🔗 요청 URL: ${API_BASE_URL}/api/categories/${userId}`);
@@ -359,11 +365,6 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
     }
   };
 
-  // ✅ useEffect에서 카테고리 가져오기 실행
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
   useEffect(() => {
     const bodyElement = bodyRef.current;
     if (!bodyElement) return;
@@ -487,20 +488,6 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
     }
   };
 
-  // // ✅ 이벤트 리스너를 추가하는 방식
-  // useEffect(() => {
-  //   const handleMouseUpGlobal = () => {
-  //     if (dragging) {
-  //       handleMouseUp();
-  //     }
-  //   };
-
-  //   window.addEventListener('mouseup', handleMouseUpGlobal);
-  //   return () => {
-  //     window.removeEventListener('mouseup', handleMouseUpGlobal);
-  //   };
-  // }, [dragging]);
-
   // 💖 Swiper 슬라이드 변경 시 활성 메모 id 전달 (02/08 초기 렌더링 메모 id 전달을 위해 수정된 부분)
   const handleSlideChange = (swiper: any) => {
     if (!memos.length) return; // memos가 비어있으면 실행하지 않음
@@ -525,6 +512,7 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
         onActiveMemoChange(memos[0].id);
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [memos]); // memos가 설정될 때 실행
 
   //-------------------------------🍞새로운 토스트 추가 로직 구현 완료🍞-------------------------------
