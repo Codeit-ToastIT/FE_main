@@ -25,8 +25,6 @@ import { API_BASE_URL } from '../../api/api';
 import { useAuth } from '../../context/AuthContext';
 
 interface BodyProps {
-  // deletedMemoId?: string; // ✅ 삭제된 메모 ID를 props로 받음
-  // deleteSuccess: boolean;
   // 💖 활성 메모 id를 상위로 전달할 콜백 prop 추가
   onActiveMemoChange?: (id: string) => void;
 }
@@ -84,8 +82,7 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
     }
   }, [showDeleteErrorMessage]);
 
-  // ✅ editing 화면에서 삭제버튼 클릭 시 삭제 확인하는 로직
-  //    localStorage에서 삭제된 메모 ID 확인 후 필터링
+  // ✅ editing 화면에서 삭제버튼 클릭 시 삭제 확인하는 로직 localStorage에서 삭제된 메모 ID 확인 후 필터링
   useEffect(() => {
     const deletedMemoId = localStorage.getItem('deletedMemoId');
     const deleteSuccess = localStorage.getItem('deleteSuccess');
@@ -107,8 +104,6 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
       localStorage.removeItem('deleteSuccess');
     }
   }, []);
-
-  //-------------------------------------------------------------
 
   //-------------------------------🍞토스트 삭제 로직 구현 완료🍞-------------------------------
 
@@ -183,7 +178,7 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
 
   //-------------------------------🍞토스트 삭제 로직 구현 완료🍞-------------------------------
 
-  //-------------------------------🍞새로운 토스트 추가 로직 구현 완료🍞(터치이벤트, 마우스 이벤트 순서)-------------------------------
+  //-------------------------------🍞새로운 토스트 추가 로직 구현 완료🍞(터치 이벤트, 마우스 이벤트 순서)-------------------------------
 
   // ✅ 카테고리 목록 가져오기
   const [lastCategoryId, setLastCategoryId] = useState('');
@@ -378,8 +373,17 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
   }, [dragging]);
 
   // ✅ 새로운 토스트 추가 모션 로직 (마우스 이벤트)
+  const isClickRef = useRef(false);
+
   const handleMouseDown = (e: React.MouseEvent) => {
+    // ✅ 휴지통 버튼을 클릭했을 때는 드래그 방지
+    if ((e.target as HTMLElement).closest('.no-drag')) {
+      setDragging(false);
+      return;
+    }
+
     setDragging(true);
+    isClickRef.current = true; // 클릭으로 간주
     offsetXRef.current = e.clientX;
   };
 
@@ -392,8 +396,13 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
 
     if (isSwiperActive) return;
 
-    // ✅ 드래그 거리가 50px 이상이어야 실제로 "드래그 중" 상태로 인식
-    if (Math.abs(deltaX) > 50) {
+    // ✅ 드래그 거리가 100px 이상이면 클릭이 아닌 드래그로 간주
+    if (Math.abs(deltaX) > 200) {
+      isClickRef.current = false;
+    }
+
+    // ✅ 드래그 거리가 100px 이상이어야 실제로 "드래그 중" 상태로 인식
+    if (Math.abs(deltaX) > 200) {
       setDragging(true);
     } else {
       if (!dragging) return; // 아직 드래그 인식 전이면 위치 이동 안 함
@@ -410,6 +419,12 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
 
   // ✅ "오른쪽으로 드래그" 시 새로운 메모 생성 (마우스 이벤트)
   const handleMouseUp = async () => {
+    if (isClickRef.current) {
+      // ✅ 클릭이라면 드래그 처리하지 않음
+      setDragging(false);
+      return;
+    }
+
     if (!showPlus || isSwiperActive || !dragging) return;
 
     try {
@@ -516,6 +531,7 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
       onMouseUp={handleMouseUp}
     >
       <IconTrash
+        className="no-drag"
         src={iconTrash}
         alt="Trash"
         onClick={() => selectedSlide !== null && handleModalToggle(selectedSlide)} // ✅ 현재 선택된 슬라이드 삭제
