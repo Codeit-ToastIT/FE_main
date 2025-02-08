@@ -1,10 +1,9 @@
 'use client';
 
-
-import React, { useState } from "react";
-import styled from "styled-components";
-import { useRouter } from "next/navigation";
-import { API_BASE_URL } from "../../../api/api";
+import React, { useState } from 'react';
+import styled from 'styled-components';
+import { useRouter } from 'next/navigation';
+import { API_BASE_URL } from '../../../api/api';
 import { useAuth } from '../../../context/AuthContext';
 import Image from 'next/image';
 import back from '../../../assets/icons/icon_back.svg';
@@ -12,7 +11,6 @@ import password from '../../../assets/icons/icon_lock.svg';
 import terms from '../../../assets/icons/icon_filecheck.svg';
 import logouticon from '../../../assets/icons/icon_out.svg';
 import accountdelete from '../../../assets/icons/icon_profile_x_r.svg';
-
 
 // 계정 메뉴
 const AccountPage = () => {
@@ -26,7 +24,7 @@ const AccountPage = () => {
   const handleLogout = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/logout`, {
-        method: "POST",
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
@@ -35,8 +33,8 @@ const AccountPage = () => {
 
       if (response.ok) {
         logout();
-        console.log("API 호출 성공");
-        router.push("/");
+        console.log('API 호출 성공');
+        router.push('/');
       } else {
         const errorMsg = await response.text();
         console.error('로그아웃 API 실패:', errorMsg);
@@ -50,10 +48,10 @@ const AccountPage = () => {
   const handleDeleteAccount = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/delete`, {
-        method: "DELETE",
+        method: 'DELETE',
         headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`,
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
         },
       });
 
@@ -318,7 +316,7 @@ const AccountPage = () => {
 
 export default AccountPage;
 
-const TermsContainer = styled.div`
+const TermsContainer = styled.div<{ show: boolean }>`
   width: 375px;
   height: 100vh;
   background: rgba(0, 0, 0, 0.5);

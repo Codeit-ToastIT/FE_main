@@ -111,35 +111,13 @@ const StyledBody = styled(Body)`
 
 /* ✅ MyPage 배경 오버레이 */
 const MyPageOverlay = styled.div<{ isOpen: boolean }>`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 89vh;
-  background-color: ${({ isOpen }) => (isOpen ? 'rgba(0, 0, 0, 0.5)' : 'transparent')};
   display: ${({ isOpen }) => (isOpen ? 'flex' : 'none')};
-  justify-content: flex-end;
-  align-items: center;
-  z-index: 999;
+  height: 900px;
 `;
 
 /* ✅ 오른쪽에서 왼쪽으로 슬라이드되는 MyPage */
 const StyledMyPage = styled(MyPage)<{ isOpen: boolean }>`
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 320px;
-  height: 89vh;
-  background-color: rgba(255, 255, 255, 0.9);
-  backdrop-filter: blur(10px);
-  box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  z-index: 1100;
-  border-top-right-radius: 40px;
-  border-bottom-right-radius: 40px;
-
   transform: ${({ isOpen }) => (isOpen ? 'translateX(0)' : 'translateX(100%)')};
-  transition: transform 0.3s ease-in-out;
+  transition: transform 1s ease-in-out;
+  height: 900px;
 `;

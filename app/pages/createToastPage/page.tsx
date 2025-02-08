@@ -148,7 +148,7 @@ const SaveToastWrapper = styled.div`
   z-index: 9999;
 `;
 
-export const SaveMessage = styled.div`
+const SaveMessage = styled.div`
   position: absolute;
   bottom: 180px;
   left: calc(50% - 125.5px);
