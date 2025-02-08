@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react'; 
+import React, { useEffect, useState } from 'react';
+import Image from 'next/image';
 import styled from 'styled-components';
-import { useRouter } from "next/navigation";
+import { useRouter } from 'next/navigation';
 
 interface MyPageProps {
   // isPremiumUser는 여기서 props로 받을 수도 있고, 로그인 API에서 받아올 수도 있습니다.
@@ -9,10 +10,10 @@ interface MyPageProps {
 
 const MyPage: React.FC<MyPageProps> = ({ isPremiumUser }) => {
   const router = useRouter();
-  
+
   // 수정 모드 활성화 상태
   const [isEditing, setIsEditing] = useState(false);
-  
+
   // 카테고리 정보를 저장할 상태 (초기값은 빈 문자열)
   const [categories, setCategories] = useState({
     top: '',
@@ -24,25 +25,23 @@ const MyPage: React.FC<MyPageProps> = ({ isPremiumUser }) => {
   const [tempCategoryName, setTempCategoryName] = useState('');
 
   // 로그인 API로부터 받아온 사용자 정보 상태
-  const [userEmail, setUserEmail] = useState("");
-  const [userId, setUserId] = useState("");
+  const [userEmail, setUserEmail] = useState('');
+  const [userId, setUserId] = useState('');
 
   // 화면에 표시할 이메일 (userEmail이 없으면 기본 이메일 사용)
-  const displayedEmail = userEmail || "test@example.com";
-  const userPlan = isPremiumUser
-    ? "메이플 시럽 버터 토스트 플랜 이용중"
-    : "토스트 플랜 이용중";
+  const displayedEmail = userEmail || 'test@example.com';
+  const userPlan = isPremiumUser ? '메이플 시럽 버터 토스트 플랜 이용중' : '토스트 플랜 이용중';
 
   // 1. 로그인 API를 호출하여 사용자 정보 (이메일, id 등)를 가져옴
   useEffect(() => {
     const fetchLogin = async () => {
       try {
         // 예시: localStorage에 저장된 이메일 사용 (실제 환경에 맞게 수정)
-        const storedEmail = localStorage.getItem("loginEmail") || "test@example.com";
-        const response = await fetch("/api/auth/login", {
-          method: "POST",
+        const storedEmail = localStorage.getItem('loginEmail') || 'test@example.com';
+        const response = await fetch('/api/auth/login', {
+          method: 'POST',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
           },
           body: JSON.stringify({ email: storedEmail }),
         });
@@ -53,10 +52,10 @@ const MyPage: React.FC<MyPageProps> = ({ isPremiumUser }) => {
           setUserId(data.id);
           // 만약 isPremiumUser 정보도 API로부터 받아올 수 있다면 여기에 반영 가능
         } else {
-          console.error("로그인 API 호출 실패:", response.statusText);
+          console.error('로그인 API 호출 실패:', response.statusText);
         }
       } catch (error) {
-        console.error("로그인 API 호출 중 에러 발생:", error);
+        console.error('로그인 API 호출 중 에러 발생:', error);
       }
     };
 
@@ -71,7 +70,7 @@ const MyPage: React.FC<MyPageProps> = ({ isPremiumUser }) => {
         const response = await fetch(`/api/categories/{userId}`, {
           method: 'GET',
           headers: {
-            "Content-Type": "application/json",
+            'Content-Type': 'application/json',
             // 필요 시 Authorization 헤더 추가
           },
         });
@@ -80,10 +79,10 @@ const MyPage: React.FC<MyPageProps> = ({ isPremiumUser }) => {
           // data 형식 예시: { top: string, right: string, bottom: string, left: string }
           setCategories(data);
         } else {
-          console.error("카테고리 정보를 불러오지 못했습니다.");
+          console.error('카테고리 정보를 불러오지 못했습니다.');
         }
       } catch (error) {
-        console.error("카테고리 API 호출 중 에러 발생:", error);
+        console.error('카테고리 API 호출 중 에러 발생:', error);
       }
     };
 
@@ -96,17 +95,17 @@ const MyPage: React.FC<MyPageProps> = ({ isPremiumUser }) => {
       const response = await fetch(`/api/categories/{categoryId}`, {
         method: 'PATCH',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
           // 필요 시 Authorization 헤더 추가
         },
         body: JSON.stringify({ name: newName }),
       });
       if (!response.ok) {
         const errorMsg = await response.text();
-        console.error("카테고리 업데이트 실패:", errorMsg);
+        console.error('카테고리 업데이트 실패:', errorMsg);
       }
     } catch (error) {
-      console.error("카테고리 업데이트 API 호출 중 에러 발생:", error);
+      console.error('카테고리 업데이트 API 호출 중 에러 발생:', error);
     }
   };
 
@@ -115,7 +114,7 @@ const MyPage: React.FC<MyPageProps> = ({ isPremiumUser }) => {
     if (isEditing) {
       // 수정 모드 종료: 입력 중인 내용은 반영하지 않고 취소
       setEditingCategory(null);
-      setTempCategoryName("");
+      setTempCategoryName('');
       setIsEditing(false);
     } else {
       setIsEditing(true);
@@ -130,9 +129,9 @@ const MyPage: React.FC<MyPageProps> = ({ isPremiumUser }) => {
             <Email>{displayedEmail}</Email>
             <Plan>{userPlan}</Plan>
             <CircularMenu>
-              <MenuImage 
-                src={isEditing ? "/4-radial_menu_edit.svg" : "/4-radial_menu.svg"} 
-                alt="Circular Menu" 
+              <MenuImage
+                src={isEditing ? '/4-radial_menu_edit.svg' : '/4-radial_menu.svg'}
+                alt="Circular Menu"
               />
               <MenuItems>
                 {Object.entries(categories).map(([position, name]) => (
@@ -160,7 +159,7 @@ const MyPage: React.FC<MyPageProps> = ({ isPremiumUser }) => {
                             });
                           }
                           setEditingCategory(null);
-                          setTempCategoryName("");
+                          setTempCategoryName('');
                         }}
                         autoFocus
                       />
@@ -171,20 +170,27 @@ const MyPage: React.FC<MyPageProps> = ({ isPremiumUser }) => {
                 ))}
               </MenuItems>
               <CenterButton onClick={handleCenterButtonClick}>
-                <img 
-                  src={isEditing ? "/iconbutton_edit.svg" : "/iconbutton.svg"} 
-                  alt="Edit Button" 
+                <StyledIconEdit
+                  src={isEditing ? '/iconbutton_edit.svg' : '/iconbutton.svg'}
+                  alt="Edit Button"
+                  width={40}
+                  height={40}
                 />
               </CenterButton>
             </CircularMenu>
-  
+
             <IconButtons>
-              <IconButton onClick={() => router.push("./myPage/account")}>
-                <img src="/icon_profile.svg" alt="계정 아이콘" />
+              <IconButton onClick={() => router.push('./myPage/account')}>
+                <StyledIconProfile
+                  src="/icon_profile.svg"
+                  alt="계정 아이콘"
+                  width={24}
+                  height={24}
+                />
                 <span>계정</span>
               </IconButton>
-              <IconButton onClick={() => router.push("./myPage/plan")}>
-                <img src="/icon_card.svg" alt="플랜 아이콘" />
+              <IconButton onClick={() => router.push('./myPage/plan')}>
+                <StyledIconPlan src="/icon_card.svg" alt="플랜 아이콘" width={24} height={24} />
                 <span>플랜</span>
               </IconButton>
             </IconButtons>
@@ -242,7 +248,7 @@ const MyPageContainer = styled.div`
   transition: transform 0.3s ease-in-out;
 
   &::before {
-    content: "";
+    content: '';
     position: absolute;
     top: 0;
     left: 0;
@@ -301,14 +307,11 @@ const MenuItem = styled.div<{ position: string }>`
   font-size: 14px;
   cursor: pointer;
 
+  ${({ position }) => position === 'top' && 'top: 20px; left: 50%; transform: translateX(-50%);'}
+  ${({ position }) => position === 'right' && 'right: 10px; top: 50%; transform: translateY(-50%);'}
   ${({ position }) =>
-    position === "top" && "top: 20px; left: 50%; transform: translateX(-50%);"}
-  ${({ position }) =>
-    position === "right" && "right: 10px; top: 50%; transform: translateY(-50%);"}
-  ${({ position }) =>
-    position === "bottom" && "bottom: 20px; left: 50%; transform: translateX(-50%);"}
-  ${({ position }) =>
-    position === "left" && "left: 10px; top: 50%; transform: translateY(-50%);"}
+    position === 'bottom' && 'bottom: 20px; left: 50%; transform: translateX(-50%);'}
+  ${({ position }) => position === 'left' && 'left: 10px; top: 50%; transform: translateY(-50%);'}
 `;
 
 const DisplayText = styled.span`
@@ -326,7 +329,7 @@ const DisplayText = styled.span`
 
 const EditingInput = styled.textarea`
   font-family: 'SUIT-Regular';
-  color: #EDCA85;
+  color: #edca85;
   font-size: 14px;
   font-weight: 600;
   border: none;
@@ -375,10 +378,10 @@ const IconButton = styled.div`
   padding: 8px 16px;
   gap: 16px;
   cursor: pointer;
-  border-radius: 40px;         
+  border-radius: 40px;
 
   &:hover {
-    background-color: white; 
+    background-color: white;
   }
 
   & > img,
@@ -390,5 +393,9 @@ const IconButton = styled.div`
     transform: translateY(-2px);
   }
 `;
+
+const StyledIconEdit = styled(Image)``;
+const StyledIconProfile = styled(Image)``;
+const StyledIconPlan = styled(Image)``;
 
 export default MyPage;

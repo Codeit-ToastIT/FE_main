@@ -7,11 +7,10 @@ import { useEmail } from '../../context/EmailContext';
 import { useAuth } from '../../context/AuthContext';
 import SubmitButton from '../../components/common/SubmitButton';
 
-import { API_BASE_URL } from "../../api/api";
+import { API_BASE_URL } from '../../api/api';
 import Image from 'next/image';
 import iconEyeOpen from '../../assets/icons/icon_eye_open.png';
 import iconEyeClosed from '../../assets/icons/icon_eye_closed.svg';
-
 
 const Whole = styled.div`
   display: inline-flex;
@@ -91,12 +90,11 @@ const SignupPage = () => {
   const inputRef1 = useRef<HTMLInputElement | null>(null);
   const inputRef2 = useRef<HTMLInputElement | null>(null);
 
-  const { email } = useEmail();  
-  const { login, loginUser, token } = useAuth();
-  const [pw, setPw] = useState(""); 
-  const [pwCheck, setPwCheck] = useState(""); 
-  const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
+  const { email } = useEmail();
+  const { login, loginUser } = useAuth();
+  const [pw, setPw] = useState('');
+  const [pwCheck, setPwCheck] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const isPwValid = pw.length >= 8; // 비밀번호 유효성 체크
   const router = useRouter();
@@ -196,32 +194,33 @@ const SignupPage = () => {
       console.log(data);
 
       // 회원가입 성공 시 사용자 정보를 사용하여 로그인 처리
-    if (data.user) {
-      // 로그인 상태 업데이트 (예: Context API 사용)     
-      try {
-            const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ email, password: pw }),
-            });
-      
-            const data = await response.json();
-      
-            if (response.ok) {
-              console.log('로그인 성공:', data);
-              // 로그인 성공 후 토큰 저장 및 홈 페이지로 이동
-              login(data.token); // 토큰 저장
-              loginUser(data.user.id); // userId 저장
-              router.push('/pages/createToastPage'); // 홈 페이지로 이동
-            }
-          } catch (error) {
-            console.error('로그인 오류:', error);
-          }
+      if (data.user) {
+        // 로그인 상태 업데이트 (예: Context API 사용)
+        try {
+          const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ email, password: pw }),
+          });
 
-    } else {
-      setErrorMessage("사용자 정보가 없습니다."); // 사용자 정보가 없는 경우 처리
+          const data = await response.json();
+
+          if (response.ok) {
+            console.log('로그인 성공:', data);
+            // 로그인 성공 후 토큰 저장 및 홈 페이지로 이동
+            login(data.token); // 토큰 저장
+            loginUser(data.user.id); // userId 저장
+            router.push('/pages/createToastPage'); // 홈 페이지로 이동
+          }
+        } catch (error) {
+          console.error('로그인 오류:', error);
+        }
+      } else {
+        setErrorMessage('사용자 정보가 없습니다.'); // 사용자 정보가 없는 경우 처리
+      }
+    } finally {
     }
   };
 
@@ -256,10 +255,11 @@ const SignupPage = () => {
               onChange={handlePwChange} // 비밀번호 상태 업데이트
               autoComplete="off"
             />
-            <EyeIcon 
-              onClick={() => setShowPw(prev => !prev)} 
+            <EyeIcon
+              onClick={() => setShowPw((prev) => !prev)}
               src={showPw ? iconEyeOpen : iconEyeClosed}
-              alt={showPw ? "비밀번호 보이기" : "비밀번호 숨기기"} />
+              alt={showPw ? '비밀번호 보이기' : '비밀번호 숨기기'}
+            />
           </div>
           <div style={{ position: 'relative' }}>
             <Input
@@ -271,10 +271,11 @@ const SignupPage = () => {
               onChange={handlePwCheckChange}
               autoComplete="off"
             />
-            <EyeIcon 
-              onClick={() => setShowPwCheck(prev => !prev)} 
+            <EyeIcon
+              onClick={() => setShowPwCheck((prev) => !prev)}
               src={showPwCheck ? iconEyeOpen : iconEyeClosed}
-              alt={showPwCheck ? "비밀번호 보이기" : "비밀번호 숨기기"} />
+              alt={showPwCheck ? '비밀번호 보이기' : '비밀번호 숨기기'}
+            />
           </div>
           {!isPwValid && <ErrorMessage>아직 8자리가 아니에요.</ErrorMessage>}{' '}
           {/* 오류 메시지 조건부 렌더링 */}
@@ -285,5 +286,4 @@ const SignupPage = () => {
     </Whole>
   );
 };
-
 export default SignupPage;

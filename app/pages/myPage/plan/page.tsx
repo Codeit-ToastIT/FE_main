@@ -5,11 +5,12 @@
  * 설명: 플랜 페이지 구현.
  */
 
-"use client";
+'use client';
 
-import React from "react";
-import styled from "styled-components";
-import { useRouter } from "next/navigation";
+import React from 'react';
+import Image from 'next/image';
+import styled from 'styled-components';
+import { useRouter } from 'next/navigation';
 
 const PlanPage = () => {
   const router = useRouter();
@@ -18,7 +19,7 @@ const PlanPage = () => {
     <Container>
       <Header>
         <BackButton onClick={() => router.back()}>
-          <img src="/icon_back.svg" alt="뒤로 가기" />
+          <StyledImage src="/icon_back.svg" alt="뒤로 가기" width={40} height={40} />
         </BackButton>
         <TitleWrapper>
           <TitleContainer>
@@ -52,7 +53,7 @@ export default PlanPage;
 const Container = styled.div`
   width: 100%;
   height: 100vh;
-  background-color: var(--ivory, #E5DCCA);
+  background-color: var(--ivory, #e5dcca);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -109,7 +110,7 @@ const PlanContainer = styled.div`
 `;
 
 const PlanBox = styled.div`
-  background: rgba(255, 255, 255, 0.60);
+  background: rgba(255, 255, 255, 0.6);
   backdrop-filter: blur(4px);
   border-radius: 40px;
   padding: 20px;
@@ -126,7 +127,7 @@ const PlanTitle = styled.h2`
 `;
 
 const PlanPrice = styled.p`
-  color: var(--caramel, #974B00);
+  color: var(--caramel, #974b00);
   font-family: SUIT;
   font-size: 24px;
   font-style: normal;
@@ -147,10 +148,12 @@ const PlanButton = styled.button`
   width: 100%;
   margin-top: 8px;
   padding: 10px;
-  background-color: ${(props) => (props.disabled ? "transparent" : "#806952")};
-  color: ${(props) => (props.disabled ? "#E5DCCA" : "#fff")};
-  border: ${(props) => (props.disabled ? "1px solid #E5DCCA" : "none")};
-  font-weight: ${(props) => (props.disabled ? "none" : "bold")};
+  background-color: ${(props) => (props.disabled ? 'transparent' : '#806952')};
+  color: ${(props) => (props.disabled ? '#E5DCCA' : '#fff')};
+  border: ${(props) => (props.disabled ? '1px solid #E5DCCA' : 'none')};
+  font-weight: ${(props) => (props.disabled ? 'none' : 'bold')};
   border-radius: 40px;
-  cursor: ${(props) => (props.disabled ? "default" : "pointer")};
+  cursor: ${(props) => (props.disabled ? 'default' : 'pointer')};
 `;
+
+const StyledImage = styled(Image)``;

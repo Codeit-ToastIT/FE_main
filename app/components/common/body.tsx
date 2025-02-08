@@ -63,23 +63,6 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
   const offsetXRef = useRef(0);
   const bodyRef = useRef<HTMLDivElement>(null);
 
-  // // ✅ localStorage에 저장된 삭제된 메모 반영
-  // useEffect(() => {
-  //   if (deletedMemoId) {
-  //     setMemos((prevMemos) => prevMemos.filter((memo) => memo.id !== deletedMemoId));
-
-  //     // ✅ 삭제 성공 시 메시지 표시
-  //     if (deleteSuccess) {
-  //       setShowDeleteMessage(true);
-  //       setTimeout(() => setShowDeleteMessage(false), 2000);
-  //     }
-
-  //     // ✅ localStorage 초기화 (다음번 실행 시 중복되지 않도록)
-  //     localStorage.removeItem('deletedMemoId');
-  //     localStorage.removeItem('deleteSuccess');
-  //   }
-  // }, [deletedMemoId, deleteSuccess]);
-
   useEffect(() => {
     if (showToastMessage) {
       const timer = setTimeout(() => setShowToastMessage(false), 2000);
@@ -101,7 +84,7 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
     }
   }, [showDeleteErrorMessage]);
 
-  // ✅ editing 화면에서 삭제버튼 클릭 시 삭제 확인하는 로직(임시)
+  // ✅ editing 화면에서 삭제버튼 클릭 시 삭제 확인하는 로직
   //    localStorage에서 삭제된 메모 ID 확인 후 필터링
   useEffect(() => {
     const deletedMemoId = localStorage.getItem('deletedMemoId');
