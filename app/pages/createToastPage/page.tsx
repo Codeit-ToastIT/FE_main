@@ -41,7 +41,6 @@ export default function CreateToastPage() {
   const handleDoubleClick = () => {
     console.log('더블클릭 이벤트 발생');
     setIsDoubleClick(true);
-    setShowSaveMessage('더블클릭으로 저장되었습니다!');
 
     // 일정 시간 후 더블클릭 상태 초기화
     setTimeout(() => {
@@ -98,6 +97,7 @@ export default function CreateToastPage() {
       onTouchStart={handleMouseDown} // 터치 시작 감지
       onTouchEnd={handleMouseUp} // 터치 종료 감지
       onTouchCancel={handleMouseUp} // 터치 취소 시 처리
+      onDoubleClick={handleDoubleClick}
     >
       <Home
         onHelpClick={() => setShowOnboarding(true)}
