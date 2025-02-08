@@ -2,7 +2,7 @@
  * 파일명: EditingToast.tsx
  * 작성일: 2025-02-08
  * 작성자: 이서연
- * 설명: 메모 작성 기능 구현(0.5초 뒤 자동저장으로 구현)
+ * 설명: 메모 작성 기능 구현(1초 뒤 자동저장으로 구현)
  */
 
 import React, { useState, useEffect } from 'react';
@@ -37,7 +37,7 @@ export default function EditingToast({
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedContent(content);
-    }, 500);
+    }, 1000);
 
     return () => clearTimeout(handler); // 새로운 입력이 있으면 기존 타이머 취소
   }, [content]);
@@ -74,7 +74,7 @@ export default function EditingToast({
     };
 
     saveContent();
-  }, [debouncedContent]); // ✅ debouncedContent가 변경될 때만 PATCH 요청 실행
+  }, [title, toastId, token, debouncedContent]); // ✅ debouncedContent가 변경될 때 PATCH 요청 실행
 
   return (
     <div>

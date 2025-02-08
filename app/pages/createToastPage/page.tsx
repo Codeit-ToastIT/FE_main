@@ -22,12 +22,12 @@ export default function CreateToastPage() {
   const { message } = useAuth();
 
   useEffect(() => {
-    // localStorage에 "onboardingShown" 값이 없을 때만 온보딩을 표시
-    const onboardingShown = localStorage.getItem('onboardingShown');
+    // localStorage에 "onBoardingShown" 값이 없을 때만 온보딩을 표시
+    const onBoardingShown = localStorage.getItem('onBoardingShown');
 
-    if (message === '회원가입이 완료되었습니다.' && !onboardingShown) {
+    if (message === '회원가입이 완료되었습니다.' && !onBoardingShown) {
       setShowOnboarding(true);
-      localStorage.setItem('onboardingShown', 'true'); // 온보딩이 표시된 적 있음을 저장
+      localStorage.setItem('onBoardingShown', 'true'); // 온보딩이 표시된 적 있음을 저장
     }
   }, [message]); // ✅ message 값이 변경될 때만 실행되도록 설정
 
