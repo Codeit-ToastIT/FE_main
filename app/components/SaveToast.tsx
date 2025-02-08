@@ -27,6 +27,15 @@ interface SaveToastProps {
   onClick?: (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => void; // 마우스 또는 터치 이벤트
 }
 
+interface Memo {
+  id: string;
+  categoryId: string;
+  title: string;
+  content: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 const SaveToast: React.FC<SaveToastProps> = ({ onClose, onSave, memoId, title, content }) => {
   const [position, setPosition] = useState({ x: 0, y: 0 }); // 식빵 위치
   const [activeSlice, setActiveSlice] = useState<number | null>(null); // 활성화된 조각 (0~3)
@@ -263,7 +272,7 @@ const SaveToast: React.FC<SaveToastProps> = ({ onClose, onSave, memoId, title, c
   const handleTouchStart = (e: React.TouchEvent) => {
     setIsDragging(true); // 드래그 시작
     setShowHint(false); // 힌트 숨김
-    e.preventDefault();
+    // e.preventDefault();
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
