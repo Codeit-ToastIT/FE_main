@@ -11,6 +11,7 @@ import React from 'react';
 import Image from 'next/image';
 import styled from 'styled-components';
 import { useRouter } from 'next/navigation';
+import back from '../../../assets/icons/icon_back.svg';
 
 const PlanPage = () => {
   const router = useRouter();
@@ -19,7 +20,7 @@ const PlanPage = () => {
     <Container>
       <Header>
         <BackButton onClick={() => router.back()}>
-          <StyledImage src="/icon_back.svg" alt="뒤로 가기" width={40} height={40} />
+          <StyledImage src={back.src} alt="뒤로 가기" width={24} height={24} />
         </BackButton>
         <TitleWrapper>
           <TitleContainer>

@@ -7,6 +7,11 @@ import { useRouter } from "next/navigation";
 import { API_BASE_URL } from "../../../api/api";
 import { useAuth } from '../../../context/AuthContext';
 import Image from 'next/image';
+import back from '../../../assets/icons/icon_back.svg';
+import password from '../../../assets/icons/icon_lock.svg';
+import terms from '../../../assets/icons/icon_filecheck.svg';
+import logouticon from '../../../assets/icons/icon_out.svg';
+import accountdelete from '../../../assets/icons/icon_profile_x_r.svg';
 
 
 // 계정 메뉴
@@ -67,7 +72,7 @@ const AccountPage = () => {
     <Container>
       <Header>
         <BackButton onClick={() => router.back()}>
-          <StyledImage src="/icon_back.svg" alt="뒤로 가기" width={40} height={40} />
+          <StyledImage src={back.src} alt="뒤로 가기" width={24} height={24} />
         </BackButton>
         <TitleWrapper>
           <TitleContainer>
@@ -81,7 +86,7 @@ const AccountPage = () => {
         <MenuItem onClick={() => router.push('./account/currentPassword')}>
           <Icon>
             <IconWrapper>
-              <StyledImage src="/icon_lock.svg" alt="비밀번호 변경" width={24} height={24} />
+              <StyledImage src={password.src} alt="비밀번호 변경" width={24} height={24} />
             </IconWrapper>
             <span>비밀번호 변경</span>
           </Icon>
@@ -89,7 +94,7 @@ const AccountPage = () => {
         <MenuItem onClick={() => setShowTermsOverlay(true)}>
           <Icon>
             <IconWrapper>
-              <StyledImage src="/icon_filecheck.svg" alt="이용 약관" width={24} height={24} />
+              <StyledImage src={terms.src} alt="이용 약관" width={24} height={24} />
             </IconWrapper>
             <span>이용 약관</span>
           </Icon>
@@ -97,7 +102,7 @@ const AccountPage = () => {
         <MenuItem onClick={() => setShowLogoutModal(true)}>
           <Icon>
             <IconWrapper>
-              <StyledImage src="/icon_out.svg" alt="로그아웃" width={24} height={24} />
+              <StyledImage src={logouticon.src} alt="로그아웃" width={24} height={24} />
             </IconWrapper>
             <span>로그아웃</span>
           </Icon>
@@ -105,7 +110,7 @@ const AccountPage = () => {
         <MenuItem className="danger" onClick={() => setShowDeleteModal(true)}>
           <Icon>
             <IconWrapper>
-              <StyledImage src="/icon_profile_x.svg" alt="회원 탈퇴" width={24} height={24} />
+              <StyledImage src={accountdelete.src} alt="회원 탈퇴" width={24} height={24} />
             </IconWrapper>
             <span>회원 탈퇴</span>
           </Icon>
