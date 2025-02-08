@@ -1,11 +1,11 @@
-"use client"; 
+'use client';
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
 import styled from 'styled-components';
 
-import { useRouter } from "next/navigation";
-import { API_BASE_URL } from "../../api/api";
+import { useRouter } from 'next/navigation';
+import { API_BASE_URL } from '../../api/api';
 import { useAuth } from '../../context/AuthContext';
 import { useEmail } from '../../context/EmailContext';
 import radial_default from '../../assets/save/4-radial_menu.svg';
@@ -13,25 +13,26 @@ import radial_edit from '../../assets/save/4-radial_menu_edit.svg';
 import check from '../../assets/icons/icon_check.svg';
 import edit from '../../assets/icons/icon_edit.svg';
 import account from '../../assets/icons/icon_profile_b.svg';
-import plan from '../../assets/icons/icon_card_b.svg'
+import plan from '../../assets/icons/icon_card_b.svg';
 
-interface MyPageProps {
-  isPremiumUser: boolean;
+interface MyPageProps extends React.HTMLAttributes<HTMLDivElement> {
+  isOpen: boolean;
+  isPremiumUser?: boolean;
 }
 
-const MyPage: React.FC<MyPageProps> = ({ isPremiumUser }) => {
+const MyPage: React.FC<MyPageProps> = ({ isOpen, isPremiumUser }) => {
   const router = useRouter();
   const { token, userId } = useAuth();
   const { email } = useEmail();
 
   // 이메일은 EmailContext에서 가져오고, 없으면 localStorage에서 불러오도록 함
   const [userEmail, setUserEmail] = useState(() => {
-    return localStorage.getItem("userEmail") || email || "test@example.com";
+    return localStorage.getItem('userEmail') || email || 'test@example.com';
   });
 
   useEffect(() => {
     if (email) {
-      localStorage.setItem("userEmail", email);
+      localStorage.setItem('userEmail', email);
       setUserEmail(email);
     }
   }, [email]);
@@ -51,23 +52,23 @@ const MyPage: React.FC<MyPageProps> = ({ isPremiumUser }) => {
   const [tempCategoryName, setTempCategoryName] = useState('');
 
   // 각 인덱스에 해당하는 위치 (스타일 적용용)
-  const positions = ["top", "right", "bottom", "left"];
+  const positions = ['top', 'right', 'bottom', 'left'];
 
   // 카테고리 업데이트 API 호출 (필요하다면 유지)
   const updateCategory = async (index: number, newName: string) => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/categories/${userId}`, {
-         method: 'PATCH',
-         headers: {
-           "Content-Type": "application/json",
-           "Authorization": `Bearer ${token}`
-         },
-         body: JSON.stringify({ name: newName }),
-     });
-       if (!response.ok) {
-         const errorMsg = await response.text();
-         console.error('카테고리 업데이트 실패:', errorMsg);
-       }
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ name: newName }),
+      });
+      if (!response.ok) {
+        const errorMsg = await response.text();
+        console.error('카테고리 업데이트 실패:', errorMsg);
+      }
     } catch (error) {
       console.error('카테고리 업데이트 API 호출 중 에러 발생:', error);
     }
@@ -87,83 +88,86 @@ const MyPage: React.FC<MyPageProps> = ({ isPremiumUser }) => {
   const userPlan = isPremiumUser ? '메이플 시럽 버터 토스트 플랜 이용중' : '토스트 플랜 이용중';
 
   return (
-    <PageContainer>
-      <ContentContainer>
-        <Overlay>
-          <MyPageContainer onClick={(e) => e.stopPropagation()}>
-            <Email>{userEmail}</Email>
-            <Plan>{userPlan}</Plan>
-            <CircularMenu>
-              <MenuImage
-                src={isEditing ? radial_edit.src : radial_default.src}
-                alt="Circular Menu"
-              />
-              <MenuItems>
-                {categories.map((name, index) => {
-                  const position = positions[index];
-                  return (
-                    <MenuItem
-                      key={position}
-                      position={position}
-                      onClick={() => {
-                        if (isEditing) {
-                          setEditingIndex(index);
-                          setTempCategoryName(name);
-                        }
-                      }}
-                    >
-                      {editingIndex === index ? (
-                        <EditingInput
-                          value={tempCategoryName}
-                          onChange={(e) => setTempCategoryName(e.target.value)}
-                          onBlur={async () => {
-                            if (editingIndex !== null) {
-                              await updateCategory(editingIndex, tempCategoryName);
-                              const newCategories = [...categories];
-                              newCategories[editingIndex] = tempCategoryName;
-                              setCategories(newCategories);
-                              setEditingIndex(null);
-                              setTempCategoryName('');
-                            }
-                          }}
-                          autoFocus
-                        />
-                      ) : (
-                        <DisplayText>{name}</DisplayText>
-                      )}
-                    </MenuItem>
-                  );
-                })}
-              </MenuItems>
-              <CenterButton onClick={handleCenterButtonClick} isEditing={isEditing}>
-                <StyledIconEdit
-                  src={isEditing ? check.src : edit.src}
-                  alt="Edit Button"
-                  width={24}  // 기존 40px에서 축소
-                  height={24} // 기존 40px에서 축소
+    <div
+      style={{
+        transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
+        transition: 'transform 1s ease-in-out',
+        height: '900px',
+      }}
+    >
+      <PageContainer>
+        <ContentContainer>
+          <Overlay>
+            <MyPageContainer onClick={(e) => e.stopPropagation()}>
+              <Email>{userEmail}</Email>
+              <Plan>{userPlan}</Plan>
+              <CircularMenu>
+                <MenuImage
+                  src={isEditing ? radial_edit.src : radial_default.src}
+                  alt="Circular Menu"
                 />
-              </CenterButton>
-            </CircularMenu>
+                <MenuItems>
+                  {categories.map((name, index) => {
+                    const position = positions[index];
+                    return (
+                      <MenuItem
+                        key={position}
+                        position={position}
+                        onClick={() => {
+                          if (isEditing) {
+                            setEditingIndex(index);
+                            setTempCategoryName(name);
+                          }
+                        }}
+                      >
+                        {editingIndex === index ? (
+                          <EditingInput
+                            value={tempCategoryName}
+                            onChange={(e) => setTempCategoryName(e.target.value)}
+                            onBlur={async () => {
+                              if (editingIndex !== null) {
+                                await updateCategory(editingIndex, tempCategoryName);
+                                const newCategories = [...categories];
+                                newCategories[editingIndex] = tempCategoryName;
+                                setCategories(newCategories);
+                                setEditingIndex(null);
+                                setTempCategoryName('');
+                              }
+                            }}
+                            autoFocus
+                          />
+                        ) : (
+                          <DisplayText>{name}</DisplayText>
+                        )}
+                      </MenuItem>
+                    );
+                  })}
+                </MenuItems>
+                <CenterButton onClick={handleCenterButtonClick} isEditing={isEditing}>
+                  <StyledIconEdit
+                    src={isEditing ? check.src : edit.src}
+                    alt="Edit Button"
+                    width={24} // 기존 40px에서 축소
+                    height={24} // 기존 40px에서 축소
+                  />
+                </CenterButton>
+              </CircularMenu>
 
-            <IconButtons>
-              <IconButton onClick={() => router.push('./myPage/account')}>
-                <StyledIconProfile
-                  src= {account.src}
-                  alt="계정 아이콘"
-                  width={24}
-                  height={24}
-                />
-                <span>계정</span>
-              </IconButton>
-              <IconButton onClick={() => router.push('./myPage/plan')}>
-                <StyledIconPlan src={plan.src} alt="플랜 아이콘" width={24} height={24} />
-                <span>플랜</span>
-              </IconButton>
-            </IconButtons>
-          </MyPageContainer>
-        </Overlay>
-      </ContentContainer>
-    </PageContainer>
+              <IconButtons>
+                <IconButton onClick={() => router.push('./myPage/account')}>
+                  <StyledIconProfile src={account.src} alt="계정 아이콘" width={24} height={24} />
+                  <span>계정</span>
+                </IconButton>
+                <IconButton onClick={() => router.push('./myPage/plan')}>
+                  <StyledIconPlan src={plan.src} alt="플랜 아이콘" width={24} height={24} />
+                  <span>플랜</span>
+                </IconButton>
+              </IconButtons>
+            </MyPageContainer>
+          </Overlay>
+        </ContentContainer>
+      </PageContainer>
+    </div>
   );
 };
 
@@ -172,7 +176,7 @@ const Overlay = styled.div`
   top: 0;
   left: 0;
   width: 100%;
-  height: 100vh;
+  height: 900px;
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
@@ -183,12 +187,15 @@ const Overlay = styled.div`
 const PageContainer = styled.div`
   position: relative;
   margin: 0 auto;
+  height: 1500px;
 `;
 
 const ContentContainer = styled.div`
   position: absolute;
   width: 100%;
+  height: 1500px;
   top: 0;
+  left: 0;
   display: flex;
 `;
 
@@ -197,7 +204,7 @@ const MyPageContainer = styled.div`
   top: 0;
   right: 85.4%;
   width: 320px;
-  height: 100vh;
+  height: 815px;
   backdrop-filter: blur(10px);
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
   display: flex;
@@ -216,7 +223,9 @@ const MyPageContainer = styled.div`
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.8);
+    background-color: rgba(255, 255, 255, 0.6);
+    /* glass */
+    backdrop-filter: blur(4px);
     z-index: -1;
     border-top-left-radius: 40px;
     border-bottom-left-radius: 40px;
@@ -269,14 +278,11 @@ const MenuItem = styled.div<{ position: string }>`
   font-size: 14px;
   cursor: pointer;
 
-  ${({ position }) =>
-    position === 'top' && 'top: 20px; left: 50%; transform: translateX(-50%);'}
-  ${({ position }) =>
-    position === 'right' && 'right: 10px; top: 50%; transform: translateY(-50%);'}
+  ${({ position }) => position === 'top' && 'top: 20px; left: 50%; transform: translateX(-50%);'}
+  ${({ position }) => position === 'right' && 'right: 10px; top: 50%; transform: translateY(-50%);'}
   ${({ position }) =>
     position === 'bottom' && 'bottom: 20px; left: 50%; transform: translateX(-50%);'}
-  ${({ position }) =>
-    position === 'left' && 'left: 10px; top: 50%; transform: translateY(-50%);'}
+  ${({ position }) => position === 'left' && 'left: 10px; top: 50%; transform: translateY(-50%);'}
 `;
 
 const DisplayText = styled.span`

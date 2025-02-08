@@ -40,6 +40,7 @@ export default function MemoInput() {
 
   useEffect(() => {
     fetchCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ✅ fetchMemos에 원하는 카테고리를 전달하기 위해 작성한 코드
