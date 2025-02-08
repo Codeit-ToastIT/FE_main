@@ -45,7 +45,14 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
 
   const [showPlus, setShowPlus] = useState(false);
 
-  const [slides, setSlides] = useState<number[]>([1, 2, 3]);
+  const [slides, setSlides] = useState<string[]>([]); // ✅ 초기값을 빈 배열로 설정
+
+  useEffect(() => {
+    if (memos.length > 0) {
+      setSlides(memos.slice(0, 3).map((memo) => String(memo.id))); // ✅ 첫 3개의 메모 id를 slides에 저장
+    }
+  }, [memos]); // ✅ memos가 변경될 때만 실행
+
   const [selectedSlide, setSelectedSlide] = useState<string | null>('');
   const [showModal, setShowModal] = useState(false);
   const [_swiperKey, setSwiperKey] = useState(0); // ✅ Swiper 리렌더링을 위한 Key 추가
