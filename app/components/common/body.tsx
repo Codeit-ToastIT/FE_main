@@ -46,7 +46,7 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
   const [showPlus, setShowPlus] = useState(false);
 
   const [slides, setSlides] = useState<number[]>([1, 2, 3]);
-  const [selectedSlide, setSelectedSlide] = useState<number | null>(slides[0]);
+  const [selectedSlide, setSelectedSlide] = useState<string | null>('');
   const [showModal, setShowModal] = useState(false);
   const [_swiperKey, setSwiperKey] = useState(0); // ✅ Swiper 리렌더링을 위한 Key 추가
 
@@ -108,8 +108,10 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
   //-------------------------------🍞토스트 삭제 로직 구현 완료🍞-------------------------------
 
   // ✅ "휴지통 아이콘" 클릭 시 모달 열기
-  const handleModalToggle = (id: number) => {
+  const handleModalToggle = (id: string) => {
     setSelectedSlide(id); // 현재 선택된 슬라이드 저장
+    console.log('📝 선택된 슬라이드 ID:', id); // ✅ 선택된 ID 확인
+    console.log('📜 현재 memos 상태:', memos);
     setShowModal(true);
   };
 
@@ -119,7 +121,7 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
     setLoading(true);
 
     // ✅ 현재 선택된 슬라이드에서 메모 ID 찾기
-    const memoToDelete = memos.find((_, index) => index + 1 === selectedSlide);
+    const memoToDelete = memos.find((memo) => memo.id === String(selectedSlide));
 
     if (!memoToDelete || !memoToDelete.id) {
       console.error('❌ 삭제할 메모를 찾을 수 없습니다.');
@@ -157,7 +159,7 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
         setShowDeleteMessage(true);
 
         // ✅ 최신 메모 목록 다시 불러오기
-        fetchMemos(lastCategoryId);
+        await fetchMemos(lastCategoryId); // ✅ 최신 메모 다시 불러오기
 
         return true;
       } else {
@@ -198,12 +200,12 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
 
       if (!response.ok) {
         const errorData = await response.text();
-        console.error(`❌ 서버 응답 오류: ${errorData}`);
-        throw new Error('❌ 메모 카테고리 목록 불러오기 실패');
+        console.error(`❌ 서버 응답 오류(서연): ${errorData}`);
+        throw new Error('❌ 메모 카테고리 목록 불러오기 실패(서연)');
       }
 
       const data = await response.json();
-      console.log('✅ 메모 카테고리 목록 가져오기 성공:', data);
+      console.log('✅ 메모 카테고리 목록 가져오기 성공(서연):', data);
 
       const categoryId = data.categories[4]?.id;
       if (categoryId) {
@@ -211,7 +213,7 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
         fetchMemos(categoryId); // ✅ 4번 인덱스 카테고리 ID로 메모 가져오기 실행
       }
     } catch (error) {
-      console.error('❌ 메모 카테고리 목록 불러오기 오류:', error);
+      console.error('❌ 메모 카테고리 목록 불러오기 오류(서연):', error);
     }
   };
 
@@ -231,21 +233,21 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
 
       if (!response.ok) {
         const errorData = await response.text();
-        console.error(`❌ 서버 응답 오류: ${errorData}`);
-        throw new Error('❌ 메모 불러오기 실패');
+        console.error(`❌ 서버 응답 오류(서연): ${errorData}`);
+        throw new Error('❌ 메모 불러오기 실패(서연)');
       }
 
       const data = await response.json();
-      console.log('✅ 메모 가져오기 성공:', data);
+      console.log('✅ 메모 가져오기 성공(서연):', data);
 
       if (data.notes.length === 0) {
-        console.log('⚠️ 불러온 메모가 없음 → 기본 메모 자동 생성');
+        console.log('⚠️ 불러온 메모가 없음 → 기본 메모 자동 생성(서연)');
         await createDefaultMemo(categoryId); // ✅ 기본 메모 생성
       } else {
         setMemos(data.notes.slice(0, 3));
       }
     } catch (error) {
-      console.error('❌ 메모 불러오기 오류:', error);
+      console.error('❌ 메모 불러오기 오류(서연):', error);
     }
   };
 
@@ -270,14 +272,14 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
       const data = await response.json();
 
       if (response.ok) {
-        console.log('✅ 기본 메모 생성 성공:', data);
+        console.log('✅ 기본 메모 생성 성공(서연):', data);
         setMemos((prevMemos) => [data.memo, ...prevMemos].slice(0, 3));
         fetchMemos(categoryId); // ✅ 최신 메모 다시 가져오기
       } else {
-        console.error('❌ 기본 메모 생성 실패:', data.message);
+        console.error('❌ 기본 메모 생성 실패(서연):', data.message);
       }
     } catch (error) {
-      console.error('❌ 기본 메모 생성 요청 오류:', error);
+      console.error('❌ 기본 메모 생성 요청 오류(서연):', error);
     }
   };
 
@@ -330,15 +332,15 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
       const data = await response.json();
 
       if (response.ok) {
-        console.log('✅ 새 메모 생성 성공:', data);
+        console.log('✅ 새 메모 생성 성공(서연):', data);
         setMemos((prevMemos) => [data.memo, ...prevMemos].slice(0, 3));
         fetchMemos(lastCategoryId); // ✅ 최신 메모 다시 가져오기
         setShowToastMessage(true);
       } else {
-        console.error('❌ 메모 생성 실패:', data.message);
+        console.error('❌ 메모 생성 실패(서연):', data.message);
       }
     } catch (error) {
-      console.error('❌ 메모 생성 요청 오류:', error);
+      console.error('❌ 메모 생성 요청 오류(서연):', error);
     } finally {
       setDragging(false);
       setShowPlus(false);
@@ -396,13 +398,13 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
 
     if (isSwiperActive) return;
 
-    // ✅ 드래그 거리가 100px 이상이면 클릭이 아닌 드래그로 간주
-    if (Math.abs(deltaX) > 200) {
+    // ✅ 드래그 거리가 240px 이상이면 클릭이 아닌 드래그로 간주
+    if (Math.abs(deltaX) > 240) {
       isClickRef.current = false;
     }
 
     // ✅ 드래그 거리가 100px 이상이어야 실제로 "드래그 중" 상태로 인식
-    if (Math.abs(deltaX) > 200) {
+    if (Math.abs(deltaX) > 150) {
       setDragging(true);
     } else {
       if (!dragging) return; // 아직 드래그 인식 전이면 위치 이동 안 함
@@ -500,7 +502,7 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
     console.log('📌 활성화된 메모:', activeMemo);
 
     if (activeMemo) {
-      setSelectedSlide(Number(activeMemo.id)); // 활성화된 메모 ID 설정
+      setSelectedSlide(activeMemo.id); // 활성화된 메모 ID 설정
       if (onActiveMemoChange) {
         onActiveMemoChange(activeMemo.id); // 활성화된 메모 ID 상위로 전달
       }
@@ -511,7 +513,7 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
   useEffect(() => {
     if (memos.length > 0) {
       console.log('📌 초기 렌더링 활성화된 메모:', memos[0]);
-      setSelectedSlide(Number(memos[0].id)); // 첫 번째 메모를 활성화
+      setSelectedSlide(memos[0].id); // 첫 번째 메모를 활성화
       if (onActiveMemoChange) {
         onActiveMemoChange(memos[0].id);
       }
