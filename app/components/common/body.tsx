@@ -195,7 +195,6 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
   // ✅ useEffect에서 카테고리 가져오기 실행
   useEffect(() => {
     fetchCategories();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const fetchCategories = async () => {
@@ -287,7 +286,7 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
       if (response.ok) {
         console.log('✅ 기본 메모 생성 성공(서연):', data);
         setMemos((prevMemos) => [data.memo, ...prevMemos].slice(0, 3));
-        fetchMemos(categoryId); // ✅ 최신 메모 다시 가져오기
+        await fetchMemos(categoryId); // ✅ 최신 메모 다시 가져오기
       } else {
         console.error('❌ 기본 메모 생성 실패(서연):', data.message);
       }
@@ -512,7 +511,6 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
         onActiveMemoChange(memos[0].id);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [memos]); // memos가 설정될 때 실행
 
   //-------------------------------🍞새로운 토스트 추가 로직 구현 완료🍞-------------------------------

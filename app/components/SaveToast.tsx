@@ -272,7 +272,7 @@ const SaveToast: React.FC<SaveToastProps> = ({ onClose, onSave, memoId, title, c
   const handleTouchStart = (e: React.TouchEvent) => {
     setIsDragging(true); // 드래그 시작
     setShowHint(false); // 힌트 숨김
-    // e.preventDefault();
+    e.preventDefault();
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
