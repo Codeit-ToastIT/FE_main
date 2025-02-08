@@ -146,7 +146,7 @@ const SaveToastWrapper = styled.div`
 
 export const SaveMessage = styled.div`
   position: absolute;
-  bottom: 148px;
+  bottom: 180px;
   left: calc(50% - 125.5px);
   width: 251px;
   height: 40px;

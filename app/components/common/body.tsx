@@ -477,14 +477,31 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
     };
   }, [dragging]);
 
-  // 💖 Swiper 슬라이드 변경 시 활성 메모 id 전달
+  // 💖 Swiper 슬라이드 변경 시 활성 메모 id 전달 (02/08 초기 렌더링 메모 id 전달을 위해 수정된 부분)
   const handleSlideChange = (swiper: any) => {
-    const activeId = slides[swiper.realIndex];
-    setSelectedSlide(activeId);
-    if (onActiveMemoChange) {
-      onActiveMemoChange(activeId.toString());
+    if (!memos.length) return; // memos가 비어있으면 실행하지 않음
+
+    const activeMemo = memos[swiper.realIndex] || memos[0]; // 초기 렌더링 시 첫 번째 메모 사용
+    console.log('📌 활성화된 메모:', activeMemo);
+
+    if (activeMemo) {
+      setSelectedSlide(Number(activeMemo.id)); // 활성화된 메모 ID 설정
+      if (onActiveMemoChange) {
+        onActiveMemoChange(activeMemo.id); // 활성화된 메모 ID 상위로 전달
+      }
     }
   };
+
+  // 초기 렌더링 시에도 활성 메모 ID 전달
+  useEffect(() => {
+    if (memos.length > 0) {
+      console.log('📌 초기 렌더링 활성화된 메모:', memos[0]);
+      setSelectedSlide(Number(memos[0].id)); // 첫 번째 메모를 활성화
+      if (onActiveMemoChange) {
+        onActiveMemoChange(memos[0].id);
+      }
+    }
+  }, [memos]); // memos가 설정될 때 실행
 
   //-------------------------------🍞새로운 토스트 추가 로직 구현 완료🍞-------------------------------
 
