@@ -24,6 +24,7 @@ interface SaveToastProps {
   memoId: string; // 메모 ID
   title: string | null; // 제목
   content: string | null; // 내용
+  onClick?: (e: React.MouseEvent<HTMLDivElement> | React.TouchEvent<HTMLDivElement>) => void; // 마우스 또는 터치 이벤트
 }
 
 const SaveToast: React.FC<SaveToastProps> = ({ onClose, onSave, memoId, title, content }) => {
@@ -31,69 +32,90 @@ const SaveToast: React.FC<SaveToastProps> = ({ onClose, onSave, memoId, title, c
   const [activeSlice, setActiveSlice] = useState<number | null>(null); // 활성화된 조각 (0~3)
   const [isDragging, setIsDragging] = useState(false); // 드래그 상태 확인
   const [showHint, setShowHint] = useState(false); // 힌트 표시 여부
-  const [showSaveMessage, setShowSaveMessage] = useState<string | null>(null); // 저장 메시지 상태
+  const [_showSaveMessage, setShowSaveMessage] = useState<string | null>(null); // 저장 메시지 상태
   const [categoryNames, setCategoryNames] = useState<string[]>([]); // 카테고리 이름
   let inactivityTimeout: NodeJS.Timeout;
 
-  const [memoTitle, setMemoTitle] = useState<string | null>(title || null);
-  const [memoContent, setMemoContent] = useState<string | null>(content || null);
+  const [categoryIds, setCategoryIds] = useState<string[]>([]); // 카테고리 ID 저장
 
-  // 카테고리 이름. 추후 api로 교체 필요
-  // const categoryNames = ['카테고리 1', '카테고리 2', '카테고리 3', '카테고리 4'];
+  const { token, userId } = useAuth();
 
-  const { token } = useAuth();
+  useEffect(() => {
+    console.log('📌 props로 전달된 memoId:', memoId);
+  }, [memoId]);
 
-  // 💖 특정 메모 정보를 가져오는 함수 추가
-  const fetchMemoDataFromCategories = async () => {
+  // (api)카테고리 불러오기
+  useEffect(() => {
+    const fetchUserCategories = async () => {
+      try {
+        if (!token) {
+          console.error('❌ 토큰이 없습니다.');
+          return;
+        }
+
+        // 현재 로그인한 유저 ID 가져오기
+
+        console.log(`🔗 요청 URL: ${API_BASE_URL}/api/categories/${userId}`);
+
+        // API 호출: 사용자의 카테고리 리스트 가져오기
+        const response = await fetch(`${API_BASE_URL}/api/categories/${userId}`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        console.log(`📩 응답 상태 코드: ${response.status}`);
+
+        if (!response.ok) {
+          const errorData = await response.text();
+          console.error(`❌ 서버 응답 오류: ${errorData}`);
+          throw new Error('❌ 카테고리 가져오기 실패');
+        }
+
+        const data = await response.json();
+        console.log('✅ 카테고리 가져오기 성공:', data);
+
+        // 받은 카테고리 ID 리스트 추출
+        const categoryIds = data.categories.map((category: { id: string }) => category.id);
+        setCategoryIds(categoryIds); // 저장 추가
+
+        // 카테고리 ID 리스트를 이용해 이름 가져오기
+        fetchCategoryNames(categoryIds);
+      } catch (error) {
+        console.error('❌ 카테고리 가져오기 오류:', error);
+      }
+    };
+
+    fetchUserCategories();
+  }, [userId, token]);
+
+  // 기존 fetchCategoryNames 함수 수정 (카테고리 ID를 매개변수로 받음)
+  const fetchCategoryNames = async (categoryIds: string[]) => {
     try {
-      const categoryIds = [1, 2, 3, 4]; // 실제 카테고리 ID 사용
-
       const results = await Promise.all(
         categoryIds.map((id) =>
           fetch(`${API_BASE_URL}/api/categories/${id}/memos`, {
             method: 'GET',
             headers: {
-              Authorization: 'Bearer ${token}',
+              Authorization: `Bearer ${token}`,
             },
           }).then((res) => {
-            if (!res.ok) throw new Error(`카테고리 ${id} 데이터 불러오기 실패`);
+            if (!res.ok) {
+              throw new Error(`카테고리 ${id} 정보를 가져오는 데 실패했습니다.`);
+            }
             return res.json();
           }),
         ),
       );
 
-      // 모든 카테고리의 메모 데이터를 합침
-      const allMemos = results.flatMap((result) =>
-        result.notes.map((note: any) => ({
-          id: note.id,
-          categoryId: result.category.id,
-          categoryName: result.category.name,
-          title: note.title,
-          content: note.content,
-        })),
-      );
-
-      // 특정 memoId를 찾음
-      const memoData = allMemos.find((memo) => memo.id === Number(memoId));
-
-      if (memoData) {
-        console.log('✅ 찾은 메모 정보:', memoData);
-      } else {
-        console.log('❌ 해당 memoId에 대한 메모를 찾을 수 없습니다.');
-      }
+      // 5️⃣ 각 카테고리 이름 추출
+      const names = results.map((result) => result.category.name);
+      setCategoryNames(names);
     } catch (error) {
-      console.error('메모 데이터 가져오기 실패:', error);
+      console.error('❌ 카테고리 이름 가져오기 실패:', error);
     }
   };
-
-  // ✅ 컴포넌트 마운트 시 실행
-  useEffect(() => {
-    fetchMemoDataFromCategories();
-  }, [memoId]);
-
-  useEffect(() => {
-    console.log('Memo Info:', { memoId, title, content });
-  }, [memoId, title, content]);
 
   useEffect(() => {
     // SaveToast가 처음 렌더링될 때 힌트 타이머 시작
@@ -111,86 +133,52 @@ const SaveToast: React.FC<SaveToastProps> = ({ onClose, onSave, memoId, title, c
     };
   }, []);
 
-  // 카테고리 불러오기
-  useEffect(() => {
-    // 카테고리 ID 배열
-    const categoryIds = [1, 2, 3, 4];
-
-    // 💖여러 API 호출을 동시에 진행 (Promise.all 사용)
-    const fetchCategoryNames = async () => {
-      try {
-        const results = await Promise.all(
-          categoryIds.map((id) =>
-            fetch(`${API_BASE_URL}/api/categories/${id}/memos`, {
-              method: 'GET',
-              headers: {
-                Authorization: 'Bearer ${token}',
-              },
-            }).then((res) => {
-              if (!res.ok) {
-                throw new Error(`카테고리 ${id}를 가져오는데 실패했습니다.`);
-              }
-              return res.json();
-            }),
-          ),
-        );
-
-        // 각 응답에서 category.name 추출
-        const names = results.map((result) => result.category.name);
-        setCategoryNames(names);
-      } catch (error) {
-        console.error('카테고리 이름 가져오기 실패:', error);
-      }
-    };
-
-    fetchCategoryNames();
-  }, []);
-
-  // 💖 선택된 카테고리에 메모 저장하는 함수
-  const saveMemoToCategory = async (selectedCategoryId: string, selectedCategoryName: string) => {
+  // (api)선택된 카테고리에 메모 저장하는 함수
+  const saveMemoToCategory = async (selectedCategoryName: string) => {
     try {
-      // 제목이 없으면 현재 날짜로 자동 설정
-      const now = new Date();
-      const defaultTitle = `${now.getFullYear()}년 ${String(now.getMonth() + 1).padStart(2, '0')}월 ${String(now.getDate()).padStart(2, '0')}일`;
-
-      const memoData = {
-        title: memoTitle || defaultTitle, // 제목이 없으면 날짜로 설정
-        content: memoContent, // 내용
-        categoryId: selectedCategoryId, // 선택된 카테고리 ID
-      };
-
-      // 내용이 없으면 저장하지 않음
-      if (!memoData.content) {
-        console.log('❌ 본문 내용이 없어 저장되지 않았습니다.');
-        setShowSaveMessage('❌ 메모 내용이 없어 저장되지 않았습니다.');
+      if (!memoId) {
+        console.error('❌ 메모 ID가 없습니다.');
         return;
       }
 
-      const response = await fetch(`${API_BASE_URL}/api/memos`, {
-        method: 'POST',
+      if (activeSlice === null || !categoryIds[activeSlice]) {
+        console.error('❌ 선택된 카테고리가 없습니다.');
+        return;
+      }
+
+      const selectedCategoryId = categoryIds[activeSlice]; // categoryIds 배열에서 ID 가져오기
+
+      console.log('📌 PATCH 요청 전송:', {
+        url: `${API_BASE_URL}/api/memos/${memoId}/category`,
+        categoryId: selectedCategoryId,
+        token,
+      });
+
+      const response = await fetch(`${API_BASE_URL}/api/memos/${memoId}/category`, {
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: 'Bearer ${token}',
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(memoData),
+        body: JSON.stringify({ categoryId: selectedCategoryId }),
       });
 
       const result = await response.json();
+      console.log('📩 서버 응답:', result);
 
       if (response.ok) {
-        console.log('✅ 메모 저장 성공:', result);
-        setShowSaveMessage('✅ 메모가 성공적으로 저장되었습니다!');
+        console.log('✅ 메모 카테고리 변경 성공:', result);
+        setShowSaveMessage('✅ 메모의 카테고리가 성공적으로 변경되었습니다!');
 
-        // 저장 성공 후 콜백 실행하여 UI 갱신
         onSave(selectedCategoryName);
         onClose(selectedCategoryName);
       } else {
-        console.error('❌ 메모 저장 실패:', result);
-        setShowSaveMessage(`❌ 저장 실패: ${result.message}`);
+        console.error('❌ 메모 카테고리 변경 실패:', result);
+        setShowSaveMessage(`❌ 변경 실패: ${result.message || '알 수 없는 오류'}`);
       }
     } catch (error) {
-      console.error('❌ 메모 저장 중 오류 발생:', error);
-      setShowSaveMessage('❌ 메모 저장 중 오류가 발생했습니다.');
+      console.error('❌ 메모 카테고리 변경 중 오류 발생:', error);
+      setShowSaveMessage('❌ 메모 카테고리 변경 중 오류가 발생했습니다.');
     }
   };
 
@@ -224,7 +212,7 @@ const SaveToast: React.FC<SaveToastProps> = ({ onClose, onSave, memoId, title, c
     });
   };
 
-  // ✅ 효과음 재생 함수 추가
+  // 효과음 재생 함수 추가
   const playSaveSound = () => {
     const audio = new Audio('/sounds/toaster_save.wav'); // 효과음 경로
     audio
@@ -241,7 +229,7 @@ const SaveToast: React.FC<SaveToastProps> = ({ onClose, onSave, memoId, title, c
       console.log('📌 선택한 카테고리:', selectedCategory);
 
       // 카테고리 ID를 가져와 메모 저장
-      saveMemoToCategory(String(activeSlice + 1), selectedCategory); // ID는 1부터 시작한다고 가정
+      saveMemoToCategory(selectedCategory); // ID는 1부터 시작한다고 가정
 
       if (typeof onSave === 'function') {
         onSave(selectedCategory);
