@@ -3,19 +3,21 @@
 import React, { useState } from "react";
 import styled from "styled-components";
 import { useRouter } from "next/navigation";
+import { API_BASE_URL } from "../../../api/api";
+import { useAuth } from '../../../context/AuthContext';
 
 // 계정 메뉴
 const AccountPage = () => {
   const [showTermsOverlay, setShowTermsOverlay] = useState(false);
   const router = useRouter();
+  const { token, logout } = useAuth();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   // 로그아웃 처리 함수 (API 호출 포함)
   const handleLogout = async () => {
     try {
-      const token = "YOUR_BEARER_TOKEN";
-      const response = await fetch("/api/auth/logout", {
+      const response = await fetch(`${API_BASE_URL}/api/auth/logout`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -24,7 +26,8 @@ const AccountPage = () => {
       });
 
       if (response.ok) {
-        localStorage.removeItem("authToken");
+        logout();
+        console.log("API 호출 성공");
         router.push("/");
       } else {
         const errorMsg = await response.text();
@@ -38,12 +41,11 @@ const AccountPage = () => {
   // 회원 탈퇴 처리 함수 (비동기)
   const handleDeleteAccount = async () => {
     try {
-      const token = "YOUR_BEARER_TOKEN";
-      const response = await fetch("/api/deleteAccount", {
+      const response = await fetch(`${API_BASE_URL}/api/auth/delete`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
-          // 필요 시 인증 토큰 등을 헤더에 추가
+          "Authorization": `Bearer ${token}`,
         },
       });
 

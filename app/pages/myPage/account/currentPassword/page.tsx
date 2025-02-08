@@ -5,8 +5,11 @@ import styled from "styled-components";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import SubmitButton from "../../../../components/common/SubmitButton";
-import iconEyeOpen from "../../../../assets/icons/icon_eye_closed.svg";
-import iconEyeClosed from "../../../../assets/icons/icon_eye_open.svg";
+import iconEyeOpen from '../../../../assets/icons/icon_eye_closed.svg';
+import iconEyeClosed from '../../../../assets/icons/icon_eye_open.svg';
+import { API_BASE_URL } from "../../../../api/api";
+import { useAuth } from '../../../../context/AuthContext';
+import { useEmail } from '../../../../context/EmailContext';
 
 const Whole = styled.div`
   display: inline-flex;
@@ -100,6 +103,8 @@ const CurrentPasswordPage = () => {
   const [pw, setPw] = useState("");
   const isPwNotEmpty = pw.length > 0;
   const router = useRouter();
+  const { token } = useAuth();
+  const { email } = useEmail();
   const [showPw, setShowPw] = useState(false);
 
   // 입력 필드 포커싱
@@ -125,31 +130,14 @@ const CurrentPasswordPage = () => {
     router.back();
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-     e.preventDefault(); // 기본 폼 제출 방지
-     try {
-        const token = "YOUR_BEARER_TOKEN"; // 실제 Bearer Token으로 교체
-        const response = await fetch("/api/auth/password/change", {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${token}`,
-          },
-          body: JSON.stringify({ currentPassword: pw }),
-        });
-
-      if (response.ok) {
-        // API 호출 성공 시, 새 비밀번호 설정 페이지로 이동
-        router.push("../changePassword");
-      } else {
-        // 실패 시 에러 메시지 출력
-        const errorMsg = await response.text();
-        console.error("비밀번호 변경 API 실패:", errorMsg);
-        // 필요하다면 사용자에게 에러 알림 처리
-      }
-    } catch (error) {
-      console.error("비밀번호 변경 API 호출 중 에러 발생:", error);
-    }
+  // 기존 페이지에서는 API 호출 대신 currentPassword를 저장하고 다음 페이지로 이동
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!pw) return;
+    // currentPassword를 임시 저장 (예: localStorage 사용)
+    localStorage.setItem("currentPassword", pw);
+    // 새 비밀번호 입력 페이지로 이동
+    router.push("../account/changePassword");
   };
 
   const handleLinkClick = () => {
