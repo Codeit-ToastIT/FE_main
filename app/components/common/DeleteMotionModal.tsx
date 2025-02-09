@@ -53,7 +53,7 @@ export default function DeleteMotionModal({ isOpen, onClose }: DeleteMotionModal
         clearTimeout(timer3);
       };
     }
-  }, [isOpen, onClose]);
+  }, [toastSets.length, isOpen, onClose]);
 
   if (!isOpen) return null;
 

@@ -1,10 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import styled from 'styled-components';
-import Toast from '../../components/common/BurntToast';
+import BurntToast from '../../components/common/BurntToast';
 import SearchBarComponent from '../../components/common/SearchBarComponent';
 import BreadBox from '../../assets/load/breadbox.svg';
+import { useAuth } from '../../context/AuthContext';
+import { API_BASE_URL } from '../../api/api';
 
 import Image from 'next/image.js';
 import { PiCaretCircleUpDownFill } from 'react-icons/pi';
@@ -14,52 +17,87 @@ const iconString = encodeURIComponent(renderToStaticMarkup(<PiCaretCircleUpDownF
 const iconDataUrl = `data:image/svg+xml,${iconString}`;
 
 interface ToastType {
+  id: number;
   title: string;
   content: string;
-  date: Date;
+  createdAt: string;
+  updatedAt: string;
 }
 
-const UserToasts = {
-  Category: '브랜딩 수집',
-  Toasts: [
-    {
-      title: '제목',
-      content:
-        '이제 filterToast를 <TextBody>로 감싸서 렌더링할 수 있습니다. TextBody 컴포넌트는 flex 레이아웃을 사용하여 자식 요소들을 세로로 나열하고, 각 요소 간의 간격을 설정합니다.',
-      date: new Date('2025-01-01'),
-    },
-    { title: '제목', content: '어쩌구', date: new Date('2025-01-01') },
-    { title: '제목', content: '어쩌구', date: new Date('2025-01-01') },
-    { title: '제목', content: '어쩌구', date: new Date('2025-01-01') },
-    { title: '제목', content: '어쩌구', date: new Date('2025-01-01') },
-    { title: '제목', content: '어쩌구', date: new Date('2025-01-01') },
-    { title: '제목', content: '어쩌구', date: new Date('2025-01-01') },
-    { title: '제목', content: '어쩌구', date: new Date('2025-01-01') },
-  ] as ToastType[],
-};
-
-const LoadToastPage = () => {
+const LoadToastContent: React.FC = () => {
   const [searchToast, setSearchToast] = useState<string>('');
+  const [toasts, setToasts] = useState<ToastType[]>([]);
+  const [categoryName, setCategoryName] = useState<string>('');
+  const router = useRouter();
+  const { token } = useAuth();
+  const searchParams = useSearchParams();
+  const category = searchParams.get('category');
+
+  useEffect(() => {
+    const fetchToasts = async () => {
+      try {
+        if (!token) {
+          console.error('인증 토큰이 필요합니다.');
+          return;
+        }
+        const apiUrl = `${API_BASE_URL}/api/categories/${category}/memos`;
+        const response = await fetch(apiUrl, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        if (!response.ok) {
+          const errorData = await response.text();
+          console.error(`❌ 서버 응답 오류: ${errorData}`);
+          throw new Error('❌ 토스트 가져오기 실패');
+        }
+
+        const data = await response.json();
+        setToasts(data.notes);
+        setCategoryName(data.category.name);
+        console.log('서버 연결 성공');
+      } catch (error) {
+        console.error('Error fetching toasts:', error);
+      }
+    };
+
+    if (category) {
+      fetchToasts();
+    }
+  }, [token, category]);
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchToast(e.target.value);
   };
 
-  const filterToast = UserToasts.Toasts.filter(
+  const handleToastClick = (id: number) => {
+    router.push(`editToastPage?noteId=${id}`);
+  };
+
+  const filterToast = toasts.filter(
     (toast) =>
       toast.content.toLowerCase().includes(searchToast.toLowerCase()) ||
       toast.title.toLowerCase().includes(searchToast.toLowerCase()),
   );
+
   return (
     <BackGround>
       <SearchBarComponent searchToast={searchToast} onChange={onChange} />
-      <Title>{UserToasts.Category}</Title>
+      <Title>{categoryName}</Title>
       <Body>
         <ScrollBar>
           {filterToast.length > 0 ? (
             <TextBody>
-              {filterToast.map((toast, index) => (
-                <Toast key={index} index={index} title={toast.title} content={toast.content} />
+              {filterToast.map((toast) => (
+                <BurntToast
+                  key={toast.id}
+                  index={toast.id}
+                  title={toast.title}
+                  content={toast.content}
+                  onClick={() => handleToastClick(toast.id)} // 클릭 이벤트 핸들러 추가
+                />
               ))}
             </TextBody>
           ) : (
@@ -87,6 +125,15 @@ const LoadToastPage = () => {
         </ScrollBar>
       </Body>
     </BackGround>
+  );
+};
+
+// Suspense로 감싼 최상위 컴포넌트
+const LoadToastPage: React.FC = () => {
+  return (
+    <Suspense fallback={<p>로딩 중...</p>}>
+      <LoadToastContent />
+    </Suspense>
   );
 };
 

@@ -8,11 +8,12 @@
 // 💖 표시된 부분 SaveToast로 활성화된 메모 id 전달을 위해 수정한 부분
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { Swiper as SwiperClass } from 'swiper'; // Swiper 타입 가져오기
 import 'swiper/css';
 import 'swiper/css/effect-coverflow';
 import { EffectCoverflow } from 'swiper/modules';
@@ -45,7 +46,14 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
 
   const [showPlus, setShowPlus] = useState(false);
 
-  const [slides, setSlides] = useState<number[]>([1, 2, 3]);
+  const [_slides, setSlides] = useState<string[]>([]); // ✅ 초기값을 빈 배열로 설정
+
+  useEffect(() => {
+    if (memos.length > 0) {
+      setSlides(memos.slice(0, 3).map((memo) => String(memo.id))); // ✅ 첫 3개의 메모 id를 slides에 저장
+    }
+  }, [memos]); // ✅ memos가 변경될 때만 실행
+
   const [selectedSlide, setSelectedSlide] = useState<string | null>('');
   const [showModal, setShowModal] = useState(false);
   const [_swiperKey, setSwiperKey] = useState(0); // ✅ Swiper 리렌더링을 위한 Key 추가
@@ -151,6 +159,7 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
         // ✅ 슬라이드 상태 업데이트
         setSlides((prevSlides) => {
           const newSlides = prevSlides.filter((slide) => slide !== selectedSlide);
+          setSwiperKey((prev) => prev + 1); // ✅ Swiper 강제 리렌더링
 
           // ✅ 삭제 후 슬라이드가 비어 있다면 새로운 슬라이드 추가
           return newSlides.length > 0 ? newSlides : [selectedSlide + 1];
@@ -174,7 +183,6 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
     } finally {
       setLoading(false);
       setShowModal(false);
-      setSwiperKey((prev) => prev + 1); // ✅ Swiper 강제 리렌더링
     }
   };
 
@@ -182,10 +190,92 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
 
   //-------------------------------🍞새로운 토스트 추가 로직 구현 완료🍞(터치 이벤트, 마우스 이벤트 순서)-------------------------------
 
-  // ✅ 카테고리 목록 가져오기
   const [lastCategoryId, setLastCategoryId] = useState('');
+  const fetchMemosRef = useRef<((categoryId: string) => Promise<void>) | null>(null); // 🔥 useRef 사용
 
-  const fetchCategories = async () => {
+  // ✅ 특정 카테고리에 기본 메모 생성
+  const createDefaultMemo = useCallback(
+    async (categoryId: string) => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/memos`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            title: new Date().toISOString().split('T')[0], // ✅ 오늘 날짜로 제목 설정
+            content: '새로운 영감을 적어볼까요?', // ✅ 기본 내용 설정
+            categoryId, // ✅ 특정 카테고리에 저장
+          }),
+        });
+
+        console.log(`📩 기본 메모 생성 응답 상태 코드: ${response.status}`);
+
+        const data = await response.json();
+
+        if (response.ok) {
+          console.log('✅ 기본 메모 생성 성공(서연):', data);
+          setMemos((prevMemos) => [data.memo, ...prevMemos].slice(0, 3));
+          // ✅ fetchMemos를 ref에서 가져와 호출
+          if (fetchMemosRef.current) {
+            fetchMemosRef.current(categoryId);
+          }
+        } else {
+          console.error('❌ 기본 메모 생성 실패(서연):', data.message);
+        }
+      } catch (error) {
+        console.error('❌ 기본 메모 생성 요청 오류(서연):', error);
+      }
+    },
+    [token],
+  );
+
+  // ✅ 특정 카테고리의 메모 가져오기
+  const fetchMemos = useCallback(
+    async (categoryId: string) => {
+      try {
+        console.log(`🔗 요청 URL: ${API_BASE_URL}/api/categories/${categoryId}/memos`);
+
+        const response = await fetch(`${API_BASE_URL}/api/categories/${categoryId}/memos`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        console.log(`📩 응답 상태 코드: ${response.status}`);
+
+        if (!response.ok) {
+          const errorData = await response.text();
+          console.error(`❌ 서버 응답 오류(서연): ${errorData}`);
+          throw new Error('❌ 메모 불러오기 실패(서연)');
+        }
+
+        const data = await response.json();
+        console.log('✅ 메모 가져오기 성공(서연):', data);
+
+        if (data.notes.length === 0) {
+          console.log('⚠️ 불러온 메모가 없음 → 기본 메모 자동 생성(서연)');
+          createDefaultMemo(categoryId); // ✅ 기본 메모 생성
+          console.log('메모 생성 완료!!!!!!!');
+        } else {
+          setMemos(data.notes.slice(0, 3));
+        }
+      } catch (error) {
+        console.error('❌ 메모 불러오기 오류(서연):', error);
+      }
+    },
+    [token, createDefaultMemo],
+  ); // ✅ token이 바뀌면 다시 생성
+
+  // 🔥 useEffect에서 fetchMemosRef에 fetchMemos 할당
+  useEffect(() => {
+    fetchMemosRef.current = fetchMemos;
+  }, [fetchMemos]);
+
+  // ✅ 카테고리 목록 가져오기
+  const fetchCategories = useCallback(async () => {
     try {
       console.log(`🔗 요청 URL: ${API_BASE_URL}/api/categories/${userId}`);
 
@@ -215,73 +305,12 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
     } catch (error) {
       console.error('❌ 메모 카테고리 목록 불러오기 오류(서연):', error);
     }
-  };
+  }, [userId, token, fetchMemos]); // ✅ useCallback을 사용하여 userId와 token이 변경될 때만 새로운 함수 생성
 
-  // ✅ 특정 카테고리의 메모 가져오기
-  const fetchMemos = async (categoryId: string) => {
-    try {
-      console.log(`🔗 요청 URL: ${API_BASE_URL}/api/categories/${categoryId}/memos`);
-
-      const response = await fetch(`${API_BASE_URL}/api/categories/${categoryId}/memos`, {
-        method: 'GET',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      console.log(`📩 응답 상태 코드: ${response.status}`);
-
-      if (!response.ok) {
-        const errorData = await response.text();
-        console.error(`❌ 서버 응답 오류(서연): ${errorData}`);
-        throw new Error('❌ 메모 불러오기 실패(서연)');
-      }
-
-      const data = await response.json();
-      console.log('✅ 메모 가져오기 성공(서연):', data);
-
-      if (data.notes.length === 0) {
-        console.log('⚠️ 불러온 메모가 없음 → 기본 메모 자동 생성(서연)');
-        await createDefaultMemo(categoryId); // ✅ 기본 메모 생성
-      } else {
-        setMemos(data.notes.slice(0, 3));
-      }
-    } catch (error) {
-      console.error('❌ 메모 불러오기 오류(서연):', error);
-    }
-  };
-
-  // ✅ 특정 카테고리에 기본 메모 생성
-  const createDefaultMemo = async (categoryId: string) => {
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/memos`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          title: new Date().toISOString().split('T')[0], // ✅ 오늘 날짜로 제목 설정
-          content: '새로운 영감을 적어볼까요?', // ✅ 기본 내용 설정
-          categoryId, // ✅ 특정 카테고리에 저장
-        }),
-      });
-
-      console.log(`📩 기본 메모 생성 응답 상태 코드: ${response.status}`);
-
-      const data = await response.json();
-
-      if (response.ok) {
-        console.log('✅ 기본 메모 생성 성공(서연):', data);
-        setMemos((prevMemos) => [data.memo, ...prevMemos].slice(0, 3));
-        fetchMemos(categoryId); // ✅ 최신 메모 다시 가져오기
-      } else {
-        console.error('❌ 기본 메모 생성 실패(서연):', data.message);
-      }
-    } catch (error) {
-      console.error('❌ 기본 메모 생성 요청 오류(서연):', error);
-    }
-  };
+  // ✅ useEffect에서 카테고리 가져오기 실행
+  useEffect(() => {
+    fetchCategories();
+  }, [fetchCategories]);
 
   // ✅ 새로운 토스트 추가 모션 로직
   const handleTouchStart = (e: React.TouchEvent) => {
@@ -352,28 +381,6 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
     }
   };
 
-  // ✅ useEffect에서 카테고리 가져오기 실행
-  useEffect(() => {
-    fetchCategories();
-  }, []);
-
-  useEffect(() => {
-    const bodyElement = bodyRef.current;
-    if (!bodyElement) return;
-
-    const handleNativeTouchMove = (e: TouchEvent) => {
-      if (dragging) {
-        e.preventDefault();
-      }
-    };
-
-    bodyElement.addEventListener('touchmove', handleNativeTouchMove, { passive: false });
-
-    return () => {
-      bodyElement.removeEventListener('touchmove', handleNativeTouchMove);
-    };
-  }, [dragging]);
-
   // ✅ 새로운 토스트 추가 모션 로직 (마우스 이벤트)
   const isClickRef = useRef(false);
 
@@ -398,13 +405,13 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
 
     if (isSwiperActive) return;
 
-    // ✅ 드래그 거리가 240px 이상이면 클릭이 아닌 드래그로 간주
-    if (Math.abs(deltaX) > 240) {
+    // ✅ 드래그 거리가 100px 이상이면 클릭이 아닌 드래그로 간주
+    if (Math.abs(deltaX) > 100) {
       isClickRef.current = false;
     }
 
     // ✅ 드래그 거리가 100px 이상이어야 실제로 "드래그 중" 상태로 인식
-    if (Math.abs(deltaX) > 150) {
+    if (Math.abs(deltaX) > 100) {
       setDragging(true);
     } else {
       if (!dragging) return; // 아직 드래그 인식 전이면 위치 이동 안 함
@@ -480,22 +487,8 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
     }
   };
 
-  // ✅ 이벤트 리스너를 추가하는 방식
-  useEffect(() => {
-    const handleMouseUpGlobal = () => {
-      if (dragging) {
-        handleMouseUp();
-      }
-    };
-
-    window.addEventListener('mouseup', handleMouseUpGlobal);
-    return () => {
-      window.removeEventListener('mouseup', handleMouseUpGlobal);
-    };
-  }, [dragging]);
-
   // 💖 Swiper 슬라이드 변경 시 활성 메모 id 전달 (02/08 초기 렌더링 메모 id 전달을 위해 수정된 부분)
-  const handleSlideChange = (swiper: any) => {
+  const handleSlideChange = (swiper: SwiperClass) => {
     if (!memos.length) return; // memos가 비어있으면 실행하지 않음
 
     const activeMemo = memos[swiper.realIndex] || memos[0]; // 초기 렌더링 시 첫 번째 메모 사용

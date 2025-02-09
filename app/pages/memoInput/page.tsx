@@ -9,7 +9,10 @@
 
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-import { useSearchParams } from 'next/navigation';
+import { Suspense } from 'react';
+
+import useSearchParams from '../../hooks/useCustomSearchParams';
+
 import { useMemoContext } from '../../context/MemoContext';
 import { API_BASE_URL } from '../../api/api';
 import { useAuth } from '../../context/AuthContext';
@@ -17,7 +20,7 @@ import { useAuth } from '../../context/AuthContext';
 import MemoHeader from '../../components/layout/MemoHeader';
 import MemoBody from '../../components/common/EditingToast';
 
-export default function MemoInput() {
+function MemoInputContent() {
   const searchParams = useSearchParams();
   const toastId = searchParams.get('id') || '';
   const { memos, fetchMemos } = useMemoContext();
@@ -40,6 +43,7 @@ export default function MemoInput() {
 
   useEffect(() => {
     fetchCategories();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ✅ fetchMemos에 원하는 카테고리를 전달하기 위해 작성한 코드
@@ -80,10 +84,30 @@ export default function MemoInput() {
   return (
     <Container>
       {/* ✅ 상태를 props로 전달 */}
-      <StyledMemoHeader toastId={toastId} title={title} setTitle={setTitle} content={content} isBurnt={false} />
+      <StyledMemoHeader
+        toastId={toastId}
+        title={title}
+        setTitle={setTitle}
+        content={content}
+        isBurnt={false}
+      />
       <HeaderBottomStyle />
-      <StyledMemoBody toastId={toastId} title={title} content={content} setContent={setContent} isBurnt={false} />
+      <StyledMemoBody
+        toastId={toastId}
+        title={title}
+        content={content}
+        setContent={setContent}
+        isBurnt={false}
+      />
     </Container>
+  );
+}
+
+export default function MemoInput() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <MemoInputContent />
+    </Suspense>
   );
 }
 

@@ -1,21 +1,12 @@
-/**
- * 파일명: MemoHeader.tsx
- * 작성일: 2025-02-07
- * 작성자: 이서연
- * 설명: 메모 작성 기능 구현
- */
-
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { API_BASE_URL } from '../../api/api';
 import { useAuth } from '../../context/AuthContext';
-
 import iconBack from '../../assets/icons/icon_back.svg';
 import iconTrash from '../../assets/icons/icon_trash.svg';
-
-import DeleteModal from '../common/DeleteModal';
+import DeleteModal from '../../components/common/DeleteModal';
 
 interface MemoHeaderProps {
   toastId: string;
@@ -23,6 +14,7 @@ interface MemoHeaderProps {
   setTitle: (title: string) => void;
   content: string; // ✅ 본문도 함께 요청해야함
   isBurnt: boolean;
+  onSave: () => void; // ✅ 저장 버튼 클릭 시 호출될 함수
 }
 
 export default function MemoHeader({
@@ -34,7 +26,7 @@ export default function MemoHeader({
 }: MemoHeaderProps) {
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
-  const [_loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { token } = useAuth();
 
   const handleTitleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -57,7 +49,6 @@ export default function MemoHeader({
         throw new Error(`메모 제목 수정 실패: ${data.message || '알 수 없는 오류'}`);
       }
 
-      // setTitle(data.note.title);
       console.log('✅ 메모 제목 수정 성공:', data);
     } catch (error) {
       console.error('❌ 메모 제목 수정 요청 오류:', error);
