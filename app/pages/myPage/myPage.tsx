@@ -16,11 +16,11 @@ import account from '../../assets/icons/icon_profile_b.svg';
 import plan from '../../assets/icons/icon_card_b.svg';
 
 interface MyPageProps extends React.HTMLAttributes<HTMLDivElement> {
-  isOpen: boolean;
+  $isOpen: boolean;
   isPremiumUser?: boolean;
 }
 
-const MyPage: React.FC<MyPageProps> = ({ isOpen, isPremiumUser }) => {
+const MyPage: React.FC<MyPageProps> = ({ $isOpen, isPremiumUser }) => {
   const router = useRouter();
   const { token, userId } = useAuth();
   const { email } = useEmail();
@@ -88,13 +88,7 @@ const MyPage: React.FC<MyPageProps> = ({ isOpen, isPremiumUser }) => {
   const userPlan = isPremiumUser ? '메이플 시럽 버터 토스트 플랜 이용중' : '토스트 플랜 이용중';
 
   return (
-    <div
-      style={{
-        transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
-        transition: 'transform 1s ease-in-out',
-        height: '900px',
-      }}
-    >
+    <div>
       <PageContainer>
         <ContentContainer>
           <Overlay>
