@@ -334,7 +334,8 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
     setShowPlus(deltaX > 200);
 
     if (bodyRef.current) {
-      bodyRef.current.style.transform = `translateX(${Math.max(0, deltaX)}px)`;
+      // ✅ 최대 드래그 거리 240px 제한
+      bodyRef.current.style.transform = `translateX(${Math.min(240, Math.max(0, deltaX))}px)`;
     }
   };
 
@@ -420,8 +421,8 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
 
     if (bodyRef.current) {
       requestAnimationFrame(() => {
-        // ✅ 강제로 transform 업데이트 적용
-        bodyRef.current!.style.transform = `translateX(${Math.max(0, deltaX)}px)`;
+        // ✅ 최대 드래그 거리 240px 제한
+        bodyRef.current!.style.transform = `translateX(${Math.min(240, Math.max(0, deltaX))}px)`;
       });
     }
   };
