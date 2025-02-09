@@ -618,12 +618,14 @@ const StyledSwiperSlide = styled(SwiperSlide)`
   justify-content: center;
   align-items: center;
   height: 360px;
+  user-select: none; /* ✅ 텍스트 선택 방지 */
 `;
 
 const StyledBasicToast = styled(BasicToast)`
   cursor: pointer;
   width: 296px;
   height: 320px;
+  user-select: none; /* ✅ 텍스트 선택 방지 */
 `;
 
 const ToastMessage = styled.div`
@@ -644,8 +646,10 @@ const ToastMessage = styled.div`
   font-style: normal;
   font-weight: 400;
   line-height: 16px;
+  user-select: none; /* ✅ 텍스트 선택 방지 */
 `;
 
 const ErrorMessageBox = styled(ToastMessage)`
   background: rgba(80, 15, 15, 0.8);
+  user-select: none; /* ✅ 텍스트 선택 방지 */
 `;
