@@ -56,6 +56,9 @@ const ToastContainer = styled.div`
 `;
 
 const StyledToastImage = styled(Image)`
+  position: absolute;
+  top: 40px;
+  left: 0px;
   display: block;
   border-radius: 10px;
   width: 296px;
