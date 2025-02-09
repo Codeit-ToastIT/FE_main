@@ -4,16 +4,8 @@ import './globals.css';
 import StyledComponentsRegistry from '../registry';
 import Providers from './providers'; // ✅ 클라이언트 Provider 불러오기
 import { metadata, viewport } from './metadata'; // ✅ metadata를 따로 가져오기
-import type { Metadata } from 'next';
 
 import React, { useEffect } from 'react';
-
-export const metadataWithIcons: Metadata = {
-  ...metadata,
-  icons: {
-    icon: '/favicon/favicon.svg', // ✅ favicon을 layout.tsx에서 직접 추가
-  },
-};
 
 export default function RootLayout({
   children,
