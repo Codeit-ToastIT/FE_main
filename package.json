@@ -2,7 +2,7 @@
   "name": "toastit",
   "version": "0.1.0",
   "private": true,
-  "proxy": "http://52.79.251.171:8000",
+  "proxy": "https://api.toast-it.site",
   "scripts": {
     "dev": "next dev --turbopack",
     "build": "next build",

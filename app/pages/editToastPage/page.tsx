@@ -2,6 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+
+import { Suspense } from 'react';
+
 import useSearchParams from '../../hooks/useCustomSearchParams';
 import { useMemoContext } from '../../context/MemoContext';
 import { API_BASE_URL } from '../../api/api';
@@ -10,6 +13,9 @@ import MemoHeader from './MemoHeader';
 import MemoBody from '../../components/common/EditingToast';
 
 const EditToastPage = () => {
+
+function EditToastPageContent() {
+
   const searchParams = useSearchParams();
   const toastId = searchParams.get('noteId') || '';
   const { memos, fetchMemos } = useMemoContext();
@@ -125,6 +131,13 @@ const EditToastPage = () => {
 
 export default EditToastPage;
 
+export default function EditToastPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <EditToastPageContent />
+    </Suspense>
+  );
+}
 const Container = styled.div`
   background: var(--ivory);
   height: 635px;

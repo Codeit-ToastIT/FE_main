@@ -8,6 +8,7 @@ body {
   overflow-x: hidden;
   font-family:
     'SUIT',
+    'Apple SD Gothic Neo',
     -apple-system,
     BlinkMacSystemFont,
     'Segoe UI',
@@ -51,7 +52,7 @@ body {
 
 @font-face {
   font-family: 'SUIT';
-  src: url('./fonts/SUIT-Variable.woff2') format('truetype');
+  src: url('./fonts/SUIT-Variable.woff2') format('woff2');
 }
 
 body {
