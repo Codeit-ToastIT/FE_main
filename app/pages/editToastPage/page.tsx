@@ -12,10 +12,7 @@ import { useAuth } from '../../context/AuthContext';
 import MemoHeader from './MemoHeader';
 import MemoBody from '../../components/common/EditingToast';
 
-const EditToastPage = () => {
-
 function EditToastPageContent() {
-
   const searchParams = useSearchParams();
   const toastId = searchParams.get('noteId') || '';
   const { memos, fetchMemos } = useMemoContext();
@@ -127,9 +124,7 @@ function EditToastPageContent() {
       />
     </Container>
   );
-};
-
-export default EditToastPage;
+}
 
 export default function EditToastPage() {
   return (
