@@ -1,8 +1,9 @@
 'use client';
 
 import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import styled from 'styled-components';
-import Toast from '../../components/common/BurntToast';
+import BurntToast from '../../components/common/BurntToast';
 import SearchBarComponent from '../../components/common/SearchBarComponent';
 import BreadBox from '../../assets/load/breadbox.svg';
 
@@ -38,11 +39,16 @@ const UserToasts = {
   ] as ToastType[],
 };
 
-const LoadToastPage = () => {
+const LoadToastPage: React.FC = () => {
   const [searchToast, setSearchToast] = useState<string>('');
+  const router = useRouter();
 
   const onChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setSearchToast(e.target.value);
+  };
+
+  const handleToastClick = (index: number) => {
+    router.push(`editToastPage`);
   };
 
   const filterToast = UserToasts.Toasts.filter(
@@ -50,6 +56,7 @@ const LoadToastPage = () => {
       toast.content.toLowerCase().includes(searchToast.toLowerCase()) ||
       toast.title.toLowerCase().includes(searchToast.toLowerCase()),
   );
+
   return (
     <BackGround>
       <SearchBarComponent searchToast={searchToast} onChange={onChange} />
@@ -59,7 +66,13 @@ const LoadToastPage = () => {
           {filterToast.length > 0 ? (
             <TextBody>
               {filterToast.map((toast, index) => (
-                <Toast key={index} index={index} title={toast.title} content={toast.content} />
+                <BurntToast
+                  key={index}
+                  index={index}
+                  title={toast.title}
+                  content={toast.content}
+                  onClick={() => handleToastClick(index)} // 클릭 이벤트 핸들러 추가
+                />
               ))}
             </TextBody>
           ) : (
