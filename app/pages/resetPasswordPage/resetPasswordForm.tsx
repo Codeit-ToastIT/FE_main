@@ -177,7 +177,7 @@ const ResetPasswordForm = () => {
         return;
       }
 
-      router.push('/pages/createToastPage');
+      router.push('/pages/emailInputPage');
     } catch (error) {
       setErrorMessage("비밀번호 재설정 중 오류가 발생했습니다.");
       console.error(error);
