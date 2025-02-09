@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import SubmitButton from '../../components/common/SubmitButton';
 import { API_BASE_URL } from "../../api/api";
 import { useAuth } from "../../context/AuthContext";
-import iconEyeOpen from '../../assets/icons/icon_eye_open.png';
+import iconEyeOpen from '../../assets/icons/icon_eye_open.svg';
 import iconEyeClosed from '../../assets/icons/icon_eye_closed.svg';
 import Image from 'next/image';
 

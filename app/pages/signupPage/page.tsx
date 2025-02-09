@@ -9,7 +9,7 @@ import SubmitButton from '../../components/common/SubmitButton';
 
 import { API_BASE_URL } from '../../api/api';
 import Image from 'next/image';
-import iconEyeOpen from '../../assets/icons/icon_eye_open.png';
+import iconEyeOpen from '../../assets/icons/icon_eye_open.svg';
 import iconEyeClosed from '../../assets/icons/icon_eye_closed.svg';
 
 const Whole = styled.div`
