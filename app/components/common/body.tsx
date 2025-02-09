@@ -219,7 +219,7 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
           setMemos((prevMemos) => [data.memo, ...prevMemos].slice(0, 3));
           // ✅ fetchMemos를 ref에서 가져와 호출
           if (fetchMemosRef.current) {
-            await fetchMemosRef.current(categoryId);
+            fetchMemosRef.current(categoryId);
           }
         } else {
           console.error('❌ 기본 메모 생성 실패(서연):', data.message);
@@ -257,7 +257,8 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
 
         if (data.notes.length === 0) {
           console.log('⚠️ 불러온 메모가 없음 → 기본 메모 자동 생성(서연)');
-          await createDefaultMemo(categoryId); // ✅ 기본 메모 생성
+          createDefaultMemo(categoryId); // ✅ 기본 메모 생성
+          console.log('메모 생성 완료!!!!!!!');
         } else {
           setMemos(data.notes.slice(0, 3));
         }
