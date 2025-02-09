@@ -141,9 +141,27 @@ const CurrentPasswordPage = () => {
     router.push("../account/changePassword");
   };
 
-  const handleLinkClick = () => {
-    router.push("/pages/resetPasswordPage");
-  };
+  const handleLinkClick = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/auth/password/reset/send-code`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email }), // 이메일 주소 전달
+        });
+  
+        if (response.ok) {
+          console.log('인증번호 전송 성공');
+          router.push('/pages/resetPasswordPage'); // 비밀번호 재설정 페이지로 이동
+        } else {
+          const errorData = await response.json();
+          console.error('인증번호 전송 실패:', errorData);
+        }
+      } catch (error) {
+        console.error('인증번호 전송 오류:', error);
+      }
+    };
 
   return (
     <Whole onMouseDown={handleMouseDown}>
