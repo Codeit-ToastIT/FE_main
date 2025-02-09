@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { Suspense } from 'react';
 
 import useSearchParams from '../../hooks/useCustomSearchParams';
 
@@ -12,15 +13,11 @@ import { useAuth } from '../../context/AuthContext';
 import MemoHeader from '../../components/layout/MemoHeader';
 import MemoBody from '../../components/common/EditingToast';
 
-export default function EditToastPage() {
+function EditToastPageContent() {
   const searchParams = useSearchParams();
-  const [toastId, setToastId] = useState('');
+  const toastId = searchParams.get('id') || '';
   const { memos, fetchMemos } = useMemoContext();
   const { token, userId } = useAuth();
-
-  useEffect(() => {
-    setToastId(searchParams.get('id') || '');
-  }, [searchParams]);
 
   // ✅ toastId에 해당하는 메모 찾기
   const memo = memos.find((memo) => memo.id === toastId);
@@ -98,6 +95,13 @@ export default function EditToastPage() {
   );
 }
 
+export default function EditToastPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <EditToastPageContent />
+    </Suspense>
+  );
+}
 const Container = styled.div`
   background: var(--ivory);
   height: 635px;
