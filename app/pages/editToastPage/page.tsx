@@ -2,9 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
-
 import useSearchParams from '../../hooks/useCustomSearchParams';
-
 import { useMemoContext } from '../../context/MemoContext';
 import { API_BASE_URL } from '../../api/api';
 import { useAuth } from '../../context/AuthContext';

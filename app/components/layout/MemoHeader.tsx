@@ -65,7 +65,7 @@ export default function MemoHeader({
   };
 
   const handleBackClick = () => {
-    router.push('/pages/createToastPage');
+    window.history.back();
   };
 
   const handleDeleteClick = () => {
