@@ -14,9 +14,13 @@ import MemoBody from '../../components/common/EditingToast';
 
 export default function EditToastPage() {
   const searchParams = useSearchParams();
-  const toastId = searchParams.get('id') || '';
+  const [toastId, setToastId] = useState('');
   const { memos, fetchMemos } = useMemoContext();
   const { token, userId } = useAuth();
+
+  useEffect(() => {
+    setToastId(searchParams.get('id') || '');
+  }, [searchParams]);
 
   // ✅ toastId에 해당하는 메모 찾기
   const memo = memos.find((memo) => memo.id === toastId);
