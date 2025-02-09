@@ -8,6 +8,8 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+
 import styled from 'styled-components';
 import SaveToast from '../../components/SaveToast';
 import LoadToast from '../../components/LoadToast';
@@ -19,6 +21,7 @@ import { useAuth } from '../../context/AuthContext';
 import { isUint8ClampedArray } from 'util/types';
 
 export default function CreateToastComponent() {
+  const router = useRouter();
   const [showOnboarding, setShowOnboarding] = useState(false);
   const { message } = useAuth();
 
@@ -41,6 +44,7 @@ export default function CreateToastComponent() {
   const [activeMemoId, setActiveMemoId] = useState<string>('1');
 
   const [isDoubleClick, setIsDoubleClick] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   // 더블클릭 이벤트 핸들러
   const handleDoubleClick = () => {
@@ -84,6 +88,11 @@ export default function CreateToastComponent() {
     }, 2000);
   };
 
+  const handleCategorySelect = (category: string) => {
+    setSelectedCategory(category);
+    router.push(`loadToastPage`);
+  };
+
   // 상위에서 활성 메모 id를 갱신할 콜백 (Home → Body에서 전달됨)
   const handleActiveMemoChange = (id: string) => {
     setActiveMemoId(id);
@@ -121,7 +130,7 @@ export default function CreateToastComponent() {
       )}
       {isDoubleClick && (
         <SaveToastWrapper onDoubleClick={handleDoubleClick}>
-          <LoadToast onClose={handleCloseSaveToast} />
+          <LoadToast onClose={handleCategorySelect} />
         </SaveToastWrapper>
       )}
       {showSaveMessage && (
