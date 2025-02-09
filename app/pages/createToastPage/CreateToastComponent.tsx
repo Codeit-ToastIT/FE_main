@@ -16,6 +16,7 @@ import Home from './home';
 import Help from './help';
 
 import { useAuth } from '../../context/AuthContext';
+import { isUint8ClampedArray } from 'util/types';
 
 export default function CreateToastComponent() {
   const [showOnboarding, setShowOnboarding] = useState(false);
@@ -35,7 +36,6 @@ export default function CreateToastComponent() {
   const [isLongPress, setIsLongPress] = useState(false);
   const [pressTimeout, setPressTimeout] = useState<NodeJS.Timeout | null>(null);
   const [showSaveMessage, setShowSaveMessage] = useState<string | null>(null); // 저장 메시지 상태
-  const [showLoadMessage, setShowLoadMessage] = useState<string | null>(null); // 저장 메시지 상태
 
   // 활성 메모 id 상태 추가 (상위에서 관리)
   const [activeMemoId, setActiveMemoId] = useState<string>('1');
@@ -44,13 +44,11 @@ export default function CreateToastComponent() {
 
   // 더블클릭 이벤트 핸들러
   const handleDoubleClick = () => {
-    console.log('더블클릭 이벤트 발생');
     setIsDoubleClick(true);
-
     // 일정 시간 후 더블클릭 상태 초기화
     setTimeout(() => {
       setIsDoubleClick(false);
-    }, 2000); // 2초 후 초기화
+    }, 3000); // 5초 후 초기화
   };
 
   // 메모 ID, 제목, 내용 상태
@@ -123,7 +121,7 @@ export default function CreateToastComponent() {
       )}
       {isDoubleClick && (
         <SaveToastWrapper onDoubleClick={handleDoubleClick}>
-          <LoadToast onClose={handleCloseSaveToast} onSave={handleSave} />
+          <LoadToast onClose={handleCloseSaveToast} />
         </SaveToastWrapper>
       )}
       {showSaveMessage && (

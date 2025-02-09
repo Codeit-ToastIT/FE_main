@@ -8,10 +8,9 @@ import ToastImg from '../assets/load/toasts/burnt1.png';
 
 interface LoadToastProps {
   onClose: (category: string) => void; // 모달 닫기 함수, 인자 추가
-  onSave: (category: string) => void; // 저장 콜백 함수
 }
 
-const LoadToast: React.FC<LoadToastProps> = ({ onClose, onSave }) => {
+const LoadToast: React.FC<LoadToastProps> = ({ onClose }) => {
   const [position, setPosition] = useState({ x: 0, y: 0 }); // 식빵 위치
   const [activeSlice, setActiveSlice] = useState<number | null>(null); // 활성화된 조각 (0~3)
   const [isdragging, setIsdragging] = useState(false); // 드래그 상태 확인
@@ -38,7 +37,6 @@ const LoadToast: React.FC<LoadToastProps> = ({ onClose, onSave }) => {
     setIspressing(false);
     if (activeSlice !== null) {
       const selectedCategory = categoryNames[activeSlice];
-      onSave(selectedCategory); // 선택된 카테고리 전달
       onClose(selectedCategory); // 선택된 카테고리 전달
     }
     setPosition({ x: 0, y: 0 });
