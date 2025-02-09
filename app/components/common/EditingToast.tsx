@@ -79,7 +79,8 @@ export default function EditingToast({
   return (
     <div>
       <StyledTextArea
-        value={content} // ✅ memo에서 가져온 값 사용
+        placeholder="새로운 토스트를 작성해볼까요?"
+        // value={content} // ✅ memo에서 가져온 값 사용
         onChange={handleTextChange}
         isBurnt={isBurnt}
       ></StyledTextArea>

@@ -132,7 +132,6 @@ const ModalContent = styled.div`
 
 const Display1 = styled.div`
   position: absolute;
-  top: 200px;
   left: 16px;
 `;
 const Display2 = styled.div`

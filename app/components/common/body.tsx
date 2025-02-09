@@ -334,7 +334,8 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
     setShowPlus(deltaX > 200);
 
     if (bodyRef.current) {
-      bodyRef.current.style.transform = `translateX(${Math.max(0, deltaX)}px)`;
+      // ✅ 최대 드래그 거리 240px 제한
+      bodyRef.current.style.transform = `translateX(${Math.min(240, Math.max(0, deltaX))}px)`;
     }
   };
 
@@ -420,8 +421,8 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
 
     if (bodyRef.current) {
       requestAnimationFrame(() => {
-        // ✅ 강제로 transform 업데이트 적용
-        bodyRef.current!.style.transform = `translateX(${Math.max(0, deltaX)}px)`;
+        // ✅ 최대 드래그 거리 240px 제한
+        bodyRef.current!.style.transform = `translateX(${Math.min(240, Math.max(0, deltaX))}px)`;
       });
     }
   };
@@ -567,7 +568,7 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
           <StyledSwiperSlide>
             <StyledBasicToast
               title={new Date().toISOString().split('T')[0]}
-              content="새로운 영감을 적어볼까요?"
+              content="새로운 토스트를 작성해볼까요?"
             />{' '}
             {/* 기본값 */}
           </StyledSwiperSlide>
@@ -617,12 +618,14 @@ const StyledSwiperSlide = styled(SwiperSlide)`
   justify-content: center;
   align-items: center;
   height: 360px;
+  user-select: none; /* ✅ 텍스트 선택 방지 */
 `;
 
 const StyledBasicToast = styled(BasicToast)`
   cursor: pointer;
   width: 296px;
   height: 320px;
+  user-select: none; /* ✅ 텍스트 선택 방지 */
 `;
 
 const ToastMessage = styled.div`
@@ -643,8 +646,10 @@ const ToastMessage = styled.div`
   font-style: normal;
   font-weight: 400;
   line-height: 16px;
+  user-select: none; /* ✅ 텍스트 선택 방지 */
 `;
 
 const ErrorMessageBox = styled(ToastMessage)`
   background: rgba(80, 15, 15, 0.8);
+  user-select: none; /* ✅ 텍스트 선택 방지 */
 `;
