@@ -9,7 +9,7 @@ import SubmitButton from '../../components/common/SubmitButton';
 
 import { API_BASE_URL } from '../../api/api';
 import Image from 'next/image';
-import iconEyeOpen from '../../assets/icons/icon_eye_open.png';
+import iconEyeOpen from '../../assets/icons/icon_eye_open.svg';
 import iconEyeClosed from '../../assets/icons/icon_eye_closed.svg';
 
 const Whole = styled.div`
@@ -76,6 +76,15 @@ const ErrorMessage = styled.div`
   padding-left: 1rem;
 `;
 
+const SuccessMessage = styled.div`
+  color: #51FFB9;
+  font-family: SUIT;
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 0.875rem;
+  padding-left: 1rem;  
+`
+
 const EyeIcon = styled(Image)`
   width: 1.5rem;
   height: 1.5rem;
@@ -95,6 +104,7 @@ const SignupPage = () => {
   const [pw, setPw] = useState('');
   const [pwCheck, setPwCheck] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const isPwValid = pw.length >= 8; // 비밀번호 유효성 체크
   const router = useRouter();
@@ -148,6 +158,7 @@ const SignupPage = () => {
         setErrorMessage('비밀번호가 서로 달라요.'); // 비밀번호 불일치 오류 메시지 설정
       } else {
         setErrorMessage(''); // 비밀번호가 같을 때 오류 메시지 초기화
+        setSuccessMessage('비밀번호가 서로 일치해요.');
       }
     }
   };
@@ -281,6 +292,7 @@ const SignupPage = () => {
           {!isPwValid && <ErrorMessage>아직 8자리가 아니에요.</ErrorMessage>}{' '}
           {/* 오류 메시지 조건부 렌더링 */}
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>} {/* 오류 메시지 표시 */}
+          {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
           <SubmitButton isActive={isPwValid && pw === pwCheck} />
         </Form>
       </Container>
