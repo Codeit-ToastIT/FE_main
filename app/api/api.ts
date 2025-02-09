@@ -1,3 +1,1 @@
-
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || '';
-// export const AUTH_TOKEN = process.env.NEXT_PUBLIC_AUTH_TOKEN;
+export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL || 'http://52.79.251.171:8000';
