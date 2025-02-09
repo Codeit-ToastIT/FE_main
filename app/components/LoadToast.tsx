@@ -31,14 +31,11 @@ const LoadToast: React.FC<LoadToastProps> = ({ onClose, onCategorySelect }) => {
   useEffect(() => {
     const fetchCategoryIds = async () => {
       try {
-        const response = await fetch(
-          `http://52.79.251.171:8000/api/categories/67a8348842292bc9d55aebfc`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+        const response = await fetch(`${API_BASE_URL}/api/categories/67a8348842292bc9d55aebfc`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
           },
-        );
+        });
         const data = await response.json();
         console.log(`데이터!!!!!!!!!!!!!!🙀🙀🙀🙀: ${JSON.stringify(data)}`);
         if (data.categories && Array.isArray(data.categories)) {
