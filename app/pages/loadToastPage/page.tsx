@@ -73,7 +73,7 @@ const LoadToastContent: React.FC = () => {
   };
 
   const handleToastClick = (id: number) => {
-    router.push(`editToastPage?noteId=${id}`);
+    router.push(`editToastPage?id=${id}`);
   };
 
   const filterToast = toasts.filter(

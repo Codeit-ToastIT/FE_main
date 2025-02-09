@@ -25,13 +25,13 @@ const LoadToast: React.FC<LoadToastProps> = ({ onClose, onCategorySelect }) => {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
   let inactivityTimeout: NodeJS.Timeout;
-  const { token } = useAuth();
+  const { token, userId } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
     const fetchCategoryIds = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/categories/67a8348842292bc9d55aebfc`, {
+        const response = await fetch(`${API_BASE_URL}/api/categories/${userId}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
