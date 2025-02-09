@@ -79,6 +79,7 @@ const LoadToast: React.FC<LoadToastProps> = ({ onClose, onCategorySelect }) => {
     }
     setPosition({ x: 0, y: 0 });
     setActiveSlice(null);
+    playSaveSound();
   };
 
   const checkCollision = (x: number, y: number) => {
@@ -118,6 +119,15 @@ const LoadToast: React.FC<LoadToastProps> = ({ onClose, onCategorySelect }) => {
       window.removeEventListener('mousedown', resetInactivityTimeout);
     };
   }, []);
+
+  // 효과음 재생 함수 추가
+  const playSaveSound = () => {
+    const audio = new Audio('/sounds/toaster_open.wav'); // 효과음 경로
+    audio
+      .play()
+      .then(() => console.log('✅ 효과음 재생 성공'))
+      .catch((error) => console.error('❌ 효과음 재생 실패:', error));
+  };
 
   return (
     <Container onMouseDown={handleMouseDown} onMouseUp={handleMouseUp}>
