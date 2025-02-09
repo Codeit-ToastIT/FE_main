@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import styled from 'styled-components';
 import BurntToast from '../../components/common/BurntToast';
@@ -24,7 +24,7 @@ interface ToastType {
   updatedAt: string;
 }
 
-const LoadToastPage: React.FC = () => {
+const LoadToastContent: React.FC = () => {
   const [searchToast, setSearchToast] = useState<string>('');
   const [toasts, setToasts] = useState<ToastType[]>([]);
   const [categoryName, setCategoryName] = useState<string>('');
@@ -125,6 +125,15 @@ const LoadToastPage: React.FC = () => {
         </ScrollBar>
       </Body>
     </BackGround>
+  );
+};
+
+// Suspense로 감싼 최상위 컴포넌트
+const LoadToastPage: React.FC = () => {
+  return (
+    <Suspense fallback={<p>로딩 중...</p>}>
+      <LoadToastContent />
+    </Suspense>
   );
 };
 
