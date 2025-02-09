@@ -568,7 +568,7 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
           <StyledSwiperSlide>
             <StyledBasicToast
               title={new Date().toISOString().split('T')[0]}
-              content="새로운 영감을 적어볼까요?"
+              content="새로운 토스트를 작성해볼까요?"
             />{' '}
             {/* 기본값 */}
           </StyledSwiperSlide>
