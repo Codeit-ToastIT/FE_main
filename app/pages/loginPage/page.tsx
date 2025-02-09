@@ -168,8 +168,28 @@ const LoginPage = () => {
     }
   };
 
-  const handleLinkClick = () => {
-    router.push('/pages/resetPasswordPage'); // 비밀번호 재설정 페이지로 이동
+  const handleLinkClick = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/password/reset/send-code`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }), // 이메일 주소 전달
+      });
+
+      if (response.ok) {
+        console.log('인증번호 전송 성공');
+        router.push('/pages/resetPasswordPage'); // 비밀번호 재설정 페이지로 이동
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message || '인증번호 전송에 실패했습니다.'); // 에러 메시지 설정
+        console.error('인증번호 전송 실패:', errorData);
+      }
+    } catch (error) {
+      setError('인증번호 전송 중 오류가 발생했습니다.');
+      console.error('인증번호 전송 오류:', error);
+    }
   };
 
   return (
