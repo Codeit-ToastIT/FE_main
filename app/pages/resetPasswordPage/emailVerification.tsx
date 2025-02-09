@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import SubmitButton from '../../components/common/SubmitButton';
 import { useEmail } from '../../context/EmailContext'; // EmailContext 가져오기
 import { API_BASE_URL } from '../../api/api';
+import { useAuth } from '../../context/AuthContext';
 
 const Whole = styled.div`
   display: inline-flex;
@@ -161,10 +162,12 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ onSuccess }) => {
   const [countdown, setCountdown] = useState(300); // 5분 카운트다운 (300초)
   const [toastVisible, setToastVisible] = useState(false); // 토스트 가시성
   const [toastMessage, setToastMessage] = useState(''); // 토스트 메시지
+  const { login } = useAuth();
 
   // 이메일로 코드 전송
   const sendEmail = async () => {
     try {
+      console.log('이메일 전송 요청 시작'); 
       const response = await fetch(`${API_BASE_URL}/api/auth/password/reset/send-code`, {
         method: 'POST',
         headers: {
@@ -174,23 +177,23 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ onSuccess }) => {
           email: email,
         }),
       });
-
+  
       if (!response.ok) {
         const errorData = await response.json();
         console.error('서버 응답:', errorData);
         throw new Error('이메일 전송에 실패했습니다.');
       }
-
-      const data = await response.json(); // 응답 데이터 파싱
-      console.log(`서버 메시지: ${data.message}`); // 서버로부터 받은 메시지 출력
+  
+      const data = await response.json();
+      console.log(`서버 메시지: ${data.message}`); 
     } catch (error) {
       console.error(error);
     }
   };
 
-  // 컴포넌트 마운트 시 이메일 전송
+
   useEffect(() => {
-    sendEmail(); // 이메일 전송 요청
+    sendEmail(); 
     const timer = setInterval(() => {
       setCountdown((prev) => {
         if (prev <= 1) {
@@ -200,10 +203,9 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ onSuccess }) => {
         return prev - 1;
       });
     }, 1000);
-    console.log('현재 이메일:', email); // 이메일 값을 콘솔에 출력
+    console.log('현재 이메일:', email); 
     return () => clearInterval(timer);
-  }, [email]);
-
+  }, []); 
   // BackIcon 클릭 시 이전 화면으로 이동
   const handleBackClick = () => {
     router.back();
@@ -229,30 +231,38 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ onSuccess }) => {
 
   // 폼 제출 처리
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  e.preventDefault();
 
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/password/reset/verify-code`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          email: email,
-          code: authCode, // 사용자가 입력한 인증 코드
-        }),
-      });
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/auth/password/reset/verify-code`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: email,
+        code: authCode, // 사용자가 입력한 인증 코드
+      }),
+    });
 
-      const data = await response.json();
-      console.log(data.message);
+    
 
-      // 인증 성공 시 onSuccess 호출
-      onSuccess();
-    } catch (error) {
+    if (!response.ok) {
+      // 서버 응답이 성공적이지 않을 경우
       setError('인증번호가 일치하지 않습니다.');
-      console.error(error);
+      return; // 함수 실행 중단
     }
-  };
+
+    // 인증 성공 시 onSuccess 호출
+    onSuccess();
+    const data = await response.json();
+    console.log(data);
+    login(data.token); // 토큰 저장
+  } catch (error) {
+    setError('인증번호가 일치하지 않습니다.');
+    console.error(error);
+  }
+};
 
   // 카운트다운 시간 -> 분과 초로 변환
   const formatTime = (seconds: number) => {
