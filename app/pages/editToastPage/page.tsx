@@ -6,37 +6,25 @@ import useSearchParams from '../../hooks/useCustomSearchParams';
 import { useMemoContext } from '../../context/MemoContext';
 import { API_BASE_URL } from '../../api/api';
 import { useAuth } from '../../context/AuthContext';
-
-import MemoHeader from '../../components/layout/MemoHeader';
+import MemoHeader from './MemoHeader';
 import MemoBody from '../../components/common/EditingToast';
 
-export default function EditToastPage() {
+const EditToastPage = () => {
   const searchParams = useSearchParams();
-  const toastId = searchParams.get('id') || '';
+  const toastId = searchParams.get('noteId') || '';
   const { memos, fetchMemos } = useMemoContext();
   const { token, userId } = useAuth();
-
-  // ✅ toastId에 해당하는 메모 찾기
-  const memo = memos.find((memo) => memo.id === toastId);
 
   // ✅ 제목과 본문을 부모에서 상태로 관리
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
 
-  // ✅ memos가 업데이트될 때, title과 content도 갱신
-  useEffect(() => {
-    if (memo) {
-      setTitle(memo.title);
-      setContent(memo.content);
-    }
-  }, [memo]);
+  // ✅ fetchMemos에 원하는 카테고리를 전달하기 위해 작성한 코드
+  const [lastCategoryId, setLastCategoryId] = useState('');
 
   useEffect(() => {
     fetchCategories();
   }, []);
-
-  // ✅ fetchMemos에 원하는 카테고리를 전달하기 위해 작성한 코드
-  const [lastCategoryId, setLastCategoryId] = useState('');
 
   const fetchCategories = async () => {
     try {
@@ -70,6 +58,48 @@ export default function EditToastPage() {
     }
   };
 
+  useEffect(() => {
+    if (lastCategoryId) {
+      fetchMemos(lastCategoryId);
+    }
+  }, [lastCategoryId]);
+
+  useEffect(() => {
+    const memo = memos.find((memo) => memo.id === toastId);
+    if (memo) {
+      setTitle(memo.title);
+      setContent(memo.content);
+    }
+  }, [memos, toastId]);
+
+  const updateMemo = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/memos/${toastId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          title,
+          content,
+        }),
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        console.log('✅ 메모 수정 성공:', data);
+        alert(data.message);
+        fetchMemos(lastCategoryId); // ✅ 메모 목록 갱신
+      } else {
+        console.error('❌ 메모 수정 실패:', data);
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error('❌ 메모 수정 오류:', error);
+    }
+  };
+
   return (
     <Container>
       {/* ✅ 상태를 props로 전달 */}
@@ -79,6 +109,7 @@ export default function EditToastPage() {
         setTitle={setTitle}
         content={content}
         isBurnt={true}
+        onSave={updateMemo} // ✅ 저장 버튼 클릭 시 updateMemo 함수 호출
       />
       <HeaderBottomStyle />
       <StyledMemoBody
@@ -90,7 +121,9 @@ export default function EditToastPage() {
       />
     </Container>
   );
-}
+};
+
+export default EditToastPage;
 
 const Container = styled.div`
   background: var(--ivory);
