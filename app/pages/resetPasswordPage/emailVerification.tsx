@@ -62,7 +62,7 @@ const InputContainer = styled.div`
 
 const Input = styled.input`
   height: 2.5rem;
-  min-width: 100%;
+  width: 20.5rem;
   border-radius: 2.5rem;
   background: rgba(255, 255, 255, 0.2);
   border: none;
