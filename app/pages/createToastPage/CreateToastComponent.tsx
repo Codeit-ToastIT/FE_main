@@ -16,10 +16,12 @@ import Home from './home';
 import Help from './help';
 
 import { useAuth } from '../../context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 export default function CreateToastComponent() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const { message } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     // localStorage에 "onBoardingShown" 값이 없을 때만 온보딩을 표시
@@ -35,18 +37,14 @@ export default function CreateToastComponent() {
   const [isLongPress, setIsLongPress] = useState(false);
   const [pressTimeout, setPressTimeout] = useState<NodeJS.Timeout | null>(null);
   const [showSaveMessage, setShowSaveMessage] = useState<string | null>(null); // 저장 메시지 상태
-  const [showLoadMessage, setShowLoadMessage] = useState<string | null>(null); // 저장 메시지 상태
-
+  const [showLoadMessage, setShowLoadMessage] = useState<string | null>(null);
   // 활성 메모 id 상태 추가 (상위에서 관리)
   const [activeMemoId, setActiveMemoId] = useState<string>('1');
-
   const [isDoubleClick, setIsDoubleClick] = useState(false);
 
   // 더블클릭 이벤트 핸들러
   const handleDoubleClick = () => {
-    console.log('더블클릭 이벤트 발생');
     setIsDoubleClick(true);
-
     // 일정 시간 후 더블클릭 상태 초기화
     setTimeout(() => {
       setIsDoubleClick(false);
@@ -79,7 +77,6 @@ export default function CreateToastComponent() {
 
   const handleSave = (category: string) => {
     setShowSaveMessage(`${category}에 저장되었어요.`);
-
     // 2초 후 메시지 사라지게 설정
     setTimeout(() => {
       setShowSaveMessage(null);
@@ -89,6 +86,10 @@ export default function CreateToastComponent() {
   // 상위에서 활성 메모 id를 갱신할 콜백 (Home → Body에서 전달됨)
   const handleActiveMemoChange = (id: string) => {
     setActiveMemoId(id);
+  };
+
+  const handleCategorySelect = (categoryId: string) => {
+    router.push(`/loadToastPage?category=${categoryId}`);
   };
 
   // ------------------------------------------------------------- 💖임사랑 - SaveToast 관련 추가되는 부분
@@ -123,7 +124,7 @@ export default function CreateToastComponent() {
       )}
       {isDoubleClick && (
         <SaveToastWrapper onDoubleClick={handleDoubleClick}>
-          <LoadToast onClose={handleCloseSaveToast} onSave={handleSave} />
+          <LoadToast onClose={handleCloseSaveToast} onCategorySelect={handleCategorySelect} />
         </SaveToastWrapper>
       )}
       {showSaveMessage && (
