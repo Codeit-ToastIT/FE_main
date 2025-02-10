@@ -1,10 +1,8 @@
-'use client';
-
 import React, { useEffect, useRef, useState } from 'react';
 import { styled } from 'styled-components';
 import { useRouter } from 'next/navigation';
 import SubmitButton from '../../components/common/SubmitButton';
-import { useEmail } from '../../context/EmailContext'; // EmailContext 가져오기
+import { useEmail } from '../../context/EmailContext';
 import { API_BASE_URL } from '../../api/api';
 import { useAuth } from '../../context/AuthContext';
 
@@ -40,7 +38,6 @@ const Disc = styled.div`
   flex-direction: column;
   justify-content: center;
   flex-shrink: 0;
-
   color: var(--ivory, #e5dcca);
   font-family: SUIT;
   font-size: 1.125rem;
@@ -56,7 +53,7 @@ const Container = styled.div`
 
 const InputContainer = styled.div`
   position: relative;
-  width: 20.5rem; /* Input과 같은 너비 */
+  width: 20.5rem;
   margin-top: 2.5rem;
 `;
 
@@ -69,7 +66,7 @@ const Input = styled.input`
   outline: none;
   color: #e5dcca;
   padding-left: 1rem;
-  padding-right: 4rem; /* 오른쪽 여백 추가 */
+  padding-right: 4rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
   color: var(--ivory, #e5dcca);
@@ -101,8 +98,6 @@ const ResendLink = styled.div`
   font-weight: 400;
   line-height: 0.875rem;
   text-decoration-line: underline;
-  text-decoration-style: solid;
-  text-underline-position: from-font;
   margin-top: 0.5rem;
   cursor: pointer;
 `;
@@ -128,7 +123,7 @@ const ErrorMessage = styled.div`
   line-height: 0.875rem;
 `;
 
-const Toast = styled.div`
+const Toast = styled.div<{ visible: boolean }>`
   padding: 0.75rem 1rem;
   justify-content: center;
   align-items: center;
@@ -142,28 +137,26 @@ const Toast = styled.div`
   font-size: 0.875rem;
   font-style: normal;
   font-weight: 400;
-  line-height: 1rem; /* 114.286% */
-  opacity: 0; /* 기본값 */
+  line-height: 1rem; 
+  opacity: ${({ visible }) => (visible ? 1 : 0)};
   transition: opacity 0.3s ease-in-out;
   z-index: 1000;
 `;
 
-// Props 타입 정의
 interface EmailVerificationProps {
-  onSuccess: () => void; // onSuccess는 매개변수가 없는 함수
+  onSuccess: () => void;
 }
 
 const EmailVerification: React.FC<EmailVerificationProps> = ({ onSuccess }) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [authCode, setAuthCode] = useState(''); // 사용자 입력값
-  const [error, setError] = useState(''); // 에러 메시지
+  const [authCode, setAuthCode] = useState('');
+  const [error, setError] = useState('');
   const { email } = useEmail();
   const router = useRouter();
-  const [countdown, setCountdown] = useState(300); // 5분 카운트다운 (300초)
-  const [toastVisible, setToastVisible] = useState(false); // 토스트 가시성
-  const [toastMessage, setToastMessage] = useState(''); // 토스트 메시지
+  const [countdown, setCountdown] = useState(300);
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
   const { login } = useAuth();
-
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -175,15 +168,13 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ onSuccess }) => {
         return prev - 1;
       });
     }, 1000);
-    console.log('현재 이메일:', email);
     return () => clearInterval(timer);
-  }, []); // email 의존성 제거
-  // BackIcon 클릭 시 이전 화면으로 이동
+  }, []);
+
   const handleBackClick = () => {
     router.back();
   };
 
-  // 재전송 버튼 클릭 시
   const handleResendClick = async () => {
     setAuthCode('');
     setCountdown(300);
@@ -202,51 +193,44 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ onSuccess }) => {
         setToastVisible(true);
         setTimeout(() => {
           setToastVisible(false);
-        }, 800);
+        }, 800); // 0.8초 후에 토스트 사라지도록 설정
       } else {
         const errorData = await response.json();
         setError(errorData.message || '이메일 전송에 실패했습니다.');
-        console.error('이메일 전송 실패:', errorData);
       }
     } catch (error) {
       setError('이메일 전송 중 오류가 발생했습니다.');
-      console.error('이메일 전송 오류:', error);
     }
   };
 
-
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
+    e.preventDefault();
 
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/auth/password/reset/verify-code`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        email,
-        code: authCode,
-      }),
-    });
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/password/reset/verify-code`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email,
+          code: authCode,
+        }),
+      });
 
-    if (response.ok) {
-      onSuccess();
-      const data = await response.json();
-      console.log(data);
-      login(data.token);
-    } else {
-      const errorData = await response.json();
-      setError(errorData.message || '인증번호가 일치하지 않습니다.');
-      console.error('인증 실패:', errorData);
+      if (response.ok) {
+        const data = await response.json();
+        login(data.token);
+        onSuccess();
+      } else {
+        const errorData = await response.json();
+        setError(errorData.message || '인증번호가 일치하지 않습니다.');
+      }
+    } catch (error) {
+      setError('인증 중 오류가 발생했습니다.');
     }
-  } catch (error) {
-    setError('인증 중 오류가 발생했습니다.');
-    console.error('인증 오류:', error);
-  }
-};
+  };
 
-  // 카운트다운 시간 -> 분과 초로 변환
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -294,9 +278,7 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ onSuccess }) => {
         </InputContainer>
         <ResendLink onClick={handleResendClick}>인증번호를 재전송할까요?</ResendLink>
       </Container>
-      <Toast
-        style={{ display: toastVisible ? 'inline-flex' : 'none', opacity: toastVisible ? 1 : 0 }}
-      >
+      <Toast visible={toastVisible}>
         {toastMessage}
       </Toast>
     </Whole>
