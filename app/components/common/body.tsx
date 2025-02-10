@@ -351,8 +351,9 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          title: new Date().toISOString().split('T')[0],
-          content: '새로운 영감을 적어볼까요?',
+          // title: new Date().toISOString().split('T')[0],
+          title: '',
+          content: '',
           categoryId: lastCategoryId, // ✅ 현재 카테고리에 저장
         }),
       });
@@ -451,8 +452,9 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          title: new Date().toISOString().split('T')[0], // ✅ 오늘 날짜로 제목 설정
-          content: '새로운 영감을 적어볼까요?', // ✅ 기본 내용 설정
+          // title: new Date().toISOString().split('T')[0], // ✅ 오늘 날짜로 제목 설정
+          title: '', // ✅ 오늘 날짜로 제목 설정
+          content: '', // ✅ 기본 내용 설정
           categoryId: lastCategoryId, // ✅ 마지막 카테고리에 저장
         }),
       });
@@ -648,8 +650,8 @@ const ToastMessage = styled.div`
   line-height: 16px;
   user-select: none; /* ✅ 텍스트 선택 방지 */
 
-  animation: fadeinout 3s ease-out;
-  -webkit-animation: fadeinout 3s ease-out; /* Safari, Chrome 등 */
+  animation: fadeinout 3s cubic-bezier(0, 0, 0.58, 1);
+  -webkit-animation: fadeinout 3s cubic-bezier(0, 0, 0.58, 1); /* Safari, Chrome 등 */
 
   /* 나타나는 + 사라지는 애니메이션 */
   @keyframes fadeinout {

@@ -180,8 +180,8 @@ const Button = styled.button`
   cursor: pointer;
   font-size: 18px;
 
-  animation: fadein 3s ease-out; /* 3초 동안 서서히 나타남 */
-  -webkit-animation: fadein 3s ease-out; /* Safari, Chrome 등 */
+  animation: fadein 3s cubic-bezier(0, 0, 0.58, 1);
+  -webkit-animation: fadein 3s cubic-bezier(0, 0, 0.58, 1);
 
   @keyframes fadein {
     from {
@@ -222,8 +222,8 @@ const CloseButton = styled.button`
   font-weight: 800;
   line-height: normal;
 
-  animation: fadein 3s ease-out; /* 3초 동안 서서히 나타남 */
-  -webkit-animation: fadein 3s ease-out; /* Safari, Chrome 등 */
+  animation: fadein 3s cubic-bezier(0, 0, 0.58, 1);
+  -webkit-animation: fadein 3s cubic-bezier(0, 0, 0.58, 1);
 
   @keyframes fadein {
     from {

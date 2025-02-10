@@ -42,10 +42,10 @@ export default function DeleteMotionModal({ isOpen, onClose }: DeleteMotionModal
       const randomSet = Math.floor(Math.random() * toastSets.length);
       setSelectedSet(randomSet);
 
-      // ✅ 0.5초마다 다음 이미지로 변경 (0 → 1 → 2)
-      const timer1 = setTimeout(() => setCurrentStep(1), 500);
-      const timer2 = setTimeout(() => setCurrentStep(2), 1000);
-      const timer3 = setTimeout(() => onClose(), 1500); // ✅ 마지막 이미지 후 모달 닫기
+      // ✅ 0.2초마다 다음 이미지로 변경 (0 → 1 → 2)
+      const timer1 = setTimeout(() => setCurrentStep(1), 200);
+      const timer2 = setTimeout(() => setCurrentStep(2), 400);
+      const timer3 = setTimeout(() => onClose(), 600); // ✅ 마지막 이미지 후 모달 닫기
 
       return () => {
         clearTimeout(timer1);
@@ -78,7 +78,7 @@ const Overlay = styled.div`
 `;
 
 const StyledImage = styled(Image)`
-  width: 236.8px; /* 기존 296px의 80% */
-  height: 256px; /* 기존 320px의 80% */
+  width: 296px;
+  height: 320px;
   transition: opacity 0.5s ease-in-out;
 `;
