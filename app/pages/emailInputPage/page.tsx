@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useEmail } from '../../context/EmailContext';
 import styled from 'styled-components';
 import { API_BASE_URL } from '../../api/api';
-
 import SubmitButton from '../../components/common/SubmitButton';
 
 const Whole = styled.div`
@@ -70,6 +69,28 @@ const EmailInputPage = () => {
   const isEmailNotEmpty = email.length > 0; // 이메일 입력 여부 확인
   const router = useRouter();
   const { setEmail: setEmailContext } = useEmail(); // EmailContext에서 setEmail 가져오기
+
+  // 자동 로그인 확인
+  useEffect(() => {
+    
+    const checkAutoLogin = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/auth/restore`, {
+          method: 'GET',
+          credentials: 'include', // 쿠키를 포함한 요청
+        });
+
+        if (response.ok) {
+          // 토큰이 유효한 경우 홈 화면으로 이동
+          router.push('/pages/createToastPage');
+        } 
+      } catch (error) {
+        console.error('자동 로그인 확인 중 오류 발생:', error);
+      }
+    };
+
+    checkAutoLogin();
+  }, [router]);
 
   // 컴포넌트가 마운트될 때 입력 필드에 포커스
   useEffect(() => {
