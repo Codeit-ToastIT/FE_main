@@ -71,21 +71,21 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
 
   useEffect(() => {
     if (showToastMessage) {
-      const timer = setTimeout(() => setShowToastMessage(false), 2000);
+      const timer = setTimeout(() => setShowToastMessage(false), 3000);
       return () => clearTimeout(timer);
     }
   }, [showToastMessage]);
 
   useEffect(() => {
     if (showDeleteMessage) {
-      const timer = setTimeout(() => setShowDeleteMessage(false), 2000); // ✅ 2초 후 메시지 숨김
+      const timer = setTimeout(() => setShowDeleteMessage(false), 3000); // ✅ 2초 후 메시지 숨김
       return () => clearTimeout(timer);
     }
   }, [showDeleteMessage]);
 
   useEffect(() => {
     if (showDeleteErrorMessage) {
-      const timer = setTimeout(() => setShowDeleteErrorMessage(false), 2000);
+      const timer = setTimeout(() => setShowDeleteErrorMessage(false), 3000);
       return () => clearTimeout(timer);
     }
   }, [showDeleteErrorMessage]);
@@ -647,6 +647,34 @@ const ToastMessage = styled.div`
   font-weight: 400;
   line-height: 16px;
   user-select: none; /* ✅ 텍스트 선택 방지 */
+
+  animation: fadeinout 3s ease-out;
+  -webkit-animation: fadeinout 3s ease-out; /* Safari, Chrome 등 */
+
+  /* 나타나는 + 사라지는 애니메이션 */
+  @keyframes fadeinout {
+    0% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @-webkit-keyframes fadeinout {
+    0% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
 `;
 
 const ErrorMessageBox = styled(ToastMessage)`
