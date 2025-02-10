@@ -3,6 +3,7 @@
 import { styled } from "styled-components";
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import FocusableInput from '../../components/common/FocusableInput';
 import SubmitButton from '../../components/common/SubmitButton';
 import { API_BASE_URL } from "../../api/api";
 import { useAuth } from "../../context/AuthContext";
@@ -225,7 +226,7 @@ const ResetPasswordForm = () => {
       <Container>
         <Form noValidate onSubmit={handleSubmit}>
           <div style={{ position: 'relative' }}>
-            <Input 
+            <FocusableInput 
               type={showPw ? "text" : "password"} // 비밀번호 타입 전환
               name="password"
               placeholder="8자리 이상의 비밀번호를 입력해주세요."
@@ -241,7 +242,7 @@ const ResetPasswordForm = () => {
             />
           </div>
           <div style={{ position: 'relative' }}>
-            <Input 
+            <FocusableInput 
               type={showPwCheck ? "text" : "password"} // 비밀번호 확인 타입 전환
               name="passwordCheck"
               placeholder="비밀번호를 한 번 더 입력해주세요."
