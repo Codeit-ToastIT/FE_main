@@ -50,18 +50,6 @@ const Form = styled.form`
   gap: 0.5rem;
 `;
 
-const Input = styled.input`
-  height: 2.5rem;
-  min-width: 20.5rem;
-  border-radius: 2.5rem;
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  outline: none;
-  color: #e5dcca;
-  padding-left: 1rem;
-  font-weight: 600;
-`;
-
 const BackIcon = styled.svg`
   width: 1.5rem;
   height: 1.5rem;
