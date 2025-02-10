@@ -179,6 +179,27 @@ const Button = styled.button`
   border-radius: 40px;
   cursor: pointer;
   font-size: 18px;
+
+  animation: fadein 3s cubic-bezier(0, 0, 0.58, 1);
+  -webkit-animation: fadein 3s cubic-bezier(0, 0, 0.58, 1);
+
+  @keyframes fadein {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @-webkit-keyframes fadein {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 `;
 
 const CloseButton = styled.button`
@@ -200,6 +221,27 @@ const CloseButton = styled.button`
   font-style: normal;
   font-weight: 800;
   line-height: normal;
+
+  animation: fadein 3s cubic-bezier(0, 0, 0.58, 1);
+  -webkit-animation: fadein 3s cubic-bezier(0, 0, 0.58, 1);
+
+  @keyframes fadein {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @-webkit-keyframes fadein {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 `;
 
 const SaveGesture = styled(Image)``;

@@ -26,18 +26,18 @@ export default function EditingToast({
   isBurnt,
 }: EditingToastProps) {
   const { token } = useAuth();
-  const [debouncedContent, setDebouncedContent] = useState(content); // 1초 뒤 저장할 값
+  const [debouncedContent, setDebouncedContent] = useState(content); // 0.3초 뒤 저장할 값
 
   // ✅ 사용자가 입력할 때 즉시 setContent 업데이트 (UI 반영)
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(e.target.value);
   };
 
-  // ✅ 입력이 멈춘 후 1초 뒤에 debouncedContent 업데이트
+  // ✅ 입력이 멈춘 후 0.3초 뒤에 debouncedContent 업데이트
   useEffect(() => {
     const handler = setTimeout(() => {
       setDebouncedContent(content);
-    }, 1000);
+    }, 300);
 
     return () => clearTimeout(handler); // 새로운 입력이 있으면 기존 타이머 취소
   }, [content]);
@@ -80,7 +80,7 @@ export default function EditingToast({
     <div>
       <StyledTextArea
         placeholder="새로운 토스트를 작성해볼까요?"
-        // value={content} // ✅ memo에서 가져온 값 사용
+        value={content} // ✅ memo에서 가져온 값 사용
         onChange={handleTextChange}
         isBurnt={isBurnt}
       ></StyledTextArea>
