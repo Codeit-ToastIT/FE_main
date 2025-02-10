@@ -42,6 +42,7 @@ export default function MemoHeader({
     setTitle(newTitle);
     try {
       console.log('📌 PATCH 요청 전 확인:', { toastId, title, content });
+      if (!content) return;
 
       const response = await fetch(`${API_BASE_URL}/api/memos/${toastId}`, {
         method: 'PATCH',
@@ -57,7 +58,6 @@ export default function MemoHeader({
         throw new Error(`메모 제목 수정 실패: ${data.message || '알 수 없는 오류'}`);
       }
 
-      // setTitle(data.note.title);
       console.log('✅ 메모 제목 수정 성공:', data);
     } catch (error) {
       console.error('❌ 메모 제목 수정 요청 오류:', error);

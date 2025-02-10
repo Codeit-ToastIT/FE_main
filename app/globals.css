@@ -5,7 +5,7 @@ body {
   padding: 0;
   width: 100%;
   height: 100dvh; /* ✅ dvh 사용하여 동적 높이 설정 */
-  min-height: -webkit-fill-available; /* ✅ iOS Safari 주소창 고려 */
+  min-height: 100svh; /* ✅ iOS Safari에서 주소창이 있을 때도 정상 표시 */
   overflow-x: hidden;
   font-family:
     'SUIT',
@@ -29,7 +29,6 @@ body {
 #__next {
   width: 375px;
   height: 100dvh; /* ✅ dvh 사용하여 동적 높이 설정 */
-  min-height: -webkit-fill-available; /* ✅ iOS Safari에서 높이 조정 */
   margin: 0 auto; /* 화면 중앙 정렬 */
   overflow: hidden;
   border: 1px solid #ddd; /* 디버그용 */
