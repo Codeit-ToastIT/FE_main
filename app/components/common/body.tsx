@@ -351,7 +351,6 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          // title: new Date().toISOString().split('T')[0],
           title: '',
           content: '',
           categoryId: lastCategoryId, // ✅ 현재 카테고리에 저장
@@ -452,9 +451,8 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          // title: new Date().toISOString().split('T')[0], // ✅ 오늘 날짜로 제목 설정
-          title: '', // ✅ 오늘 날짜로 제목 설정
-          content: '', // ✅ 기본 내용 설정
+          title: '',
+          content: '',
           categoryId: lastCategoryId, // ✅ 마지막 카테고리에 저장
         }),
       });
