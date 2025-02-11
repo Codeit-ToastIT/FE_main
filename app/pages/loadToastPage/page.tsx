@@ -87,42 +87,24 @@ const LoadToastContent: React.FC = () => {
       <SearchBarComponent searchToast={searchToast} onChange={onChange} />
       <Title>{categoryName}</Title>
       <Body>
-        <ScrollBar>
-          {filterToast.length > 0 ? (
-            <TextBody>
-              {filterToast.map((toast) => (
-                <BurntToast
-                  key={toast.id}
-                  index={toast.id}
-                  title={toast.title}
-                  content={toast.content}
-                  onClick={() => handleToastClick(toast.id)} // 클릭 이벤트 핸들러 추가
-                />
-              ))}
-            </TextBody>
-          ) : (
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}
-            >
-              <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                  gap: '10px',
-                }}
-              >
-                <Image src={BreadBox} alt="bread box" />
-                <NoneText>브레드 박스가 비었어요.</NoneText>
-              </div>
-            </div>
-          )}
-        </ScrollBar>
+        {filterToast.length > 0 ? (
+          <TextBody>
+            {filterToast.map((toast) => (
+              <BurntToast
+                key={toast.id}
+                index={toast.id}
+                title={toast.title}
+                content={toast.content}
+                onClick={() => handleToastClick(toast.id)} // 클릭 이벤트 핸들러 추가
+              />
+            ))}
+          </TextBody>
+        ) : (
+          <NoneBody>
+            <Image src={BreadBox} alt="bread box" />
+            <NoneText>브레드 박스가 비었어요.</NoneText>
+          </NoneBody>
+        )}
       </Body>
     </BackGround>
   );
@@ -155,7 +137,6 @@ const Body = styled.div`
   right: 0px;
   height: calc(100vh - 200px); /* 화면 전체 높이에서 상단 요소의 높이를 뺀 값 */
   gap: 30px 0px;
-  display: grid;
   background: #ffffff;
   border-radius: 20px 10px 0px 0px;
 `;
@@ -203,4 +184,14 @@ const ScrollBar = styled.div`
     background: white;
     border-radius: 10px;
   }
+`;
+
+const NoneBody = styled.div`
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  top: 50%;
+  left: 20%;
 `;
