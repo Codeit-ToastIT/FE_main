@@ -1,26 +1,61 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
+import { useRouter } from 'next/navigation';
 import { Hint, HintBold } from './SaveToast';
 import plateImage from '../assets/load/plate.svg';
 import ToastImg from '../assets/load/toasts/burnt1.png';
+import { API_BASE_URL } from '../api/api';
+import { useAuth } from '../context/AuthContext';
 
 interface LoadToastProps {
   onClose: (category: string) => void; // 모달 닫기 함수, 인자 추가
-  onSave: (category: string) => void; // 저장 콜백 함수
+  onCategorySelect: (categoryId: string) => void; // 카테고리 선택 함수 추가
 }
 
-const LoadToast: React.FC<LoadToastProps> = ({ onClose, onSave }) => {
+const LoadToast: React.FC<LoadToastProps> = ({ onClose, onCategorySelect }) => {
   const [position, setPosition] = useState({ x: 0, y: 0 }); // 식빵 위치
   const [activeSlice, setActiveSlice] = useState<number | null>(null); // 활성화된 조각 (0~3)
   const [isdragging, setIsdragging] = useState(false); // 드래그 상태 확인
   const [ispressing, setIspressing] = useState(true);
   const [showHint, setShowHint] = useState(false); // 힌트 표시 여부
-  let inactivityTimeout: NodeJS.Timeout;
+  const [categoryIds, setCategoryIds] = useState<string[]>([]);
+  const [categoryName, setCategoryName] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
 
-  // 카테고리 이름. 추후 api로 교체 필요
-  const categoryNames = ['카테고리 1', '카테고리 2', '카테고리 3', '카테고리 4'];
+  let inactivityTimeout: NodeJS.Timeout;
+  const { token, userId } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    const fetchCategoryIds = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/categories/${userId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await response.json();
+        console.log(`데이터!!!!!!!!!!!!!!🙀🙀🙀🙀: ${JSON.stringify(data)}`);
+        if (data.categories && Array.isArray(data.categories)) {
+          const ids = data.categories.map((category: { id: string }) => category.id);
+          setCategoryIds(ids);
+          const categories = data.categories.map((category: { name: string }) => category.name);
+          setCategoryName(categories);
+          if (ids.length > 0) {
+            setSelectedCategory(ids[0]); // 첫 번째 카테고리 선택
+          }
+        } else {
+          console.error('Categories data is undefined or not an array');
+        }
+      } catch (error) {
+        console.error('Error fetching category IDs:', error);
+      }
+    };
+
+    fetchCategoryIds();
+  }, [token]);
 
   // 마우스 이벤트
   const handleMouseDown = (e: React.MouseEvent) => {
@@ -37,12 +72,14 @@ const LoadToast: React.FC<LoadToastProps> = ({ onClose, onSave }) => {
     setIsdragging(false); // 드래그 종료
     setIspressing(false);
     if (activeSlice !== null) {
-      const selectedCategory = categoryNames[activeSlice];
-      onSave(selectedCategory); // 선택된 카테고리 전달
-      onClose(selectedCategory); // 선택된 카테고리 전달
+      const selectedCategoryId = categoryIds[activeSlice];
+      onClose(selectedCategoryId); // 선택된 카테고리 전달
+      onCategorySelect(selectedCategoryId); // 선택된 카테고리 ID 전달
+      router.push(`loadToastPage?category=${selectedCategoryId}`); // LoadToastPage로 이동
     }
     setPosition({ x: 0, y: 0 });
     setActiveSlice(null);
+    playSaveSound();
   };
 
   const checkCollision = (x: number, y: number) => {
@@ -83,6 +120,15 @@ const LoadToast: React.FC<LoadToastProps> = ({ onClose, onSave }) => {
     };
   }, []);
 
+  // 효과음 재생 함수 추가
+  const playSaveSound = () => {
+    const audio = new Audio('/sounds/toaster_open.wav'); // 효과음 경로
+    audio
+      .play()
+      .then(() => console.log('✅ 효과음 재생 성공'))
+      .catch((error) => console.error('❌ 효과음 재생 실패:', error));
+  };
+
   return (
     <Container onMouseDown={handleMouseDown} onMouseUp={handleMouseUp}>
       <ModalOverlay>
@@ -93,12 +139,14 @@ const LoadToast: React.FC<LoadToastProps> = ({ onClose, onSave }) => {
           </Hint>
         )}
         <RadialMenu>
-          <Plate src={plateImage.src} ispressing={ispressing} />
+          <Plate src={plateImage.src} ispressing={ispressing.toString()} />
           <Toast isdragging={isdragging} selectedCategory={activeSlice} src={ToastImg.src} />
           {activeSlice !== null && (
-            <CategoryText ispressing={ispressing}>{categoryNames[activeSlice]}</CategoryText>
+            <CategoryText ispressing={ispressing.toString()}>
+              {categoryName[activeSlice]}
+            </CategoryText>
           )}
-          <MiddleToast ispressing={ispressing} src={ToastImg.src} />
+          <MiddleToast ispressing={ispressing.toString()} src={ToastImg.src} />
         </RadialMenu>
       </ModalOverlay>
     </Container>
@@ -139,7 +187,7 @@ const RadialMenu = styled.div`
   align-items: center;
 `;
 
-const Plate = styled.img<{ ispressing: boolean }>`
+const Plate = styled.img<{ ispressing: string }>`
   position: absolute;
   top: 50%;
   left: 50%;
@@ -147,9 +195,9 @@ const Plate = styled.img<{ ispressing: boolean }>`
   user-select: none;
   z-index: 10;
   width: ${({ ispressing }) =>
-    ispressing ? '120px' : '320px'}; // 예시: ispressing에 따라 너비 변경
+    ispressing === 'true' ? '120px' : '320px'}; // 예시: ispressing에 따라 너비 변경
   height: ${({ ispressing }) =>
-    ispressing ? '120px' : '320px'}; // 예시: ispressing에 따라 너비 변경
+    ispressing === 'true' ? '120px' : '320px'}; // 예시: ispressing에 따라 너비 변경
 `;
 
 const Toast = styled.img<{ isdragging: boolean; selectedCategory: number | null }>`
@@ -186,7 +234,7 @@ const Toast = styled.img<{ isdragging: boolean; selectedCategory: number | null 
   opacity: ${({ isdragging }) => (isdragging ? 1 : 0)};
 `;
 
-const CategoryText = styled.div<{ ispressing: boolean }>`
+const CategoryText = styled.div<{ ispressing: string }>`
   font-family: 'SUIT';
   font-style: normal;
   font-weight: 800;
@@ -197,15 +245,15 @@ const CategoryText = styled.div<{ ispressing: boolean }>`
   text-align: center;
   color: black;
   z-index: 50;
-  opacity: ${({ ispressing }) => (ispressing ? 1 : 0)};
+  opacity: ${({ ispressing }) => (ispressing === 'true' ? 1 : 0)};
 `;
 
-const MiddleToast = styled.img<{ ispressing: boolean }>`
+const MiddleToast = styled.img<{ ispressing: string }>`
   position: absolute;
   width: 148px; // 너비 조정
   height: 160px; // 높이 조정
   z-index: 20;
   top: 20%;
   left: 25%;
-  opacity: ${({ ispressing }) => (!ispressing ? 1 : 0)};
+  opacity: ${({ ispressing }) => (ispressing === 'true' ? 0 : 1)};
 `;

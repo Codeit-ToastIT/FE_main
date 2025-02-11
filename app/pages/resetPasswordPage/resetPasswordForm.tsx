@@ -3,10 +3,11 @@
 import { styled } from "styled-components";
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import FocusableInput from '../../components/common/FocusableInput';
 import SubmitButton from '../../components/common/SubmitButton';
 import { API_BASE_URL } from "../../api/api";
 import { useAuth } from "../../context/AuthContext";
-import iconEyeOpen from '../../assets/icons/icon_eye_open.png';
+import iconEyeOpen from '../../assets/icons/icon_eye_open.svg';
 import iconEyeClosed from '../../assets/icons/icon_eye_closed.svg';
 import Image from 'next/image';
 
@@ -47,18 +48,6 @@ flex-direction: column;
 gap: 0.5rem;
 `;
 
-const Input = styled.input`
-height: 2.5rem;
-min-width: 20.5rem;
-border-radius: 2.5rem;
-background: rgba(255, 255, 255, 0.2);
-border: none;
-outline: none;
-color: #E5DCCA;
-padding-left: 1rem;
-font-weight: 600;
-`
-
 const BackIcon = styled.svg`
 width: 1.5rem;
 height: 1.5rem;
@@ -83,6 +72,25 @@ top: 50%;
 transform: translateY(-50%);
 cursor: pointer;
 `;
+const Toast = styled.div`
+  padding: 0.75rem 1rem;
+  justify-content: center;
+  align-items: center;
+  gap: 0.625rem;
+  border-radius: 2.5rem;
+  background: rgba(229, 220, 202, 0.2);
+  color: var(--ivory, #e5dcca);
+  margin-top: 2.37rem;
+  text-align: center;
+  font-family: SUIT;
+  font-size: 0.875rem;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1rem; /* 114.286% */
+  opacity: 0; /* 기본값 */
+  transition: opacity 0.3s ease-in-out;
+  z-index: 1000;
+`;
 
 const ResetPasswordForm = () => {
 
@@ -96,6 +104,8 @@ const ResetPasswordForm = () => {
   const [showPw, setShowPw] = useState(false); // 비밀번호 보이기 상태
   const [showPwCheck, setShowPwCheck] = useState(false); // 비밀번호 확인 보이기 상태
   const { token } = useAuth();
+  const [toastVisible, setToastVisible] = useState(false); // 토스트 가시성
+  const [toastMessage, setToastMessage] = useState(''); // 토스트 메시지
   // 입력 필드 포커싱 
   useEffect(() => {
     const timeoutId = setTimeout(() => {
@@ -177,7 +187,14 @@ const ResetPasswordForm = () => {
         return;
       }
 
-      router.push('/pages/createToastPage');
+      setToastMessage('비밀번호가 변경되었습니다.');
+      setToastVisible(true);
+      setTimeout(() => {
+        setToastVisible(false); // Toast 숨기기
+      }, 800); 
+      setTimeout(()=>{
+        router.push('/pages/emailInputPage'); 
+      })
     } catch (error) {
       setErrorMessage("비밀번호 재설정 중 오류가 발생했습니다.");
       console.error(error);
@@ -197,7 +214,7 @@ const ResetPasswordForm = () => {
       <Container>
         <Form noValidate onSubmit={handleSubmit}>
           <div style={{ position: 'relative' }}>
-            <Input 
+            <FocusableInput 
               type={showPw ? "text" : "password"} // 비밀번호 타입 전환
               name="password"
               placeholder="8자리 이상의 비밀번호를 입력해주세요."
@@ -213,7 +230,7 @@ const ResetPasswordForm = () => {
             />
           </div>
           <div style={{ position: 'relative' }}>
-            <Input 
+            <FocusableInput 
               type={showPwCheck ? "text" : "password"} // 비밀번호 확인 타입 전환
               name="passwordCheck"
               placeholder="비밀번호를 한 번 더 입력해주세요."
@@ -235,6 +252,11 @@ const ResetPasswordForm = () => {
           />
         </Form>
       </Container>
+      <Toast
+        style={{ display: toastVisible ? 'inline-flex' : 'none', opacity: toastVisible ? 1 : 0 }}
+      >
+        {toastMessage}
+      </Toast>
     </Whole>
   );
 };

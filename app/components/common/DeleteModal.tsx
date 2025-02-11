@@ -33,17 +33,18 @@ export default function DeleteModal({ isOpen, onClose, onClick }: ModalProps) {
                   setShowMotion(true); // ✅ 먼저 애니메이션 모달 실행
 
                   setTimeout(async () => {
-                    const success = await onClick(); // ✅ 1.5초 후 삭제 실행
+                    const success = await onClick(); // ✅ 0.6초 후 삭제 실행
                     setIsDeleteSuccess(success);
 
                     if (success) {
                       setTimeout(() => {
                         setShowMotion(false); // ✅ 애니메이션 모달 숨김
                         onClose(); // ✅ 모달 닫기
-                      }, 1000); // ✅ 1초 뒤 모달 닫기                    } else {
+                      }, 100); // ✅ 0.1초 뒤 모달 닫기
+                    } else {
                       setShowMotion(false); // ✅ 삭제 실패 시 애니메이션 모달 숨김
                     }
-                  }, 1500); // ✅ 애니메이션 지속 시간 1.5초
+                  }, 600); // ✅ 애니메이션 지속 시간 0.6초
                 }}
               >
                 먹어버리기

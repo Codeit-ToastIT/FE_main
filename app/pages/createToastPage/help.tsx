@@ -34,7 +34,9 @@ const Help: React.FC<HelpProps> = ({ onClose }) => {
   }, [step]); // step 변경될 때마다 실행
 
   // "계속하기" 버튼 클릭 시 다음 도움말로 이동
-  const handleNextStep = () => {
+  const handleNextStep = (e: React.MouseEvent) => {
+    e.stopPropagation(); // 이벤트 버블링 방지
+
     if (step < 1) {
       setStep((prev) => prev + 1);
       setShowNextButton(false); // 버튼 숨겼다가 다시 2초 후 표시
@@ -45,8 +47,8 @@ const Help: React.FC<HelpProps> = ({ onClose }) => {
   };
 
   return (
-    <Overlay>
-      <ModalContent>
+    <Overlay onClick={(e) => e.stopPropagation()}>
+      <ModalContent onClick={(e) => e.stopPropagation()}>
         {step === 0 && (
           <>
             <SaveGesture src={SaveGestureIcon} alt="SaveGesture" width={80} height={80} />
@@ -132,7 +134,6 @@ const ModalContent = styled.div`
 
 const Display1 = styled.div`
   position: absolute;
-  top: 200px;
   left: 16px;
 `;
 const Display2 = styled.div`
@@ -180,6 +181,27 @@ const Button = styled.button`
   border-radius: 40px;
   cursor: pointer;
   font-size: 18px;
+
+  animation: fadein 3s cubic-bezier(0, 0, 0.58, 1);
+  -webkit-animation: fadein 3s cubic-bezier(0, 0, 0.58, 1);
+
+  @keyframes fadein {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @-webkit-keyframes fadein {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 `;
 
 const CloseButton = styled.button`
@@ -201,6 +223,27 @@ const CloseButton = styled.button`
   font-style: normal;
   font-weight: 800;
   line-height: normal;
+
+  animation: fadein 3s cubic-bezier(0, 0, 0.58, 1);
+  -webkit-animation: fadein 3s cubic-bezier(0, 0, 0.58, 1);
+
+  @keyframes fadein {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @-webkit-keyframes fadein {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
 `;
 
 const SaveGesture = styled(Image)``;

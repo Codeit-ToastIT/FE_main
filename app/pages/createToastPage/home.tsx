@@ -57,8 +57,8 @@ export default function Home({ onHelpClick, onActiveMemoChange }: HomeProps) {
       {showDeletedMessage && <DeletedMessage>토스트 하나를 버렸어요.</DeletedMessage>}
 
       {/* ✅ MyPage 컴포넌트가 오른쪽에서 왼쪽으로 슬라이드되며 나타남 */}
-      <MyPageOverlay isOpen={isMyPageOpen} onClick={onCloseMyPage}>
-        <StyledMyPage onClick={(e) => e.stopPropagation()} isOpen={isMyPageOpen} />
+      <MyPageOverlay $isOpen={isMyPageOpen} onClick={onCloseMyPage}>
+        <StyledMyPage onClick={(e) => e.stopPropagation()} $isOpen={isMyPageOpen} />
       </MyPageOverlay>
     </Container>
   );
@@ -71,7 +71,7 @@ const Container = styled.div`
 
 const StyledHeader = styled(Header)`
   width: 375px;
-  height: 56px;
+  height: 56px; /* 💡 주소창이 있을 때도 높이 유지 */
   background: var(--black, #171612);
   box-sizing: border-box;
 `;
@@ -110,14 +110,14 @@ const StyledBody = styled(Body)`
 `;
 
 /* ✅ MyPage 배경 오버레이 */
-const MyPageOverlay = styled.div<{ isOpen: boolean }>`
-  display: ${({ isOpen }) => (isOpen ? 'flex' : 'none')};
+const MyPageOverlay = styled.div<{ $isOpen: boolean }>`
+  display: ${({ $isOpen }) => ($isOpen ? 'flex' : 'none')};
   height: 900px;
 `;
 
 /* ✅ 오른쪽에서 왼쪽으로 슬라이드되는 MyPage */
-const StyledMyPage = styled(MyPage)<{ isOpen: boolean }>`
-  transform: ${({ isOpen }) => (isOpen ? 'translateX(0)' : 'translateX(100%)')};
+const StyledMyPage = styled(MyPage)<{ $isOpen: boolean }>`
+  transform: ${({ $isOpen }) => ($isOpen ? 'translateX(0)' : 'translateX(100%)')};
   transition: transform 1s ease-in-out;
   height: 900px;
 `;

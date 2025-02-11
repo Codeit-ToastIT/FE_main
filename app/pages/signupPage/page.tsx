@@ -5,11 +5,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useEmail } from '../../context/EmailContext';
 import { useAuth } from '../../context/AuthContext';
+import FocusableInput from '../../components/common/FocusableInput';
 import SubmitButton from '../../components/common/SubmitButton';
 
 import { API_BASE_URL } from '../../api/api';
 import Image from 'next/image';
-import iconEyeOpen from '../../assets/icons/icon_eye_open.png';
+import iconEyeOpen from '../../assets/icons/icon_eye_open.svg';
 import iconEyeClosed from '../../assets/icons/icon_eye_closed.svg';
 
 const Whole = styled.div`
@@ -49,18 +50,6 @@ const Form = styled.form`
   gap: 0.5rem;
 `;
 
-const Input = styled.input`
-  height: 2.5rem;
-  min-width: 20.5rem;
-  border-radius: 2.5rem;
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  outline: none;
-  color: #e5dcca;
-  padding-left: 1rem;
-  font-weight: 600;
-`;
-
 const BackIcon = styled.svg`
   width: 1.5rem;
   height: 1.5rem;
@@ -75,6 +64,15 @@ const ErrorMessage = styled.div`
   line-height: 0.875rem;
   padding-left: 1rem;
 `;
+
+const SuccessMessage = styled.div`
+  color: #51FFB9;
+  font-family: SUIT;
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 0.875rem;
+  padding-left: 1rem;  
+`
 
 const EyeIcon = styled(Image)`
   width: 1.5rem;
@@ -95,6 +93,7 @@ const SignupPage = () => {
   const [pw, setPw] = useState('');
   const [pwCheck, setPwCheck] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [successMessage, setSuccessMessage] = useState('');
 
   const isPwValid = pw.length >= 8; // 비밀번호 유효성 체크
   const router = useRouter();
@@ -148,6 +147,7 @@ const SignupPage = () => {
         setErrorMessage('비밀번호가 서로 달라요.'); // 비밀번호 불일치 오류 메시지 설정
       } else {
         setErrorMessage(''); // 비밀번호가 같을 때 오류 메시지 초기화
+        setSuccessMessage('비밀번호가 서로 일치해요.');
       }
     }
   };
@@ -247,7 +247,7 @@ const SignupPage = () => {
       <Container>
         <Form noValidate onSubmit={handleSignup}>
           <div style={{ position: 'relative' }}>
-            <Input
+            <FocusableInput
               type={showPw ? 'text' : 'password'} // 비밀번호 타입 전환
               name="password"
               placeholder="8자리 이상의 비밀번호를 입력해주세요."
@@ -263,7 +263,7 @@ const SignupPage = () => {
             />
           </div>
           <div style={{ position: 'relative' }}>
-            <Input
+            <FocusableInput
               type={showPwCheck ? 'text' : 'password'} // 비밀번호 확인 타입 전환
               name="passwordCheck"
               placeholder="비밀번호를 한 번 더 입력해주세요."
@@ -281,6 +281,7 @@ const SignupPage = () => {
           {!isPwValid && <ErrorMessage>아직 8자리가 아니에요.</ErrorMessage>}{' '}
           {/* 오류 메시지 조건부 렌더링 */}
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>} {/* 오류 메시지 표시 */}
+          {successMessage && <SuccessMessage>{successMessage}</SuccessMessage>}
           <SubmitButton isActive={isPwValid && pw === pwCheck} />
         </Form>
       </Container>

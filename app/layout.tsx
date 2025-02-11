@@ -1,9 +1,7 @@
-import type { Metadata } from 'next';
 import './globals.css';
 import StyledComponentsRegistry from '../registry';
-// import { AuthProvider } from './context/AuthContext';
-// import { EmailProvider } from './context/EmailContext';
 import Providers from './providers'; // ✅ 클라이언트 Provider 불러오기
+import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: 'Toast-it',
@@ -28,10 +26,13 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         style={{
+          position: 'absolute',
+          top: '0' /* 💡 최상단 배치 */,
+          left: '0',
           width: '100vw', // 💡 화면 전체를 차지하도록 설정
-          height: '100vh', // 💡 화면 전체를 차지하도록 설정
+          height: '100vh',
+          paddingTop: 'env(safe-area-inset-top, 0px)' /* 💡 iOS 안전 영역 반영 */,
           margin: '0',
-          padding: '0',
           display: 'flex',
           justifyContent: 'center', // 💡 중앙 정렬
           alignItems: 'center', // 💡 중앙 정렬
@@ -44,7 +45,7 @@ export default function RootLayout({
             <div
               style={{
                 width: '375px', // 아이폰 13 미니 너비
-                height: '812px', // 아이폰 13 미니 높이
+                height: '100dvh', // 아이폰 13 미니 높이
                 position: 'absolute', // 💡 중앙 정렬을 위해 absolute 사용
                 top: '50%',
                 left: '50%',

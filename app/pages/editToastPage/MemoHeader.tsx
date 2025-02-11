@@ -1,21 +1,12 @@
-/**
- * 파일명: MemoHeader.tsx
- * 작성일: 2025-02-07
- * 작성자: 이서연
- * 설명: 메모 작성 기능 구현
- */
-
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { API_BASE_URL } from '../../api/api';
 import { useAuth } from '../../context/AuthContext';
-
 import iconBack from '../../assets/icons/icon_back.svg';
 import iconTrash from '../../assets/icons/icon_trash.svg';
-
-import DeleteModal from '../common/DeleteModal';
+import DeleteModal from '../../components/common/DeleteModal';
 
 interface MemoHeaderProps {
   toastId: string;
@@ -23,6 +14,7 @@ interface MemoHeaderProps {
   setTitle: (title: string) => void;
   content: string; // ✅ 본문도 함께 요청해야함
   isBurnt: boolean;
+  onSave: () => void; // ✅ 저장 버튼 클릭 시 호출될 함수
 }
 
 export default function MemoHeader({
@@ -34,77 +26,36 @@ export default function MemoHeader({
 }: MemoHeaderProps) {
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
-  const [_loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false);
   const { token } = useAuth();
-  const [debouncedTitle, setDebouncedTitle] = useState(title); // 0.3초 뒤 저장할 값
-  const [isTitleCleared, setIsTitleCleared] = useState(false); // ✅ 사용자가 직접 ""을 입력했는지 여부 저장
 
-  // 🔹 title이 ISO 8601 형식(날짜+시간)인지 확인하는 함수
-  const hasTimestamp = (str: string) => {
-    const isoDateTimeRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z?$/;
-    return isoDateTimeRegex.test(str);
-  };
+  const handleTitleChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newTitle = e.target.value;
+    setTitle(newTitle);
+    try {
+      console.log('📌 PATCH 요청 전 확인:', { toastId, title, content });
 
-  // ✅ 사용자가 입력할 때 즉시 setTitle 업데이트 (UI 반영)
-  const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTitle(e.target.value);
-    setIsTitleCleared(e.target.value.trim() === ''); // ✅ 사용자가 직접 ""을 입력하면 true 설정
-  };
+      const response = await fetch(`${API_BASE_URL}/api/memos/${toastId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ title: newTitle, content: content }),
+      });
 
-  // ✅ 입력이 멈춘 후 0.3초 뒤에 debouncedTitle 업데이트
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      if (hasTimestamp(title)) {
-        setDebouncedTitle(''); // ISO 8601 형식이면 빈 문자열 저장
-      } else {
-        setDebouncedTitle(title); // 사용자가 입력한 값 유지
+      const data = await response.json();
+
+      if (!response.ok) {
+        console.error('❌ 서버 응답 상태:', response.status);
+        console.error('❌ 서버 응답 메시지:', data);
+        throw new Error(`메모 제목 수정 실패: ${data.message || '알 수 없는 오류'}`);
       }
-    }, 300);
 
-    return () => clearTimeout(handler); // 새로운 입력이 있으면 기존 타이머 취소
-  }, [title]);
-
-  // ✅ debouncedTitle이 변경될 때 PATCH 요청 보내기 (자동 저장)
-  useEffect(() => {
-    if (!debouncedTitle || !toastId) return; // 값이 없으면 실행 안 함
-    if (!content) return;
-
-    const saveTitle = async () => {
-      try {
-        console.log('📌 PATCH 요청 전 확인:', { toastId, debouncedTitle, content });
-
-        const response = await fetch(`${API_BASE_URL}/api/memos/${toastId}`, {
-          method: 'PATCH',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
-          },
-          body: JSON.stringify({ title: debouncedTitle, content }), // ✅ 0.3초 후 자동 저장
-        });
-
-        const data = await response.json();
-
-        if (!response.ok) {
-          console.error('❌ 서버 응답 상태:', response.status);
-          console.error('❌ 서버 응답 메시지:', data);
-          throw new Error(`메모 제목 수정 실패: ${data.message || '알 수 없는 오류'}`);
-        }
-
-        console.log('✅ 메모 제목 수정 성공:', data);
-      } catch (error) {
-        console.error('❌ 메모 제목 수정 요청 오류:', error);
-      }
-    };
-
-    saveTitle();
-  }, [debouncedTitle, toastId, token, content]); // ✅ debouncedTitle이 변경될 때 PATCH 요청 실행
+      console.log('✅ 메모 제목 수정 성공:', data);
+    } catch (error) {
+      console.error('❌ 메모 제목 수정 요청 오류:', error);
+    }
+  };
 
   const handleBackClick = () => {
-    if (isTitleCleared) {
-      setTitle(new Date().toISOString().split('T')[0]); // ✅ 사용자가 빈 제목을 입력한 경우 오늘 날짜 설정
-    } else if (hasTimestamp(title)) {
-      setTitle(new Date().toISOString().split('T')[0]); // ✅ 사용자가 빈 제목을 입력한 경우 오늘 날짜 설정
-    }
     window.history.back();
   };
 
@@ -151,12 +102,7 @@ export default function MemoHeader({
   return (
     <HeaderContainer isBurnt={isBurnt}>
       <IconBack src={iconBack} alt="Back" onClick={handleBackClick} />
-      <TitleInput
-        type="text"
-        placeholder="토스트의 제목을 입력해주세요"
-        value={hasTimestamp(title) ? '' : title} // ✅ 사용자가 직접 입력한 ""은 유지
-        onChange={handleTitleChange}
-      />
+      <TitleInput type="text" placeholder={title} value={title} onChange={handleTitleChange} />
       <IconTrash src={iconTrash} alt="Trash" onClick={handleDeleteClick} />
       <DeleteModal
         isOpen={showModal}

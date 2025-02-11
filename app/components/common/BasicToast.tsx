@@ -39,11 +39,20 @@ export default function BasicToast({ toastid, title, content }: ToastProps) {
     router.push(`/pages/memoInput?id=${toastid}`); // ✅ ID 포함하여 이동
   };
 
+  // 🔹 title이 ISO 8601 형식(날짜+시간)인지 확인하는 함수
+  const hasTimestamp = (str: string) => {
+    const isoDateTimeRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z?$/;
+    return isoDateTimeRegex.test(str);
+  };
+
+  // ✅ title이 ISO 8601 날짜+시간 형식이면 빈 문자열로 변경
+  const formattedTitle = hasTimestamp(title) ? '' : title;
+
   return (
     <ToastContainer onClick={handleToastClick}>
-      <MemoTitleDisplay>{title}</MemoTitleDisplay>
+      {formattedTitle && <MemoTitleDisplay>{formattedTitle}</MemoTitleDisplay>}
       <StyledToastImage src={toastNumber} alt="RandomToast" width={296} height={320} priority />
-      <MemoDisplay>{content}</MemoDisplay>
+      <MemoDisplay>{content.trim() === '' ? '새로운 토스트를 작성해볼까요?' : content}</MemoDisplay>
     </ToastContainer>
   );
 }
@@ -56,6 +65,9 @@ const ToastContainer = styled.div`
 `;
 
 const StyledToastImage = styled(Image)`
+  position: absolute;
+  top: 40px;
+  left: 0px;
   display: block;
   border-radius: 10px;
   width: 296px;

@@ -7,11 +7,12 @@ interface ToastProps {
   index: number;
   title: string;
   content: string;
+  onClick: () => void; // onClick 속성 추가
 }
 
-const BurntToast: React.FC<ToastProps> = ({ index, title, content }) => {
+const BurntToast: React.FC<ToastProps> = ({ index, title, content, onClick }) => {
   return (
-    <ImageWrapper key={index}>
+    <ImageWrapper key={index} onClick={onClick}> {/* onClick 이벤트 핸들러 추가 */}
       <Image src={burnt1} alt="burnt" layout="fixed" width={145} height={145} objectFit="cover" />
       <TextOverlay>
         <ContentText>{content}</ContentText>
@@ -26,6 +27,7 @@ export default BurntToast;
 const ImageWrapper = styled.div`
   position: relative;
   height: auto;
+  cursor: pointer; /* 클릭 가능한 커서 추가 */
   ::-webkit-scrollbar {
     display: none; /* 크롬, 사파리, 엣지 */
   }

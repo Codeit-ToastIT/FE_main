@@ -15,17 +15,40 @@ import edit from '../../assets/icons/icon_edit.svg';
 import account from '../../assets/icons/icon_profile_b.svg';
 import plan from '../../assets/icons/icon_card_b.svg';
 
+interface CategoryData {
+  id: string;
+  name: string;
+}
+
+// API 응답 데이터 타입 정의
+interface CategoryApiResponse {
+  categories: { id: string }[];
+}
+
 interface MyPageProps extends React.HTMLAttributes<HTMLDivElement> {
-  isOpen: boolean;
+  $isOpen: boolean;
   isPremiumUser?: boolean;
 }
 
-const MyPage: React.FC<MyPageProps> = ({ isOpen, isPremiumUser }) => {
+/* 로컬 스토리지에서 카테고리 이름 매핑을 불러옴 */
+const getStoredCategoryNames = (): { [key: string]: string } => {
+  const stored = localStorage.getItem('categoryNames');
+  return stored ? JSON.parse(stored) : {};
+};
+
+/* 로컬 스토리지에 특정 카테고리 이름 업데이트 */
+const storeCategoryName = (id: string, name: string) => {
+  const mapping = getStoredCategoryNames();
+  mapping[id] = name;
+  localStorage.setItem('categoryNames', JSON.stringify(mapping));
+};
+
+const MyPage: React.FC<MyPageProps> = ({ $isOpen, isPremiumUser }) => {
   const router = useRouter();
   const { token, userId } = useAuth();
   const { email } = useEmail();
 
-  // 이메일은 EmailContext에서 가져오고, 없으면 localStorage에서 불러오도록 함
+  // 이메일은 EmailContext 또는 localStorage에서 불러옴
   const [userEmail, setUserEmail] = useState(() => {
     return localStorage.getItem('userEmail') || email || 'test@example.com';
   });
@@ -40,24 +63,68 @@ const MyPage: React.FC<MyPageProps> = ({ isOpen, isPremiumUser }) => {
   // 수정 모드 여부
   const [isEditing, setIsEditing] = useState(false);
 
-  // 카테고리명을 배열로 관리 (기본값)
-  const [categories, setCategories] = useState<string[]>([
-    '카테고리 1',
-    '카테고리 2',
-    '카테고리 3',
-    '카테고리 4',
+  // 카테고리 데이터를 객체 배열로 관리
+  // 기본값은 API GET 이후 덮어씁니다.
+  const [categories, setCategories] = useState<CategoryData[]>([
+    { id: 'dummy1', name: '카테고리 1' },
+    { id: 'dummy2', name: '카테고리 2' },
+    { id: 'dummy3', name: '카테고리 3' },
+    { id: 'dummy4', name: '카테고리 4' },
   ]);
-  // 수정 중인 카테고리의 인덱스 (배열로 관리)
+
+  // 수정 중인 카테고리의 인덱스 및 임시 값
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [tempCategoryName, setTempCategoryName] = useState('');
 
   // 각 인덱스에 해당하는 위치 (스타일 적용용)
   const positions = ['top', 'right', 'bottom', 'left'];
 
-  // 카테고리 업데이트 API 호출 (필요하다면 유지)
+  // GET 요청: 서버로부터 카테고리 데이터(id만 있음)를 불러오고, 로컬 스토리지에 저장된 이름을 적용
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/categories/${userId}`, {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (response.ok) {
+          const data: CategoryApiResponse = await response.json();
+          if (data.categories && Array.isArray(data.categories)) {
+            // 기본 이름 배열
+            const defaultNames = ['카테고리 1', '카테고리 2', '카테고리 3', '카테고리 4'];
+            const storedMapping = getStoredCategoryNames();
+            // 상위 4개의 카테고리만 사용 (필요에 따라 조정)
+            const fetchedCategories: CategoryData[] = data.categories
+              .slice(0, 4)
+              .map((cat, index) => ({
+                id: cat.id,
+                // 로컬에 저장된 이름이 있으면 사용, 없으면 기본 이름 사용
+                name: storedMapping[cat.id] || defaultNames[index],
+              }));
+            setCategories(fetchedCategories);
+          }
+          console.log('카테고리 데이터 불러오기 성공:', data);
+        } else {
+          console.error('카테고리 정보를 불러오지 못했습니다.');
+        }
+      } catch (error) {
+        console.error('카테고리 GET API 호출 중 에러 발생:', error);
+      }
+    };
+
+    if (userId && token) {
+      fetchCategories();
+    }
+  }, [userId, token]);
+
+  // PATCH 요청: 수정된 카테고리 이름을 업데이트하고 로컬 스토리지에도 저장
   const updateCategory = async (index: number, newName: string) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/categories/${userId}`, {
+      const categoryId = categories[index].id;
+      const response = await fetch(`${API_BASE_URL}/api/categories/${categoryId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -68,6 +135,9 @@ const MyPage: React.FC<MyPageProps> = ({ isOpen, isPremiumUser }) => {
       if (!response.ok) {
         const errorMsg = await response.text();
         console.error('카테고리 업데이트 실패:', errorMsg);
+      } else {
+        // 성공 시 로컬 스토리지 업데이트
+        storeCategoryName(categoryId, newName);
       }
     } catch (error) {
       console.error('카테고리 업데이트 API 호출 중 에러 발생:', error);
@@ -88,13 +158,7 @@ const MyPage: React.FC<MyPageProps> = ({ isOpen, isPremiumUser }) => {
   const userPlan = isPremiumUser ? '메이플 시럽 버터 토스트 플랜 이용중' : '토스트 플랜 이용중';
 
   return (
-    <div
-      style={{
-        transform: isOpen ? 'translateX(0)' : 'translateX(100%)',
-        transition: 'transform 1s ease-in-out',
-        height: '900px',
-      }}
-    >
+    <div>
       <PageContainer>
         <ContentContainer>
           <Overlay>
@@ -107,16 +171,16 @@ const MyPage: React.FC<MyPageProps> = ({ isOpen, isPremiumUser }) => {
                   alt="Circular Menu"
                 />
                 <MenuItems>
-                  {categories.map((name, index) => {
+                  {categories.map((cat, index) => {
                     const position = positions[index];
                     return (
                       <MenuItem
-                        key={position}
+                        key={cat.id}
                         position={position}
                         onClick={() => {
                           if (isEditing) {
                             setEditingIndex(index);
-                            setTempCategoryName(name);
+                            setTempCategoryName(cat.name);
                           }
                         }}
                       >
@@ -128,7 +192,10 @@ const MyPage: React.FC<MyPageProps> = ({ isOpen, isPremiumUser }) => {
                               if (editingIndex !== null) {
                                 await updateCategory(editingIndex, tempCategoryName);
                                 const newCategories = [...categories];
-                                newCategories[editingIndex] = tempCategoryName;
+                                newCategories[editingIndex] = {
+                                  ...newCategories[editingIndex],
+                                  name: tempCategoryName,
+                                };
                                 setCategories(newCategories);
                                 setEditingIndex(null);
                                 setTempCategoryName('');
@@ -137,7 +204,7 @@ const MyPage: React.FC<MyPageProps> = ({ isOpen, isPremiumUser }) => {
                             autoFocus
                           />
                         ) : (
-                          <DisplayText>{name}</DisplayText>
+                          <DisplayText>{cat.name}</DisplayText>
                         )}
                       </MenuItem>
                     );
@@ -147,8 +214,8 @@ const MyPage: React.FC<MyPageProps> = ({ isOpen, isPremiumUser }) => {
                   <StyledIconEdit
                     src={isEditing ? check.src : edit.src}
                     alt="Edit Button"
-                    width={24} // 기존 40px에서 축소
-                    height={24} // 기존 40px에서 축소
+                    width={24}
+                    height={24}
                   />
                 </CenterButton>
               </CircularMenu>

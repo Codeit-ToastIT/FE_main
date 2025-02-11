@@ -16,10 +16,12 @@ import Home from './home';
 import Help from './help';
 
 import { useAuth } from '../../context/AuthContext';
+import { useRouter } from 'next/navigation';
 
 export default function CreateToastComponent() {
   const [showOnboarding, setShowOnboarding] = useState(false);
   const { message } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     // localStorage에 "onBoardingShown" 값이 없을 때만 온보딩을 표시
@@ -41,14 +43,11 @@ export default function CreateToastComponent() {
 
   // 활성 메모 id 상태 추가 (상위에서 관리)
   const [activeMemoId, setActiveMemoId] = useState<string>('1');
-
   const [isDoubleClick, setIsDoubleClick] = useState(false);
 
   // 더블클릭 이벤트 핸들러
   const handleDoubleClick = () => {
-    console.log('더블클릭 이벤트 발생');
     setIsDoubleClick(true);
-
     // 일정 시간 후 더블클릭 상태 초기화
     setTimeout(() => {
       setIsDoubleClick(false);
@@ -95,6 +94,10 @@ export default function CreateToastComponent() {
     setActiveMemoId(id);
   };
 
+  const handleCategorySelect = (categoryId: string) => {
+    router.push(`/loadToastPage?category=${categoryId}`);
+  };
+
   // ------------------------------------------------------------- 💖임사랑 - SaveToast 관련 추가되는 부분
 
   // 임사랑 - return 부분 수정.
@@ -128,7 +131,7 @@ export default function CreateToastComponent() {
       )}
       {isDoubleClick && (
         <SaveToastWrapper onDoubleClick={handleDoubleClick}>
-          <LoadToast onClose={handleCloseSaveToast} onSave={handleSave} />
+          <LoadToast onClose={handleCloseSaveToast} onCategorySelect={handleCategorySelect} />
         </SaveToastWrapper>
       )}
       {showSaveMessage && (
