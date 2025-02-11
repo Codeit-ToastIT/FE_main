@@ -99,11 +99,11 @@ export default function Home() {
             router.push('/pages/createToastPage');
           }
         } else if (response.status === 401) {
-          router.push('/pages/emailInputPage');
+          console.log('401 Unauthorized : 로그인 필요')
         }
       } catch (error) {
         console.error('Error checking token:', error);
-        router.push('/pages/emailInputPage');
+        
       }
     };
 
