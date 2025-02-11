@@ -4,6 +4,7 @@ import { styled } from 'styled-components';
 import React, { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import FocusableInput from '../../components/common/FocusableInput';
 import SubmitButton from '../../components/common/SubmitButton';
 import iconEyeOpen from '../../assets/icons/icon_eye_open.svg';
 import iconEyeClosed from '../../assets/icons/icon_eye_closed.svg';
@@ -48,26 +49,6 @@ const Form = styled.form`
   gap: 0.5rem;
 `;
 
-const Input = styled.input`
-  height: 2.5rem;
-  min-width: 20.5rem;
-  border-radius: 2.5rem;
-  background: rgba(255, 255, 255, 0.2);
-  border: none;
-  outline: none;
-  color: #e5dcca;
-  padding-left: 1rem;
-  overflow: hidden;
-  color: var(--ivory, #e5dcca);
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  font-family: SUIT;
-  font-size: 1rem;
-  font-style: normal;
-  font-weight: 600;
-  line-height: normal;
-`;
-
 const Link = styled.div`
   color: var(--ivory, #e5dcca);
   text-align: center;
@@ -86,16 +67,25 @@ const BackIcon = styled.svg`
   width: 1.5rem;
   height: 1.5rem;
   flex-shrink: 0;
+  cursor: pointer;
 `;
 
 const IconEye = styled(Image)`
   width: 1.5rem;
   height: 1.5rem;
   position: absolute;
-  right: 1rem; /* 오른쪽 여백 */
+  right: 1rem;
   top: 50%;
   transform: translateY(-50%);
   cursor: pointer;
+`;
+
+const ErrorMessage = styled.div`
+  color: #ff5151;
+  font-family: SUIT;
+  font-size: 0.875rem;
+  font-weight: 400;
+  margin-top: 0.5rem;
 `;
 
 const LoginPage = () => {
@@ -112,17 +102,12 @@ const LoginPage = () => {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       if (inputRef.current) {
-        inputRef.current.focus(); // 입력 필드에 포커스
+        inputRef.current.focus();
       }
     }, 100);
-    console.log('현재 이메일:', email); // 이메일 값을 콘솔에 출력
+    console.log('현재 이메일:', email);
     return () => clearTimeout(timeoutId);
   }, [email]);
-
-  const handleMouseDown = (event: React.MouseEvent) => {
-    event.preventDefault(); // 기본 동작 방지
-    inputRef.current?.focus(); // 입력 필드에 포커스
-  };
 
   // 비밀번호 입력 시 상태 업데이트
   const handlePwChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -131,11 +116,12 @@ const LoginPage = () => {
 
   // BackIcon 클릭 시 이전 화면으로 이동
   const handleBackClick = () => {
-    router.back(); // 이전 페이지로 이동
+    router.back();
   };
 
+  // 폼 제출 처리
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault(); // 기본 동작 방지
+    event.preventDefault();
     if (!pw) {
       setError('비밀번호를 입력해주세요.');
       return;
@@ -155,7 +141,6 @@ const LoginPage = () => {
 
       if (response.ok) {
         console.log('로그인 성공:', data);
-        // 로그인 성공 후 토큰 저장 및 홈 페이지로 이동
         login(data.token); // 토큰 저장
         loginUser(data.user.id); // userId 저장
         router.push('/pages/createToastPage'); // 홈 페이지로 이동
@@ -168,6 +153,7 @@ const LoginPage = () => {
     }
   };
 
+  // 비밀번호 재설정 링크 클릭 처리
   const handleLinkClick = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/password/reset/send-code`, {
@@ -175,7 +161,7 @@ const LoginPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email }), // 이메일 주소 전달
+        body: JSON.stringify({ email }),
       });
 
       if (response.ok) {
@@ -183,7 +169,7 @@ const LoginPage = () => {
         router.push('/pages/resetPasswordPage'); // 비밀번호 재설정 페이지로 이동
       } else {
         const errorData = await response.json();
-        setError(errorData.message || '인증번호 전송에 실패했습니다.'); // 에러 메시지 설정
+        setError(errorData.message || '인증번호 전송에 실패했습니다.');
         console.error('인증번호 전송 실패:', errorData);
       }
     } catch (error) {
@@ -193,7 +179,7 @@ const LoginPage = () => {
   };
 
   return (
-    <Whole onMouseDown={handleMouseDown}>
+    <Whole>
       <Header>
         <BackIcon
           onClick={handleBackClick}
@@ -214,25 +200,23 @@ const LoginPage = () => {
       <Container>
         <Form noValidate onSubmit={handleSubmit}>
           <div style={{ position: 'relative' }}>
-            <Input
+            <FocusableInput
               type={showPw ? 'text' : 'password'}
               name="password"
               placeholder="비밀번호를 입력해주세요."
               ref={inputRef}
               value={pw}
-              onChange={handlePwChange} // 비밀번호 상태 업데이트
+              onChange={handlePwChange}
               autoComplete="off"
             />
             <IconEye
-              src={showPw ? iconEyeOpen : iconEyeClosed} // 상태에 따라 아이콘 변경
-              alt={showPw ? '비밀번호 보이기' : '비밀번호 숨기기'} // 대체 텍스트 추가
+              src={showPw ? iconEyeOpen : iconEyeClosed}
+              alt={showPw ? '비밀번호 보이기' : '비밀번호 숨기기'}
               onClick={() => setShowPw((prev) => !prev)}
             />
           </div>
 
-          {error && (
-            <div style={{ color: 'red', fontSize: '0.875rem', marginTop: '0.5rem' }}>{error}</div>
-          )}
+          {error && <ErrorMessage>{error}</ErrorMessage>}
           <SubmitButton isActive={isPwNotEmpty} />
         </Form>
         <Link onClick={handleLinkClick}>비밀번호를 잊어버렸나요?</Link>
@@ -240,4 +224,5 @@ const LoginPage = () => {
     </Whole>
   );
 };
+
 export default LoginPage;
