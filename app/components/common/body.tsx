@@ -204,8 +204,8 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            title: new Date().toISOString().split('T')[0], // ✅ 오늘 날짜로 제목 설정
-            content: '새로운 영감을 적어볼까요?', // ✅ 기본 내용 설정
+            title: '', // ✅ 오늘 날짜로 제목 설정
+            content: '', // ✅ 기본 내용 설정
             categoryId, // ✅ 특정 카테고리에 저장
           }),
         });

@@ -26,10 +26,13 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <body
         style={{
+          position: 'absolute',
+          top: '0' /* 💡 최상단 배치 */,
+          left: '0',
           width: '100vw', // 💡 화면 전체를 차지하도록 설정
-          height: '100dvh', // 💡 dvh 사용하여 동적 높이 설정
+          height: '100vh',
+          paddingTop: 'env(safe-area-inset-top, 0px)' /* 💡 iOS 안전 영역 반영 */,
           margin: '0',
-          padding: '0',
           display: 'flex',
           justifyContent: 'center', // 💡 중앙 정렬
           alignItems: 'center', // 💡 중앙 정렬

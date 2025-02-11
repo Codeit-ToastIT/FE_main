@@ -71,7 +71,7 @@ const Container = styled.div`
 
 const StyledHeader = styled(Header)`
   width: 375px;
-  height: 56px;
+  height: 56px; /* 💡 주소창이 있을 때도 높이 유지 */
   background: var(--black, #171612);
   box-sizing: border-box;
 `;
