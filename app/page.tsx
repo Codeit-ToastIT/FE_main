@@ -2,7 +2,7 @@
 
 import styled from "styled-components";
 import Splash from './components/ui/splash';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion  } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
@@ -78,11 +78,36 @@ const KakaoIcon = styled(Image)`
   align-items: center;
 `;
 
-
 export default function Home() {
   const [show, setShow] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
+
+  // 로그인 유지 API 
+  useEffect(() => {
+    const checkToken = async () => {
+      try {
+        const response = await fetch('/api/auth/restore', {
+          method: 'GET',
+          credentials: 'include', 
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          if (data.accessToken) {
+            router.push('/pages/createToastPage');
+          }
+        } else if (response.status === 401) {
+          router.push('/pages/emailInputPage');
+        }
+      } catch (error) {
+        console.error('Error checking token:', error);
+        router.push('/pages/emailInputPage');
+      }
+    };
+
+    checkToken();
+  }, [router]);
 
   const handleAnimationComplete = () => {
     setShow(true);
@@ -115,7 +140,7 @@ export default function Home() {
         </Container>
       )}
 
-    <TermsModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}/>  
+      <TermsModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}/>  
     </Whole>
   );
 }
