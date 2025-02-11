@@ -297,10 +297,10 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
       const data = await response.json();
       console.log('✅ 메모 카테고리 목록 가져오기 성공(서연):', data);
 
-      const categoryId = data.categories[4]?.id;
-      if (categoryId) {
-        setLastCategoryId(categoryId);
-        fetchMemos(categoryId); // ✅ 4번 인덱스 카테고리 ID로 메모 가져오기 실행
+      const lastCategoryId = data.categories[4]?.id;
+      if (lastCategoryId) {
+        setLastCategoryId(lastCategoryId);
+        fetchMemos(lastCategoryId); // ✅ 4번 인덱스 카테고리 ID로 메모 가져오기 실행
       }
     } catch (error) {
       console.error('❌ 메모 카테고리 목록 불러오기 오류(서연):', error);
