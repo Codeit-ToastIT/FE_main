@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import iconKakao from './assets/icons/icon_kakao.svg';
 import TermsModal from './components/common/TermsModal';
+import { API_BASE_URL } from "./api/api";
 
 const Whole = styled.div`
   display: flex;
@@ -87,7 +88,7 @@ export default function Home() {
   useEffect(() => {
     const checkToken = async () => {
       try {
-        const response = await fetch('/api/auth/restore', {
+        const response = await fetch(`${API_BASE_URL}/api/auth/restore`, {
           method: 'GET',
           credentials: 'include', 
         });
