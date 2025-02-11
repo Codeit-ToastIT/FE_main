@@ -263,25 +263,39 @@ const SaveToast: React.FC<SaveToastProps> = ({ onClose, onSave, memoId, title, c
   const handleTouchStart = (e: React.TouchEvent) => {
     setIsDragging(true); // 드래그 시작
     setShowHint(false); // 힌트 숨김
-    e.preventDefault();
+    // e.preventDefault();
+
+    // 터치 시작 시 좌표 초기화
+    setPosition({ x: 0, y: 0 });
+
+    // console.log('📌 터치 시작됨');
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging) return;
 
     const touch = e.touches[0];
-    setPosition((_prev) => {
-      const newX = Math.min(16, Math.max(-16, touch.clientX - window.innerWidth / 2));
-      const newY = Math.min(16, Math.max(-16, touch.clientY - window.innerHeight / 2));
 
-      // 최대치 16px까지 도달해야만 카테고리 선택 가능
-      if (Math.abs(newX) === 16 || Math.abs(newY) === 16) {
-        checkCollision(newX, newY);
+    // 컨테이너 기준 상대 좌표 계산
+    const container = e.currentTarget.getBoundingClientRect();
+    let relativeX = touch.clientX - (container.left + container.width / 2);
+    let relativeY = touch.clientY - (container.top + container.height / 2);
+
+    // 최대 이동 범위 제한 (-16px ~ 16px)
+    relativeX = Math.min(16, Math.max(-16, relativeX));
+    relativeY = Math.min(16, Math.max(-16, relativeY));
+
+    // console.log(`📌 터치 이동 중: relativeX=${relativeX}, relativeY=${relativeY}`);
+
+    setPosition(() => {
+      // 이동 범위 안에서만 카테고리 선택 가능
+      if (Math.abs(relativeX) === 16 || Math.abs(relativeY) === 16) {
+        checkCollision(relativeX, relativeY);
       } else {
         setActiveSlice(null); // 최대치 미만 이동 시 카테고리 선택 해제
       }
 
-      return { x: newX, y: newY };
+      return { x: relativeX, y: relativeY };
     });
   };
 
@@ -303,18 +317,16 @@ const SaveToast: React.FC<SaveToastProps> = ({ onClose, onSave, memoId, title, c
       return; // 저장 로직 실행되지 않도록 여기서 종료!
     }
 
+    // 터치 저장 로직 추가
     if (activeSlice !== null) {
       const selectedCategory = categoryNames[activeSlice];
 
-      console.log({
-        memoId,
-        category: selectedCategory,
-        title,
-        content,
-      });
+      console.log('📌 터치 저장 - 선택한 카테고리:', selectedCategory);
 
-      onSave(selectedCategory); // 선택된 카테고리 전달
-      onClose(selectedCategory); // 선택된 카테고리 전달
+      saveMemoToCategory(selectedCategory); // 저장 실행
+      playSaveSound(); // 효과음 추가
+      onSave(selectedCategory); // 저장 후 onSave 호출
+      onClose(selectedCategory); // SaveToast 닫기
     }
 
     setPosition({ x: 0, y: 0 });
