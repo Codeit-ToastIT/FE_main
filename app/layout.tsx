@@ -45,7 +45,7 @@ export default function RootLayout({
             <div
               style={{
                 width: '375px', // 아이폰 13 미니 너비
-                height: '812px', // 아이폰 13 미니 높이
+                height: '100dvh', // 아이폰 13 미니 높이
                 position: 'absolute', // 💡 중앙 정렬을 위해 absolute 사용
                 top: '50%',
                 left: '50%',

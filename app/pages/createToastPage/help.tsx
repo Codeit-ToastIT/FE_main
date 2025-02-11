@@ -34,7 +34,9 @@ const Help: React.FC<HelpProps> = ({ onClose }) => {
   }, [step]); // step 변경될 때마다 실행
 
   // "계속하기" 버튼 클릭 시 다음 도움말로 이동
-  const handleNextStep = () => {
+  const handleNextStep = (e: React.MouseEvent) => {
+    e.stopPropagation(); // 이벤트 버블링 방지
+
     if (step < 1) {
       setStep((prev) => prev + 1);
       setShowNextButton(false); // 버튼 숨겼다가 다시 2초 후 표시
@@ -45,8 +47,8 @@ const Help: React.FC<HelpProps> = ({ onClose }) => {
   };
 
   return (
-    <Overlay>
-      <ModalContent>
+    <Overlay onClick={(e) => e.stopPropagation()}>
+      <ModalContent onClick={(e) => e.stopPropagation()}>
         {step === 0 && (
           <>
             <SaveGesture src={SaveGestureIcon} alt="SaveGesture" width={80} height={80} />
