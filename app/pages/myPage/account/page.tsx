@@ -2,6 +2,9 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import styled from 'styled-components';
+
+import { Suspense } from 'react';
+
 import { useRouter, useSearchParams } from 'next/navigation';
 import { API_BASE_URL } from '../../../api/api';
 import { useAuth } from '../../../context/AuthContext';
@@ -12,7 +15,7 @@ import terms from '../../../assets/icons/icon_filecheck.svg';
 import logouticon from '../../../assets/icons/icon_out.svg';
 import accountdelete from '../../../assets/icons/icon_profile_x_r.svg';
 
-const AccountPage = () => {
+function AccountPageContent() {
   const [showTermsOverlay, setShowTermsOverlay] = useState(false);
   const router = useRouter();
   const { token, logout } = useAuth();
@@ -23,7 +26,7 @@ const AccountPage = () => {
 
   // 쿼리 파라미터로 이동한 경우 fade‑in 효과 적용 여부 확인
   const searchParams = useSearchParams();
-  const shouldFadeIn = searchParams.get("fadeIn") === "true";
+  const shouldFadeIn = searchParams.get('fadeIn') === 'true';
   // 만약 shouldFadeIn이면 초기 opacity를 0으로 두고, 마운트 후에 true로 전환
   const [fadeIn, setFadeIn] = useState(shouldFadeIn ? false : true);
   useEffect(() => {
@@ -155,19 +158,23 @@ const AccountPage = () => {
             <Clause>
               <ClauseNumber>제 2조 (정의)</ClauseNumber>
               <ClauseContent>
-                1. &quot;서비스&quot;란 [토스트잇 팀]이 제공하는 메모 관련 모바일 웹 서비스를 의미합니다.
+                1. &quot;서비스&quot;란 [토스트잇 팀]이 제공하는 메모 관련 모바일 웹 서비스를
+                의미합니다.
               </ClauseContent>
               <ClauseContent>
-                2. &quot;회원&quot;이란 서비스에 가입하여 이 약관에 따라 서비스를 이용하는 자를 의미합니다.
+                2. &quot;회원&quot;이란 서비스에 가입하여 이 약관에 따라 서비스를 이용하는 자를
+                의미합니다.
               </ClauseContent>
               <ClauseContent>
-                3. &quot;유료 멤버십&quot;이란 회원이 추가 요금을 지불하고 이용할 수 있는 프리미엄 서비스 기능을 의미합니다.
+                3. &quot;유료 멤버십&quot;이란 회원이 추가 요금을 지불하고 이용할 수 있는 프리미엄
+                서비스 기능을 의미합니다.
               </ClauseContent>
               <ClauseContent>
                 4. &quot;토스트&quot;란 회원이 서비스에 저장한 메모 데이터를 의미합니다.
               </ClauseContent>
               <ClauseContent>
-                5. &quot;갤러리&quot;란 회원이 서비스에 저장된 &quot;토스트&quot;가 카테고리 별로 분류되어있는, 열람이 가능한 창을 의미합니다.
+                5. &quot;갤러리&quot;란 회원이 서비스에 저장된 &quot;토스트&quot;가 카테고리 별로
+                분류되어있는, 열람이 가능한 창을 의미합니다.
               </ClauseContent>
             </Clause>
             <Clause>
@@ -177,28 +184,37 @@ const AccountPage = () => {
               </ClauseContent>
               <ClauseContent>2. 만 14세 미만의 사용자는 회원가입이 제한됩니다.</ClauseContent>
               <ClauseContent>
-                3. 회원은 정확하고 최신의 정보를 제공해야 하며, 이를 위반하여 발생한 불이익에 대한 책임은 회원에게 있습니다.
+                3. 회원은 정확하고 최신의 정보를 제공해야 하며, 이를 위반하여 발생한 불이익에 대한
+                책임은 회원에게 있습니다.
               </ClauseContent>
               <ClauseContent>
-                4. 계정 정보 관리 책임은 회원에게 있으며, 회원은 계정을 제3자와 공유하거나 양도할 수 없습니다.
+                4. 계정 정보 관리 책임은 회원에게 있으며, 회원은 계정을 제3자와 공유하거나 양도할 수
+                없습니다.
               </ClauseContent>
             </Clause>
             <Clause>
               <ClauseNumber>제 4조 (서비스 제공 및 변경)</ClauseNumber>
               <ClauseContent>
-                1. 서비스는 회원의 메모 작성, 저장, 카테고리화, 불러오기, 갤러리 열람 기능을 제공합니다.
+                1. 서비스는 회원의 메모 작성, 저장, 카테고리화, 불러오기, 갤러리 열람 기능을
+                제공합니다.
               </ClauseContent>
               <ClauseContent>
-                2. 서비스는 회원의 데이터를 저장하지만, 공유 기능은 지원하지 않으며, 복사/붙여넣기를 통해서만 메모를 외부로 공유할 수 있습니다.
+                2. 서비스는 회원의 데이터를 저장하지만, 공유 기능은 지원하지 않으며, 복사/붙여넣기를
+                통해서만 메모를 외부로 공유할 수 있습니다.
               </ClauseContent>
               <ClauseContent>
                 3. 유료 멤버십 구독 시 아래와 같은 추가 기능이 제공됩니다:
-                <ClauseContent className="bullet">•⠀메모 제목이 없는 경우 AI 기반 자동 요약 기능</ClauseContent>
+                <ClauseContent className="bullet">
+                  •⠀메모 제목이 없는 경우 AI 기반 자동 요약 기능
+                </ClauseContent>
                 <ClauseContent className="bullet">•⠀메모 RECAP 기능</ClauseContent>
-                <ClauseContent className="bullet">•⠀8개의 방위로 구성된 카테고리 제공</ClauseContent>
+                <ClauseContent className="bullet">
+                  •⠀8개의 방위로 구성된 카테고리 제공
+                </ClauseContent>
               </ClauseContent>
               <ClauseContent>
-                4. 서비스 내용은 운영상, 기술상의 필요에 따라 변경될 수 있으며, 변경 사항은 사전에 공지합니다.
+                4. 서비스 내용은 운영상, 기술상의 필요에 따라 변경될 수 있으며, 변경 사항은 사전에
+                공지합니다.
               </ClauseContent>
               <ClauseContent>
                 5. 서비스 종료 시, 남은 유료 멤버십 기간에 대한 비례 환불이 제공됩니다.
@@ -207,13 +223,16 @@ const AccountPage = () => {
             <Clause>
               <ClauseNumber>제 5조 (개인정보 보호)</ClauseNumber>
               <ClauseContent>
-                1. 회사는 회원의 개인정보를 &quot;개인정보처리방침&quot;에 따라 보호하며, 회원은 이를 확인할 수 있습니다.
+                1. 회사는 회원의 개인정보를 &quot;개인정보처리방침&quot;에 따라 보호하며, 회원은
+                이를 확인할 수 있습니다.
               </ClauseContent>
               <ClauseContent>
-                2. 회원의 개인정보는 회원의 동의 없이 제3자에게 제공되지 않습니다. 단, 법률에 의거한 요청은 예외로 합니다.
+                2. 회원의 개인정보는 회원의 동의 없이 제3자에게 제공되지 않습니다. 단, 법률에 의거한
+                요청은 예외로 합니다.
               </ClauseContent>
               <ClauseContent>
-                3. 회원의 개인정보는 서비스 종료 또는 회원 탈퇴 시, 최대 90일 이내에 안전하게 삭제됩니다.
+                3. 회원의 개인정보는 서비스 종료 또는 회원 탈퇴 시, 최대 90일 이내에 안전하게
+                삭제됩니다.
               </ClauseContent>
             </Clause>
             <Clause>
@@ -221,30 +240,40 @@ const AccountPage = () => {
               <ClauseContent>
                 1. 회원은 서비스를 이용함에 있어 다음 행위를 해서는 안 됩니다:
               </ClauseContent>
-              <ClauseContent className="bullet">•⠀타인의 계정을 도용하거나 부정 이용하는 행위</ClauseContent>
-              <ClauseContent className="bullet">•⠀서비스의 정상적인 운영을 방해하는 행위</ClauseContent>
-              <ClauseContent className="bullet">•⠀악성 코드를 배포하거나 비정상적인 방식으로 서버에 과부하를 유발하는 행위</ClauseContent>
+              <ClauseContent className="bullet">
+                •⠀타인의 계정을 도용하거나 부정 이용하는 행위
+              </ClauseContent>
+              <ClauseContent className="bullet">
+                •⠀서비스의 정상적인 운영을 방해하는 행위
+              </ClauseContent>
+              <ClauseContent className="bullet">
+                •⠀악성 코드를 배포하거나 비정상적인 방식으로 서버에 과부하를 유발하는 행위
+              </ClauseContent>
               <ClauseContent className="bullet">•⠀기타 법령 및 약관을 위반하는 행위</ClauseContent>
               <ClauseContent>
-                2. 회원은 서비스 이용 시 본인의 데이터를 정기적으로 백업해야 하며, 데이터 손실에 대한 책임은 회원에게 있습니다.
+                2. 회원은 서비스 이용 시 본인의 데이터를 정기적으로 백업해야 하며, 데이터 손실에
+                대한 책임은 회원에게 있습니다.
               </ClauseContent>
             </Clause>
             <Clause>
               <ClauseNumber>제 7조 (서비스 중단)</ClauseNumber>
               <ClauseContent>
-                1. 회사는 천재지변, 시스템 장애, 운영 상의 필요 등으로 서비스 제공을 일시적으로 중단할 수 있습니다.
+                1. 회사는 천재지변, 시스템 장애, 운영 상의 필요 등으로 서비스 제공을 일시적으로
+                중단할 수 있습니다.
               </ClauseContent>
               <ClauseContent>
                 2. 서비스 중단 시 회원에게 사전 공지하며, 불가피한 경우 사후 공지할 수 있습니다.
               </ClauseContent>
               <ClauseContent>
-                3. 서비스 중단으로 인해 회원이 입은 피해에 대해서는 회사의 고의 또는 중대한 과실이 없는 한 책임을 지지 않습니다.
+                3. 서비스 중단으로 인해 회원이 입은 피해에 대해서는 회사의 고의 또는 중대한 과실이
+                없는 한 책임을 지지 않습니다.
               </ClauseContent>
             </Clause>
             <Clause>
               <ClauseNumber>제 8조 (유료 멤버십 및 결제)</ClauseNumber>
               <ClauseContent>
-                1. 유료 멤버십 구독은 회원의 선택 사항이며, 결제는 사전에 명시된 방법에 따라 이루어집니다.
+                1. 유료 멤버십 구독은 회원의 선택 사항이며, 결제는 사전에 명시된 방법에 따라
+                이루어집니다.
               </ClauseContent>
               <ClauseContent>
                 2. 결제 취소 및 환불은 관련 법률 및 회사의 &quot;결제 및 환불 정책&quot;에 따릅니다.
@@ -253,7 +282,8 @@ const AccountPage = () => {
                 3. 미성년자는 법정대리인의 동의 없이 유료 멤버십 구독이 불가능합니다.
               </ClauseContent>
               <ClauseContent>
-                4. 결제 실패 시, 회사는 회원에게 이를 통지하고, 지정된 기간 내에 결제 방법을 수정할 기회를 제공합니다.
+                4. 결제 실패 시, 회사는 회원에게 이를 통지하고, 지정된 기간 내에 결제 방법을 수정할
+                기회를 제공합니다.
               </ClauseContent>
             </Clause>
             <Clause>
@@ -265,7 +295,8 @@ const AccountPage = () => {
                 2. 회사는 회원의 귀책 사유로 발생한 손해에 대해 책임을 지지 않습니다.
               </ClauseContent>
               <ClauseContent>
-                3. 회사는 기술적 오류로 인한 데이터 손실에 대해 최대한 복구를 지원하나, 이를 보장하지는 않습니다.
+                3. 회사는 기술적 오류로 인한 데이터 손실에 대해 최대한 복구를 지원하나, 이를
+                보장하지는 않습니다.
               </ClauseContent>
             </Clause>
             <Clause>
@@ -274,7 +305,8 @@ const AccountPage = () => {
                 1. 이 약관과 관련하여 발생한 분쟁은 대한민국 법령을 따릅니다.
               </ClauseContent>
               <ClauseContent>
-                2. 회사와 회원 간 분쟁은 상호 협의하여 해결하며, 협의가 어려울 경우 관할 법원에 해결을 요청할 수 있습니다.
+                2. 회사와 회원 간 분쟁은 상호 협의하여 해결하며, 협의가 어려울 경우 관할 법원에
+                해결을 요청할 수 있습니다.
               </ClauseContent>
             </Clause>
             <Clause>
@@ -284,9 +316,7 @@ const AccountPage = () => {
             <TermsTitle>개인정보처리방침</TermsTitle>
             <Clause>
               <ClauseNumber>제 1조 (개인정보의 수집 항목 및 방법)</ClauseNumber>
-              <ClauseContent>
-                1. 회사는 다음과 같은 개인정보를 수집합니다:
-              </ClauseContent>
+              <ClauseContent>1. 회사는 다음과 같은 개인정보를 수집합니다:</ClauseContent>
               <ClauseContent className="bullet">
                 •⠀회원가입 시: 이메일 주소, 비밀번호, 카카오톡 계정 정보(선택 시).
               </ClauseContent>
@@ -303,42 +333,35 @@ const AccountPage = () => {
             <Clause>
               <ClauseNumber>제 2조 (개인정보의 이용 목적)</ClauseNumber>
               <ClauseContent>1. 회원 관리: 회원 인증, 계정 보호, 고객 문의 처리.</ClauseContent>
-              <ClauseContent>2. 서비스 제공: 메모 저장, RECAP 기능 제공, AI 기반 요약 등.</ClauseContent>
+              <ClauseContent>
+                2. 서비스 제공: 메모 저장, RECAP 기능 제공, AI 기반 요약 등.
+              </ClauseContent>
               <ClauseContent>3. 서비스 개선: 서비스 사용 통계 분석 및 품질 향상.</ClauseContent>
               <ClauseContent>4. 법적 의무 이행: 관련 법령에 따른 보관 및 보고.</ClauseContent>
             </Clause>
             <Clause>
               <ClauseNumber>제 3조 (개인정보의 보관 및 파기)</ClauseNumber>
               <ClauseContent>
-                1. 회사는 법령에서 정한 기간 동안 개인정보를 보관합니다. 이후에는 해당 정보를 즉시 파기합니다.
+                1. 회사는 법령에서 정한 기간 동안 개인정보를 보관합니다. 이후에는 해당 정보를 즉시
+                파기합니다.
               </ClauseContent>
-              <ClauseContent className="bullet">
-                •⠀회원 정보: 회원 탈퇴 시 즉시 파기.
-              </ClauseContent>
+              <ClauseContent className="bullet">•⠀회원 정보: 회원 탈퇴 시 즉시 파기.</ClauseContent>
               <ClauseContent className="bullet">
                 •⠀거래 정보: 전자상거래 등에서의 소비자 보호에 관한 법률에 따라 5년간 보관.
               </ClauseContent>
-              <ClauseContent>
-                2. 개인정보는 다음 방법으로 파기됩니다:
-              </ClauseContent>
+              <ClauseContent>2. 개인정보는 다음 방법으로 파기됩니다:</ClauseContent>
               <ClauseContent className="bullet">
                 •⠀전자적 파일: 복구할 수 없도록 영구 삭제.
               </ClauseContent>
-              <ClauseContent className="bullet">
-                •⠀출력물: 파쇄 또는 소각 처리.
-              </ClauseContent>
+              <ClauseContent className="bullet">•⠀출력물: 파쇄 또는 소각 처리.</ClauseContent>
             </Clause>
             <Clause>
               <ClauseNumber>제 4조 (개인정보의 제3자 제공)</ClauseNumber>
               <ClauseContent>
                 1. 회사는 회원의 동의 없이 개인정보를 제3자에게 제공하지 않습니다.
               </ClauseContent>
-              <ClauseContent>
-                2. 단, 다음 경우에는 예외로 합니다:
-              </ClauseContent>
-              <ClauseContent className="bullet">
-                •⠀법령에 따른 요구가 있을 경우.
-              </ClauseContent>
+              <ClauseContent>2. 단, 다음 경우에는 예외로 합니다:</ClauseContent>
+              <ClauseContent className="bullet">•⠀법령에 따른 요구가 있을 경우.</ClauseContent>
               <ClauseContent className="bullet">
                 •⠀서비스 제공을 위해 결제 대행사 등과 최소한의 정보를 공유하는 경우.
               </ClauseContent>
@@ -349,7 +372,8 @@ const AccountPage = () => {
                 1. 회원은 언제든지 본인의 개인정보 열람, 수정, 삭제를 요청할 수 있습니다.
               </ClauseContent>
               <ClauseContent>
-                2. 회원의 요청은 회사 고객센터를 통해 접수되며, 회사는 법령에서 정한 기간 내에 처리합니다.
+                2. 회원의 요청은 회사 고객센터를 통해 접수되며, 회사는 법령에서 정한 기간 내에
+                처리합니다.
               </ClauseContent>
               <ClauseContent>
                 3. 개인정보 수정 또는 삭제 요청 시, 일부 서비스 이용이 제한될 수 있습니다.
@@ -360,27 +384,15 @@ const AccountPage = () => {
               <ClauseContent>
                 1. 회사는 다음과 같은 기술적/관리적 조치를 통해 개인정보를 보호합니다:
               </ClauseContent>
-              <ClauseContent className="bullet">
-                •⠀데이터 암호화 및 안전한 저장.
-              </ClauseContent>
-              <ClauseContent className="bullet">
-                •⠀접근 권한 제어 및 정기 보안 점검.
-              </ClauseContent>
-              <ClauseContent className="bullet">
-                •⠀내부 보안 교육 및 정책 시행.
-              </ClauseContent>
+              <ClauseContent className="bullet">•⠀데이터 암호화 및 안전한 저장.</ClauseContent>
+              <ClauseContent className="bullet">•⠀접근 권한 제어 및 정기 보안 점검.</ClauseContent>
+              <ClauseContent className="bullet">•⠀내부 보안 교육 및 정책 시행.</ClauseContent>
             </Clause>
             <Clause>
               <ClauseNumber>제 7조 (개인정보 보호책임자 및 연락처)</ClauseNumber>
-              <ClauseContent>
-                1. 개인정보 보호책임자:
-              </ClauseContent>
-              <ClauseContent className="bullet">
-                •⠀이름: 김동민
-              </ClauseContent>
-              <ClauseContent className="bullet">
-                •⠀이메일: ehdals5387@gmail.com
-              </ClauseContent>
+              <ClauseContent>1. 개인정보 보호책임자:</ClauseContent>
+              <ClauseContent className="bullet">•⠀이름: 김동민</ClauseContent>
+              <ClauseContent className="bullet">•⠀이메일: ehdals5387@gmail.com</ClauseContent>
               <ClauseContent>
                 2. 회원은 개인정보와 관련된 문의를 위 연락처를 통해 할 수 있습니다.
               </ClauseContent>
@@ -391,7 +403,8 @@ const AccountPage = () => {
                 1. 이 개인정보처리방침은 2025년 1월 17일부터 시행됩니다.
               </ClauseContent>
               <ClauseContent>
-                2. 개인정보처리방침의 변경 사항은 서비스 공지사항 또는 이메일을 통해 사전 고지합니다.
+                2. 개인정보처리방침의 변경 사항은 서비스 공지사항 또는 이메일을 통해 사전
+                고지합니다.
               </ClauseContent>
             </Clause>
             <TermsTitle>결제 및 환불 정책</TermsTitle>
@@ -400,17 +413,14 @@ const AccountPage = () => {
               <ClauseContent>
                 1. 유료 멤버십은 다음 결제 방식을 통해 구독할 수 있습니다:
               </ClauseContent>
-              <ClauseContent className="bullet">
-                •⠀신용카드 및 체크카드
-              </ClauseContent>
+              <ClauseContent className="bullet">•⠀신용카드 및 체크카드</ClauseContent>
               <ClauseContent className="bullet">
                 •⠀간편결제 서비스 (예: 카카오페이, 네이버페이 등)
               </ClauseContent>
-              <ClauseContent className="bullet">
-                •⠀기타 회사가 지정한 결제 방식
-              </ClauseContent>
+              <ClauseContent className="bullet">•⠀기타 회사가 지정한 결제 방식</ClauseContent>
               <ClauseContent>
-                2. 결제는 회원이 선택한 방식에 따라 즉시 처리되며, 결제가 완료되면 서비스 이용 권한을 즉시 부여받습니다.
+                2. 결제는 회원이 선택한 방식에 따라 즉시 처리되며, 결제가 완료되면 서비스 이용
+                권한을 즉시 부여받습니다.
               </ClauseContent>
             </Clause>
             <Clause>
@@ -428,14 +438,11 @@ const AccountPage = () => {
             <Clause>
               <ClauseNumber>제 3조 (환불 정책)</ClauseNumber>
               <ClauseContent>
-                1. 유료 멤버십 구독 후 7일 이내에 서비스 이용 기록이 없는 경우, 회원은 전액 환불을 요청할 수 있습니다.
+                1. 유료 멤버십 구독 후 7일 이내에 서비스 이용 기록이 없는 경우, 회원은 전액 환불을
+                요청할 수 있습니다.
               </ClauseContent>
-              <ClauseContent>
-                2. 다음의 경우에는 환불이 제한됩니다:
-              </ClauseContent>
-              <ClauseContent className="bullet">
-                •⠀서비스 이용 기록이 있는 경우.
-              </ClauseContent>
+              <ClauseContent>2. 다음의 경우에는 환불이 제한됩니다:</ClauseContent>
+              <ClauseContent className="bullet">•⠀서비스 이용 기록이 있는 경우.</ClauseContent>
               <ClauseContent className="bullet">
                 •⠀이미 제공된 기간제 혜택에 해당하는 경우.
               </ClauseContent>
@@ -446,7 +453,8 @@ const AccountPage = () => {
             <Clause>
               <ClauseNumber>제 4조 (결제 실패 및 연체 처리)</ClauseNumber>
               <ClauseContent>
-                1. 결제 실패 시 회사는 회원에게 이를 통지하며, 지정된 기간 내에 결제 정보를 갱신하거나 수정할 기회를 제공합니다.
+                1. 결제 실패 시 회사는 회원에게 이를 통지하며, 지정된 기간 내에 결제 정보를
+                갱신하거나 수정할 기회를 제공합니다.
               </ClauseContent>
               <ClauseContent>
                 2. 지정된 기간 내 결제 실패가 지속되면 유료 멤버십은 자동으로 중지됩니다.
@@ -467,25 +475,21 @@ const AccountPage = () => {
             <Clause>
               <ClauseNumber>제 6조 (서비스 종료 시 환불)</ClauseNumber>
               <ClauseContent>
-                1. 회사가 서비스를 종료하는 경우, 회원의 남은 유료 멤버십 기간에 대해 비례 환불이 제공됩니다.
+                1. 회사가 서비스를 종료하는 경우, 회원의 남은 유료 멤버십 기간에 대해 비례 환불이
+                제공됩니다.
               </ClauseContent>
-              <ClauseContent>
-                2. 환불 절차 및 일정은 별도로 공지됩니다.
-              </ClauseContent>
+              <ClauseContent>2. 환불 절차 및 일정은 별도로 공지됩니다.</ClauseContent>
             </Clause>
             <Clause>
               <ClauseNumber>제 7조 (문의 및 지원)</ClauseNumber>
               <ClauseContent>
                 1. 결제 및 환불과 관련한 모든 문의는 다음 연락처를 통해 처리됩니다:
               </ClauseContent>
-              <ClauseContent className="bullet">
-                •⠀이메일: shinboy3078@gmail.com
-              </ClauseContent>
-              <ClauseContent className="bullet">
-                •⠀전화번호: 010-4194-6578
-              </ClauseContent>
+              <ClauseContent className="bullet">•⠀이메일: shinboy3078@gmail.com</ClauseContent>
+              <ClauseContent className="bullet">•⠀전화번호: 010-4194-6578</ClauseContent>
               <ClauseContent>
-                2. 회사는 회원의 문의를 최대한 신속하게 처리하며, 법령에 따라 필요한 경우 추가적인 서류를 요청할 수 있습니다.
+                2. 회사는 회원의 문의를 최대한 신속하게 처리하며, 법령에 따라 필요한 경우 추가적인
+                서류를 요청할 수 있습니다.
               </ClauseContent>
             </Clause>
             <Clause>
@@ -530,9 +534,15 @@ const AccountPage = () => {
       <Footer>앱 버전 1.0.0</Footer>
     </Container>
   );
-};
+}
 
-export default AccountPage;
+export default function AccountPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <AccountPageContent />
+    </Suspense>
+  );
+}
 
 const Container = styled.div<{ transitioning: boolean; fadeIn: boolean }>`
   width: 100%;
@@ -721,7 +731,7 @@ const ClauseContent = styled.div`
   font-weight: normal;
   color: #f5e8d6;
   padding: 1px;
-  
+
   &.bullet {
     margin-left: 23px;
   }
@@ -785,7 +795,7 @@ const LogoutButton = styled.button`
   background: none;
   border: none;
   font-size: 16px;
-  color: #974B00;
+  color: #974b00;
   font-weight: bold;
   cursor: pointer;
   width: 98px;
@@ -797,7 +807,7 @@ const DeleteButton = styled.button`
   background: none;
   border: none;
   font-size: 16px;
-  color: #974B00;
+  color: #974b00;
   font-weight: bold;
   cursor: pointer;
   width: 98px;
