@@ -71,7 +71,7 @@ const Container = styled.div`
 
 const StyledHeader = styled(Header)`
   width: 375px;
-  height: 56px; /* 💡 주소창이 있을 때도 높이 유지 */
+  height: 56dvh; /* 💡 주소창이 있을 때도 높이 유지 */
   background: var(--black, #171612);
   box-sizing: border-box;
 `;
@@ -103,7 +103,7 @@ const DeletedMessage = styled.div`
 
 const StyledBody = styled(Body)`
   width: 375px;
-  height: 579px;
+  height: 100dvh;
   border-radius: 40px 0px 0px 40px;
   background: #fff;
   box-sizing: border-box;
@@ -116,7 +116,7 @@ const MyPageOverlay = styled.div<{ $isOpen: boolean }>`
   left: 0;
   width: 100%;
   height: 100%;
-  background-color: rgba(0, 0, 0, 0.5);
+
   display: ${({ $isOpen }) => ($isOpen ? 'flex' : 'none')};
   justify-content: center;
   align-items: center;
@@ -133,8 +133,7 @@ const StyledMyPage = styled(MyPage)<{ $isOpen: boolean }>`
   right: 0;
   width: 100%;
   max-width: 400px; /* 원하는 너비 설정 */
-  background-color: white; /* 필요에 따라 배경색 설정 */
-  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
+
   transform: ${({ $isOpen }) => ($isOpen ? 'translateX(0)' : 'translateX(100%)')};
   transition:
     transform 0.3s cubic-bezier(0, 0, 0.58, 1),

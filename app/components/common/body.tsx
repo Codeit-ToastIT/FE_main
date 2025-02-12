@@ -590,7 +590,7 @@ const Container = styled.div`
   justify-content: center;
   background-color: #ffffff;
   border-radius: 40px 0 0 40px;
-  height: 82.7vh;
+  height: 92.2dvh;
   position: relative;
   overflow: hidden;
   touch-action: none; /* ✅ 터치 이벤트를 스크롤이 아닌 드래그로 인식하도록 설정 */
