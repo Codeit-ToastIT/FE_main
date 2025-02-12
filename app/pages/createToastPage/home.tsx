@@ -31,7 +31,7 @@ export default function Home({ onHelpClick, onActiveMemoChange }: HomeProps) {
 
   // ✅ 프로필 버튼 클릭 시 myPage 표시
   const onProfileClick = () => {
-    setIsMyPageOpen(true); // ✅ myPage 열기
+    setIsMyPageOpen((prev) => !prev);
   };
 
   // ✅ myPage 닫기 함수
@@ -111,13 +111,33 @@ const StyledBody = styled(Body)`
 
 /* ✅ MyPage 배경 오버레이 */
 const MyPageOverlay = styled.div<{ $isOpen: boolean }>`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
   display: ${({ $isOpen }) => ($isOpen ? 'flex' : 'none')};
-  height: 900px;
+  justify-content: center;
+  align-items: center;
+  z-index: 999;
+  opacity: ${({ $isOpen }) => ($isOpen ? 1 : 0)};
+  transition: opacity 0.3s ease-in-out;
 `;
 
 /* ✅ 오른쪽에서 왼쪽으로 슬라이드되는 MyPage */
 const StyledMyPage = styled(MyPage)<{ $isOpen: boolean }>`
+  height: 100dvh;
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: 100%;
+  max-width: 400px; /* 원하는 너비 설정 */
+  background-color: white; /* 필요에 따라 배경색 설정 */
+  box-shadow: -2px 0 10px rgba(0, 0, 0, 0.1);
   transform: ${({ $isOpen }) => ($isOpen ? 'translateX(0)' : 'translateX(100%)')};
-  transition: transform 1s ease-in-out;
-  height: 900px;
+  transition:
+    transform 0.3s cubic-bezier(0, 0, 0.58, 1),
+    opacity 0.3s ease;
+  opacity: ${({ $isOpen }) => ($isOpen ? 1 : 0)};
 `;

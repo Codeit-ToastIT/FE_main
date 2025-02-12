@@ -130,7 +130,9 @@ export default function MemoHeader({
         localStorage.setItem('deletedMemoId', toastId);
         localStorage.setItem('deleteSuccess', 'true');
 
-        router.push('/pages/createToastPage');
+        setTimeout(() => {
+          router.push('/pages/createToastPage');
+        }, 900); // 0.9초 후 이동
         return true;
       } else {
         console.error('❌ 메모 삭제 실패:', data.message);

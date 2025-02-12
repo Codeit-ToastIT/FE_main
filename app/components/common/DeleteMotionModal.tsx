@@ -43,9 +43,9 @@ export default function DeleteMotionModal({ isOpen, onClose }: DeleteMotionModal
       setSelectedSet(randomSet);
 
       // ✅ 0.2초마다 다음 이미지로 변경 (0 → 1 → 2)
-      const timer1 = setTimeout(() => setCurrentStep(1), 200);
-      const timer2 = setTimeout(() => setCurrentStep(2), 400);
-      const timer3 = setTimeout(() => onClose(), 600); // ✅ 마지막 이미지 후 모달 닫기
+      const timer1 = setTimeout(() => setCurrentStep(1), 300);
+      const timer2 = setTimeout(() => setCurrentStep(2), 600);
+      const timer3 = setTimeout(() => onClose(), 900); // ✅ 마지막 이미지 후 모달 닫기
 
       return () => {
         clearTimeout(timer1);

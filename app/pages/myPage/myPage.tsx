@@ -162,7 +162,7 @@ const MyPage: React.FC<MyPageProps> = ({ $isOpen, isPremiumUser }) => {
       <PageContainer>
         <ContentContainer>
           <Overlay>
-            <MyPageContainer onClick={(e) => e.stopPropagation()}>
+            <MyPageContainer $isOpen={$isOpen} onClick={(e) => e.stopPropagation()}>
               <Email>{userEmail}</Email>
               <Plan>{userPlan}</Plan>
               <CircularMenu>
@@ -266,7 +266,7 @@ const ContentContainer = styled.div`
   display: flex;
 `;
 
-const MyPageContainer = styled.div`
+const MyPageContainer = styled.div<{ $isOpen: boolean }>`
   position: absolute;
   top: 0;
   right: 85.4%;
@@ -280,8 +280,10 @@ const MyPageContainer = styled.div`
   z-index: 1100;
   border-top-left-radius: 40px;
   border-bottom-left-radius: 40px;
-  transform: translateX(100%);
-  transition: transform 0.3s ease-in-out;
+
+  /* ✅ 슬라이드 애니메이션 추가 */
+  transform: ${({ $isOpen }) => ($isOpen ? 'translateX(0)' : 'translateX(100%)')};
+  transition: transform 0.3s cubic-bezier(0, 0, 0.58, 1);
 
   &::before {
     content: '';

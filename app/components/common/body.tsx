@@ -550,9 +550,9 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
         modules={[EffectCoverflow]}
         style={{
           position: 'absolute',
-          // top: '50%',
-          // left: '50%',
-          // transform: 'translate(-50%, -50%)',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
         }}
         onSlideChange={handleSlideChange} // 💖 활성 슬라이드 변경 시 콜백 호출
         onTouchStart={() => setIsSwiperActive(true)}
@@ -566,11 +566,7 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
           ))
         ) : (
           <StyledSwiperSlide>
-            <StyledBasicToast
-              title={new Date().toISOString().split('T')[0]}
-              content="새로운 토스트를 작성해볼까요?"
-            />{' '}
-            {/* 기본값 */}
+            <StyledBasicToast title="" content="새로운 토스트를 작성해볼까요?" /> {/* 기본값 */}
           </StyledSwiperSlide>
         )}
       </Swiper>
