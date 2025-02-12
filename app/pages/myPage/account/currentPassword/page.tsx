@@ -9,10 +9,9 @@ import SubmitButton from "../../../../components/common/SubmitButton";
 import iconEyeOpen from '../../../../assets/icons/icon_eye_open.svg';
 import iconEyeClosed from '../../../../assets/icons/icon_eye_closed.svg';
 import { API_BASE_URL } from "../../../../api/api";
-import { useAuth } from '../../../../context/AuthContext';
 import { useEmail } from '../../../../context/EmailContext';
 
-const Whole = styled.div`
+const Whole = styled.div<{ fadeIn: boolean }>`
   display: inline-flex;
   flex-direction: column;
   align-items: center;
@@ -20,6 +19,8 @@ const Whole = styled.div`
   background-color: #171612;
   padding-top: 1.5rem;
   height: 100vh;
+  opacity: ${({ fadeIn }) => (fadeIn ? 1 : 0)};
+  transition: opacity 0.1s ease-in-out;
 `;
 
 const Header = styled.div`
@@ -99,21 +100,25 @@ const IconEye = styled(Image)`
   cursor: pointer;
 `;
 
-const CurrentPasswordPage = () => {
+const CurrentPassword = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
   const [pw, setPw] = useState("");
   const isPwNotEmpty = pw.length > 0;
   const router = useRouter();
-  const { token } = useAuth();
   const { email } = useEmail();
+  const [error, setErrorMessage] = useState("");
   const [showPw, setShowPw] = useState(false);
+
+  // fadeIn 상태: 마운트 후 true로 설정하여 fade-in 효과 발생
+  const [fadeIn, setFadeIn] = useState(false);
+  useEffect(() => {
+    setFadeIn(true);
+  }, []);
 
   // 입력 필드 포커싱
   useEffect(() => {
     const timeoutId = setTimeout(() => {
-      if (inputRef.current) {
-        inputRef.current.focus();
-      }
+      inputRef.current?.focus();
     }, 100);
     return () => clearTimeout(timeoutId);
   }, []);
@@ -131,40 +136,71 @@ const CurrentPasswordPage = () => {
     router.back();
   };
 
-  // 기존 페이지에서는 API 호출 대신 currentPassword를 저장하고 다음 페이지로 이동
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!pw) return;
-    // currentPassword를 임시 저장 (예: localStorage 사용)
-    localStorage.setItem("currentPassword", pw);
-    // 새 비밀번호 입력 페이지로 이동
-    router.push("../account/changePassword");
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password: pw }),
+      });
+      if (!response.ok) {
+        const errorData = await response.json();
+        setErrorMessage(errorData.message || "현재 비밀번호가 올바르지 않습니다.");
+        return;
+      }
+      // 로그인 성공 -> 현재 비밀번호가 올바르다는 뜻
+      localStorage.setItem("currentPassword", pw);
+      router.push("../account/changePassword");
+    } catch (error) {
+      setErrorMessage("현재 비밀번호 확인 중 오류가 발생했습니다.");
+      console.error(error);
+    }
+  };
+  
+  const handleLinkClick = async () => {
+    try {
+      const response = await fetch(`${API_BASE_URL}/api/auth/password/reset/send-code`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email }),
+      });
+  
+      if (response.ok) {
+        console.log('인증번호 전송 성공');
+        router.push('/pages/resetPasswordPage');
+      } else {
+        const errorData = await response.json();
+        console.error('인증번호 전송 실패:', errorData);
+      }
+    } catch (error) {
+      console.error('인증번호 전송 오류:', error);
+    }
   };
 
-  const handleLinkClick = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/auth/password/reset/send-code`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({ email }), // 이메일 주소 전달
-        });
-  
-        if (response.ok) {
-          console.log('인증번호 전송 성공');
-          router.push('/pages/resetPasswordPage'); // 비밀번호 재설정 페이지로 이동
-        } else {
-          const errorData = await response.json();
-          console.error('인증번호 전송 실패:', errorData);
+  // 기존의 onClick={() => setShowPw((prev) => !prev)} 대신
+  const handleToggleShowPw = () => {
+    if (inputRef.current) {
+      const caretPos = inputRef.current.selectionStart;
+      setShowPw((prev) => !prev);
+      // 상태 변경 후, 바로 커서 위치를 복원 (타이밍 문제를 피하기 위해 setTimeout 사용)
+      setTimeout(() => {
+        if (inputRef.current && caretPos !== null) {
+          inputRef.current.focus();
+          inputRef.current.setSelectionRange(caretPos, caretPos);
         }
-      } catch (error) {
-        console.error('인증번호 전송 오류:', error);
-      }
-    };
+    }, 0);
+    } else {
+      setShowPw((prev) => !prev);
+    }
+  };
+
 
   return (
-    <Whole onMouseDown={handleMouseDown}>
+    <Whole fadeIn={fadeIn} onMouseDown={handleMouseDown}>
       <Header>
         <BackIcon
           onClick={handleBackClick}
@@ -197,9 +233,12 @@ const CurrentPasswordPage = () => {
             <IconEye
               src={showPw ? iconEyeOpen : iconEyeClosed}
               alt={showPw ? "비밀번호 보이기" : "비밀번호 숨기기"}
-              onClick={() => setShowPw((prev) => !prev)}
+              onClick={handleToggleShowPw}
             />
           </div>
+          {error && (
+            <div style={{ color: 'red', fontSize: '0.875rem', marginTop: '0.5rem' }}>{error}</div>
+          )}
           <SubmitButton isActive={isPwNotEmpty}  />
         </Form>
         <Link onClick={handleLinkClick}>비밀번호를 잊어버렸나요?</Link>
@@ -208,4 +247,4 @@ const CurrentPasswordPage = () => {
   );
 };
 
-export default CurrentPasswordPage;
+export default CurrentPassword;
