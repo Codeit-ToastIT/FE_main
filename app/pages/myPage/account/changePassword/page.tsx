@@ -1,12 +1,17 @@
-"use client";
+'use client'; 
+
 import React, { useEffect, useRef, useState } from "react";
-import { styled } from "styled-components";
+import styled from "styled-components";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
+import SubmitButton from "../../../../components/common/SubmitButton";
+
+import iconEyeOpen from '../../../../assets/icons/icon_eye_open.svg';
+import iconEyeClosed from '../../../../assets/icons/icon_eye_closed.svg';
 import { API_BASE_URL } from "../../../../api/api";
 import { useAuth } from '../../../../context/AuthContext';
-import SubmitButton from '../../../../components/common/SubmitButton';
 
-const Whole = styled.div`
+const Whole = styled.div<{ fadeOut: boolean }>`
   display: inline-flex;
   flex-direction: column;
   align-items: center;
@@ -14,6 +19,8 @@ const Whole = styled.div`
   background-color: #171612;
   padding-top: 1.5rem;
   height: 100vh;
+  opacity: ${({ fadeOut }) => (fadeOut ? 0 : 1)};
+  transition: opacity 0.3s ease-in-out;
 `;
 
 const Header = styled.div`
@@ -29,7 +36,7 @@ const Title = styled.div`
   font-style: normal;
   font-weight: 600;
   line-height: 1.5rem; 
-  margin-left: 27%;
+  margin-left: 22%;
 `;
 
 const Container = styled.div`
@@ -50,8 +57,14 @@ const Input = styled.input`
   background: rgba(255, 255, 255, 0.2);
   border: none;
   outline: none;
-  color: #E5DCCA;
   padding-left: 1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--ivory, #E5DCCA);
+  font-family: SUIT;
+  font-size: 1rem;
+  font-style: normal;
   font-weight: 600;
 `;
 
@@ -59,6 +72,7 @@ const BackIcon = styled.svg`
   width: 1.5rem;
   height: 1.5rem;
   flex-shrink: 0;
+  cursor: pointer;
 `;
 
 const ErrorMessage = styled.div`
@@ -70,7 +84,7 @@ const ErrorMessage = styled.div`
   padding-left: 1rem;
 `;
 
-const EyeIcon = styled.svg`
+const IconEye = styled(Image)`
   width: 1.5rem;
   height: 1.5rem;
   position: absolute;
@@ -82,38 +96,26 @@ const EyeIcon = styled.svg`
 
 const ChangePassword = () => {
   const { token } = useAuth();
-  const inputRef1 = useRef<HTMLInputElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
   const inputRef2 = useRef<HTMLInputElement | null>(null);
   const [pw, setPw] = useState(""); 
   const [pwCheck, setPwCheck] = useState(""); 
   const [errorMessage, setErrorMessage] = useState("");
-  const isPwValid = pw.length >= 8; // 비밀번호 유효성 체크
+  const isPwNotEmpty = pw.length > 0;
   const router = useRouter();
-  const [showPw, setShowPw] = useState(false); // 비밀번호 보이기 상태
-  const [showPwCheck, setShowPwCheck] = useState(false); // 비밀번호 확인 보이기 상태
+  const [showPw, setShowPw] = useState(false);
+  const [showPwCheck, setShowPwCheck] = useState(false);
+  const [fadeOut, setFadeOut] = useState(false);
 
-  // 페이지 로드시 이전 페이지에서 저장한 currentPassword가 있는지 확인
   useEffect(() => {
-    const storedCurrentPassword = localStorage.getItem("currentPassword");
-    if (!storedCurrentPassword) {
-      setErrorMessage("현재 비밀번호 정보가 없습니다.");
-      // 필요에 따라 이전 페이지로 이동시킬 수도 있음.
-    }
-    // 포커스 설정 (첫 번째 입력 필드)
     const timeoutId = setTimeout(() => {
-      if (inputRef1.current) {
-        inputRef1.current.focus();
+      if (inputRef.current) {
+        inputRef.current.focus();
       }
     }, 100);
     return () => clearTimeout(timeoutId);
   }, []);
 
-  const handleMouseDown = (event: React.MouseEvent<HTMLInputElement>) => {
-    event.preventDefault();
-    (event.target as HTMLInputElement).focus();
-  };
-  
-  // 비밀번호 입력 시 상태 업데이트
   const handlePwChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newPw = e.target.value;
     setPw(newPw); 
@@ -131,7 +133,6 @@ const ChangePassword = () => {
     }
   };
 
-  // 비밀번호 확인 입력 시 상태 업데이트
   const handlePwCheckChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newPwCheck = e.target.value;
     setPwCheck(newPwCheck);
@@ -142,12 +143,10 @@ const ChangePassword = () => {
     }
   };
 
-  // BackIcon 클릭 시 이전 화면으로 이동
   const handleBackClick = () => {
     router.back();
   };
 
-  // 비밀번호 변경 API 호출 (세 값 모두 전송)
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     const currentPassword = localStorage.getItem("currentPassword");
@@ -156,7 +155,7 @@ const ChangePassword = () => {
       return;
     }
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/password/change`, {
+      const response = await fetch(`${API_BASE_URL}/api/auth/password/${token}/change`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
@@ -174,40 +173,87 @@ const ChangePassword = () => {
         setErrorMessage(errorData.message || "비밀번호 변경에 실패했습니다.");
         return;
       }
-      // API 호출 성공 시 임시 저장된 currentPassword 삭제
       localStorage.removeItem("currentPassword");
-      router.push('../');
+      setFadeOut(true);
+      setTimeout(() => {
+        router.push('./?fadeIn=true');
+      }, 50);
     } catch (error) {
       setErrorMessage("비밀번호 변경 중 오류가 발생했습니다.");
       console.error(error);
     }
   };
 
+  const handleToggleShowPw = () => {
+    if (inputRef.current) {
+      const caretPos = inputRef.current.selectionStart;
+      setShowPw((prev) => !prev);
+      setTimeout(() => {
+        if (inputRef.current && caretPos !== null) {
+          inputRef.current.focus();
+          inputRef.current.setSelectionRange(caretPos, caretPos);
+        }
+      }, 0);
+    } else {
+      setShowPw((prev) => !prev);
+    }
+  };
+
+  const handleToggleShowPwCheck = () => {
+    if (inputRef2.current) {
+      const caretPos = inputRef2.current.selectionStart;
+      setShowPwCheck((prev) => !prev);
+      setTimeout(() => {
+        if (inputRef2.current && caretPos !== null) {
+          inputRef2.current.focus();
+          inputRef2.current.setSelectionRange(caretPos, caretPos);
+        }
+      }, 0);
+    } else {
+      setShowPwCheck((prev) => !prev);
+    }
+  };
+
   return (
-    <Whole onMouseDown={handleMouseDown}>
+    <Whole fadeOut={fadeOut}>
       <Header>
-        <BackIcon onClick={handleBackClick} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none">
-          <path d="M14.4 16.7998L9.59998 11.9998L14.4 7.19981" stroke="#E5DCCA" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <BackIcon
+          onClick={handleBackClick}
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+        >
+          <path
+            d="M14.4 16.7998L9.59998 11.9998L14.4 7.19981"
+            stroke="#E5DCCA"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </BackIcon>
         <Title>새로운 비밀번호 입력</Title>
       </Header>
       <Container>
         <Form noValidate onSubmit={handleSubmit}>
-          <div style={{ position: 'relative' }}>
+          <div style={{ position: "relative" }}>
             <Input 
               type={showPw ? "text" : "password"}
               name="password"
-              placeholder="8자리 이상의 비밀번호를 입력해주세요."
-              ref={inputRef1}
+              placeholder="비밀번호를 입력해주세요."
+              ref={inputRef}
               value={pw}
               onChange={handlePwChange}
               autoComplete="off"
             />
-            <EyeIcon onClick={() => setShowPw(prev => !prev)} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M20.4 19.5L5.40002 4.5M10.2 10.4416C9.82661 10.8533 9.60002 11.394 9.60002 11.9863C9.60002 13.2761 10.6745 14.3217 12 14.3217C12.6112 14.3217 13.169 14.0994 13.5927 13.7334M20.4388 14.3217C21.265 13.0848 21.6 12.0761 21.6 12.0761C21.6 12.0761 19.4154 5.1 12 5.1C11.5837 5.1 11.1839 5.12199 10.8 5.16349M17.4 17.3494C16.0226 18.2281 14.2494 18.8495 12 18.8127C4.67695 18.693 2.40002 12.0761 2.40002 12.0761C2.40002 12.0761 3.45788 8.69808 6.60002 6.64332" stroke="#E5DCCA" strokeWidth="2" strokeLinecap="round"/>
-            </EyeIcon>
+            <IconEye
+              src={showPw ? iconEyeOpen.src : iconEyeClosed.src}
+              alt={showPw ? "비밀번호 보이기" : "비밀번호 숨기기"}
+              width={24}
+              height={24}
+              onClick={handleToggleShowPw}
+            />
           </div>
-          <div style={{ position: 'relative' }}>
+          <div style={{ position: "relative" }}>
             <Input 
               type={showPwCheck ? "text" : "password"}
               name="passwordCheck"
@@ -217,13 +263,17 @@ const ChangePassword = () => {
               onChange={handlePwCheckChange}
               autoComplete="off"
             />
-            <EyeIcon onClick={() => setShowPwCheck(prev => !prev)} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M20.4 19.5L5.40002 4.5M10.2 10.4416C9.82661 10.8533 9.60002 11.394 9.60002 11.9863C9.60002 13.2761 10.6745 14.3217 12 14.3217C12.6112 14.3217 13.169 14.0994 13.5927 13.7334M20.4388 14.3217C21.265 13.0848 21.6 12.0761 21.6 12.0761C21.6 12.0761 19.4154 5.1 12 5.1C11.5837 5.1 11.1839 5.12199 10.8 5.16349M17.4 17.3494C16.0226 18.2281 14.2494 18.8495 12 18.8127C4.67695 18.693 2.40002 12.0761 2.40002 12.0761C2.40002 12.0761 3.45788 8.69808 6.60002 6.64332" stroke="#E5DCCA" strokeWidth="2" strokeLinecap="round"/>
-            </EyeIcon>
+            <IconEye
+              src={showPwCheck ? iconEyeOpen.src : iconEyeClosed.src}
+              alt={showPwCheck ? "비밀번호 보이기" : "비밀번호 숨기기"}
+              width={24}
+              height={24}
+              onClick={handleToggleShowPwCheck}
+            />
           </div>
-          {!isPwValid && <ErrorMessage>아직 8자리가 아니에요.</ErrorMessage>}
+          {!isPwNotEmpty && <ErrorMessage>아직 8자리가 아니에요.</ErrorMessage>}
           {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>} 
-          <SubmitButton isActive={isPwValid && pw === pwCheck} />
+          <SubmitButton isActive={isPwNotEmpty && pw === pwCheck} />
         </Form>
       </Container>
     </Whole>
