@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useEmail } from '../../context/EmailContext';
 import styled from 'styled-components';
 import { API_BASE_URL } from '../../api/api';
-
 import SubmitButton from '../../components/common/SubmitButton';
 
 const Whole = styled.div`
@@ -65,31 +64,59 @@ const Form = styled.form`
 const EmailInputPage = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  // 입력 필드 포커싱
-
   const [email, setEmail] = useState(''); // 이메일 상태
   const [error, setError] = useState(''); // 오류 메시지 상태
   const isEmailNotEmpty = email.length > 0; // 이메일 입력 여부 확인
   const router = useRouter();
   const { setEmail: setEmailContext } = useEmail(); // EmailContext에서 setEmail 가져오기
-  // 컴포넌트 마운트 시 이메일 입력 필드에 포커스
 
+
+  // 컴포넌트가 마운트될 때 입력 필드에 포커스
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const timeoutId = setTimeout(() => {
-        if (inputRef.current) {
-          inputRef.current.focus();
-        }
-      }, 100);
-  
-      return () => clearTimeout(timeoutId);
+    if (inputRef.current) {
+      inputRef.current.focus();
     }
   }, []);
 
-  // 마우스 클릭 시 입력 필드 포커스
+  // 마우스 클릭 시 커서 이동
   const handleMouseDown = (event: React.MouseEvent) => {
     event.preventDefault(); // 기본 동작 방지
-    inputRef.current?.focus(); // 입력 필드에 포커스
+
+    const input = inputRef.current;
+    if (input) {
+      const { offsetX } = event.nativeEvent; // 클릭한 위치의 X 좌표
+      const clickedPosition = getCursorPosition(input, offsetX); // 커서 위치 계산
+
+      input.focus();
+      input.setSelectionRange(clickedPosition, clickedPosition); // 커서 위치 설정
+    }
+  };
+
+  // 클릭한 위치에 해당하는 커서 위치 계산
+  const getCursorPosition = (input: HTMLInputElement, offsetX: number) => {
+    const value = input.value;
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('2d');
+
+    if (!context) return 0;
+
+    // 입력 필드의 폰트 스타일 가져오기
+    const font = window.getComputedStyle(input).font;
+    context.font = font;
+
+    // 평균 문자 너비 계산
+    const textWidth = context.measureText(value).width;
+    const averageCharWidth = textWidth / value.length;
+
+    // 클릭한 위치에 해당하는 문자 인덱스 계산
+    return Math.round(offsetX / averageCharWidth);
+  };
+
+  // 포커스를 잃을 때 다시 포커스
+  const handleBlur = () => {
+    if (inputRef.current) {
+      inputRef.current.focus();
+    }
   };
 
   // 폼 제출 처리
@@ -105,34 +132,32 @@ const EmailInputPage = () => {
       setEmailContext(email); // 이메일 상태 업데이트
 
       // 이메일 등록 여부 확인 API 호출
+      try {
+        const response = await fetch(`${API_BASE_URL}/api/auth/check-email`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email }),
+        });
 
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/check-email`, { // API 경로 수정
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email }), // 요청 바디 수정
-      });
-      
-      
-      if (!response.ok) {
-        const errorData = await response.json(); // 오류 메시지 파싱
-        setError(errorData.message); // 오류 메시지 설정
-        return;
+        if (!response.ok) {
+          const errorData = await response.json(); // 오류 메시지 파싱
+          setError(errorData.message); // 오류 메시지 설정
+          return;
+        }
+
+        const data = await response.json(); // 응답 데이터 파싱
+
+        console.log(data);
+        // 이메일 존재 여부에 따라 라우팅
+        if (data.exists) {
+          router.push('/pages/loginPage');
+        } else {
+          router.push('/pages/signupPage');
+        }
+      } catch (error) {
+        console.error('이메일 확인 중 오류 발생', error); // 오류 로깅
+        setError('이메일 확인 중 오류가 발생했습니다.'); // 사용자에게 오류 메시지 설정
       }
-
-      const data = await response.json(); // 응답 데이터 파싱
-
-      console.log(data);
-      // 이메일 존재 여부에 따라 라우팅
-      if (data.exists) {
-        router.push('/pages/loginPage');
-      } else {
-        router.push('/pages/signupPage');
-      }
-    } catch (error) {
-      console.error('이메일 확인 중 오류 발생', error); // 오류 로깅
-      setError("이메일 확인 중 오류가 발생했습니다."); // 사용자에게 오류 메시지 설정
-    }
     }
   };
 
@@ -146,7 +171,7 @@ const EmailInputPage = () => {
       <Title>어서오세요.</Title>
       <Form onSubmit={handleSubmit} noValidate>
         <Input
-          type="email"
+          type="text"
           name="email"
           placeholder="이메일을 입력해주세요."
           ref={inputRef}
@@ -154,6 +179,7 @@ const EmailInputPage = () => {
           onChange={handleEmailChange} // 이메일 상태 업데이트
           onInvalid={() => setError('유효한 이메일 주소를 입력해주세요.')}
           autoComplete="off"
+          onBlur={handleBlur} // 포커스를 잃을 때 다시 포커스
         />
         {error && <ErrorMessage>{error}</ErrorMessage>} {/* 오류 메시지 표시 */}
         <SubmitButton isActive={isEmailNotEmpty} />

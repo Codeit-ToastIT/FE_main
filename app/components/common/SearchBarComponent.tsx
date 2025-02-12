@@ -47,13 +47,22 @@ const SearchBar = styled.input`
   border-width: 0;
   padding: 13px;
   width: 303px;
+  padding-left: 1rem;
+  overflow: hidden;
+  color: var(--ivory, #e5dcca);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-family: 'SUIT';
+  font-size: 1rem;
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
 
   &::placeholder {
     font-family: 'SUIT';
     font-style: normal;
     font-weight: 800;
     font-size: 16px;
-
     display: flex;
     align-items: center;
     opacity: 0.2;

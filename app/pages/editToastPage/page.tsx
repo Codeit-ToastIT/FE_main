@@ -28,7 +28,6 @@ function EditToastPageContent() {
   // ✅ memos가 업데이트될 때, title과 content도 갱신
   useEffect(() => {
     if (memo) {
-      console.log(`데이터!!!!!!!!!!!!!!🍊🍊🍊🍊: ${memo.title}`);
       setTitle(memo.title);
       setContent(memo.content);
     }

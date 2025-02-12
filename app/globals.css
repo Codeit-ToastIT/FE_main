@@ -4,8 +4,11 @@ body {
   margin: 0;
   padding: 0;
   width: 100%;
-  height: 100%;
+  height: 100dvh; /* 💡 주소창 크기 변화에도 높이 유지 */
+  min-height: 100svh; /* 💡 iOS Safari에서도 주소창 영향 없음 */
+  padding-top: env(safe-area-inset-top, 0px); /* 💡 iOS 안전 영역 대응 */
   overflow-x: hidden;
+  overflow-y: hidden;
   font-family:
     'SUIT',
     'Apple SD Gothic Neo',
@@ -27,7 +30,7 @@ body {
 
 #__next {
   width: 375px;
-  height: 812px;
+  height: 100dvh; /* ✅ dvh 사용하여 동적 높이 설정 */
   margin: 0 auto; /* 화면 중앙 정렬 */
   overflow: hidden;
   border: 1px solid #ddd; /* 디버그용 */
@@ -44,17 +47,37 @@ body {
   --brown: #473728;
 }
 
-@media (width: 375px) and (height: 812px) {
+@media all {
   body {
-    background-color: #171612; /* 아이폰 13 미니 전용 배경 */
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100dvh; /* 💡 주소창 크기 변화에도 높이 유지 */
+    min-height: 100svh; /* 💡 iOS Safari에서도 주소창 영향 없음 */
+    padding-top: env(safe-area-inset-top, 0px); /* 💡 iOS 안전 영역 대응 */
+    overflow-x: hidden;
+    overflow-y: hidden;
+    font-family:
+      'SUIT',
+      'Apple SD Gothic Neo',
+      -apple-system,
+      BlinkMacSystemFont,
+      'Segoe UI',
+      Roboto,
+      Oxygen,
+      Ubuntu,
+      Cantarell,
+      'Open Sans',
+      'Helvetica Neue',
+      sans-serif;
+    background-color: #171612; /* 기본 배경색 */
+    overscroll-behavior: none; /* ✅ iOS에서 스크롤로 인한 터치 이벤트 차단 */
+    touch-action: none; /* ✅ 기본 터치 이벤트 방지 */
+    -webkit-overflow-scrolling: none; /* ✅ iOS Safari 스크롤 문제 해결 */
   }
 }
 
 @font-face {
   font-family: 'SUIT';
   src: url('./fonts/SUIT-Variable.woff2') format('woff2');
-}
-
-body {
-  font-family: 'SUIT', sans-serif;
 }

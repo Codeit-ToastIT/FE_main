@@ -80,8 +80,7 @@ export default function MemoHeader({
         // ✅ localStorage에 삭제된 메모 ID & 성공 여부 저장
         localStorage.setItem('deletedMemoId', toastId);
         localStorage.setItem('deleteSuccess', 'true');
-
-        router.push('/pages/createToastPage');
+        window.history.back();
         return true;
       } else {
         console.error('❌ 메모 삭제 실패:', data.message);

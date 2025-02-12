@@ -3,10 +3,11 @@
 import { styled } from "styled-components";
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import FocusableInput from '../../components/common/FocusableInput';
 import SubmitButton from '../../components/common/SubmitButton';
 import { API_BASE_URL } from "../../api/api";
 import { useAuth } from "../../context/AuthContext";
-import iconEyeOpen from '../../assets/icons/icon_eye_open.png';
+import iconEyeOpen from '../../assets/icons/icon_eye_open.svg';
 import iconEyeClosed from '../../assets/icons/icon_eye_closed.svg';
 import Image from 'next/image';
 
@@ -46,18 +47,6 @@ display: flex;
 flex-direction: column;
 gap: 0.5rem;
 `;
-
-const Input = styled.input`
-height: 2.5rem;
-min-width: 20.5rem;
-border-radius: 2.5rem;
-background: rgba(255, 255, 255, 0.2);
-border: none;
-outline: none;
-color: #E5DCCA;
-padding-left: 1rem;
-font-weight: 600;
-`
 
 const BackIcon = styled.svg`
 width: 1.5rem;
@@ -225,7 +214,7 @@ const ResetPasswordForm = () => {
       <Container>
         <Form noValidate onSubmit={handleSubmit}>
           <div style={{ position: 'relative' }}>
-            <Input 
+            <FocusableInput 
               type={showPw ? "text" : "password"} // 비밀번호 타입 전환
               name="password"
               placeholder="8자리 이상의 비밀번호를 입력해주세요."
@@ -241,7 +230,7 @@ const ResetPasswordForm = () => {
             />
           </div>
           <div style={{ position: 'relative' }}>
-            <Input 
+            <FocusableInput 
               type={showPwCheck ? "text" : "password"} // 비밀번호 확인 타입 전환
               name="passwordCheck"
               placeholder="비밀번호를 한 번 더 입력해주세요."

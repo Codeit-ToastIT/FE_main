@@ -71,21 +71,21 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
 
   useEffect(() => {
     if (showToastMessage) {
-      const timer = setTimeout(() => setShowToastMessage(false), 2000);
+      const timer = setTimeout(() => setShowToastMessage(false), 3000);
       return () => clearTimeout(timer);
     }
   }, [showToastMessage]);
 
   useEffect(() => {
     if (showDeleteMessage) {
-      const timer = setTimeout(() => setShowDeleteMessage(false), 2000); // ✅ 2초 후 메시지 숨김
+      const timer = setTimeout(() => setShowDeleteMessage(false), 3000); // ✅ 2초 후 메시지 숨김
       return () => clearTimeout(timer);
     }
   }, [showDeleteMessage]);
 
   useEffect(() => {
     if (showDeleteErrorMessage) {
-      const timer = setTimeout(() => setShowDeleteErrorMessage(false), 2000);
+      const timer = setTimeout(() => setShowDeleteErrorMessage(false), 3000);
       return () => clearTimeout(timer);
     }
   }, [showDeleteErrorMessage]);
@@ -204,8 +204,8 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
             Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify({
-            title: new Date().toISOString().split('T')[0], // ✅ 오늘 날짜로 제목 설정
-            content: '새로운 영감을 적어볼까요?', // ✅ 기본 내용 설정
+            title: '', // ✅ 오늘 날짜로 제목 설정
+            content: '', // ✅ 기본 내용 설정
             categoryId, // ✅ 특정 카테고리에 저장
           }),
         });
@@ -297,10 +297,10 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
       const data = await response.json();
       console.log('✅ 메모 카테고리 목록 가져오기 성공(서연):', data);
 
-      const categoryId = data.categories[4]?.id;
-      if (categoryId) {
-        setLastCategoryId(categoryId);
-        fetchMemos(categoryId); // ✅ 4번 인덱스 카테고리 ID로 메모 가져오기 실행
+      const lastCategoryId = data.categories[4]?.id;
+      if (lastCategoryId) {
+        setLastCategoryId(lastCategoryId);
+        fetchMemos(lastCategoryId); // ✅ 4번 인덱스 카테고리 ID로 메모 가져오기 실행
       }
     } catch (error) {
       console.error('❌ 메모 카테고리 목록 불러오기 오류(서연):', error);
@@ -334,7 +334,8 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
     setShowPlus(deltaX > 200);
 
     if (bodyRef.current) {
-      bodyRef.current.style.transform = `translateX(${Math.max(0, deltaX)}px)`;
+      // ✅ 최대 드래그 거리 240px 제한
+      bodyRef.current.style.transform = `translateX(${Math.min(240, Math.max(0, deltaX))}px)`;
     }
   };
 
@@ -350,8 +351,8 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          title: new Date().toISOString().split('T')[0],
-          content: '새로운 영감을 적어볼까요?',
+          title: '',
+          content: '',
           categoryId: lastCategoryId, // ✅ 현재 카테고리에 저장
         }),
       });
@@ -420,8 +421,8 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
 
     if (bodyRef.current) {
       requestAnimationFrame(() => {
-        // ✅ 강제로 transform 업데이트 적용
-        bodyRef.current!.style.transform = `translateX(${Math.max(0, deltaX)}px)`;
+        // ✅ 최대 드래그 거리 240px 제한
+        bodyRef.current!.style.transform = `translateX(${Math.min(240, Math.max(0, deltaX))}px)`;
       });
     }
   };
@@ -450,8 +451,8 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
           Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          title: new Date().toISOString().split('T')[0], // ✅ 오늘 날짜로 제목 설정
-          content: '새로운 영감을 적어볼까요?', // ✅ 기본 내용 설정
+          title: '',
+          content: '',
           categoryId: lastCategoryId, // ✅ 마지막 카테고리에 저장
         }),
       });
@@ -567,7 +568,7 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
           <StyledSwiperSlide>
             <StyledBasicToast
               title={new Date().toISOString().split('T')[0]}
-              content="새로운 영감을 적어볼까요?"
+              content="새로운 토스트를 작성해볼까요?"
             />{' '}
             {/* 기본값 */}
           </StyledSwiperSlide>
@@ -617,12 +618,14 @@ const StyledSwiperSlide = styled(SwiperSlide)`
   justify-content: center;
   align-items: center;
   height: 360px;
+  user-select: none; /* ✅ 텍스트 선택 방지 */
 `;
 
 const StyledBasicToast = styled(BasicToast)`
   cursor: pointer;
   width: 296px;
   height: 320px;
+  user-select: none; /* ✅ 텍스트 선택 방지 */
 `;
 
 const ToastMessage = styled.div`
@@ -643,8 +646,38 @@ const ToastMessage = styled.div`
   font-style: normal;
   font-weight: 400;
   line-height: 16px;
+  user-select: none; /* ✅ 텍스트 선택 방지 */
+
+  animation: fadeinout 3s cubic-bezier(0, 0, 0.58, 1);
+  -webkit-animation: fadeinout 3s cubic-bezier(0, 0, 0.58, 1); /* Safari, Chrome 등 */
+
+  /* 나타나는 + 사라지는 애니메이션 */
+  @keyframes fadeinout {
+    0% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @-webkit-keyframes fadeinout {
+    0% {
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
 `;
 
 const ErrorMessageBox = styled(ToastMessage)`
   background: rgba(80, 15, 15, 0.8);
+  user-select: none; /* ✅ 텍스트 선택 방지 */
 `;

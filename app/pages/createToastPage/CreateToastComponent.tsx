@@ -37,7 +37,8 @@ export default function CreateToastComponent() {
   const [isLongPress, setIsLongPress] = useState(false);
   const [pressTimeout, setPressTimeout] = useState<NodeJS.Timeout | null>(null);
   const [showSaveMessage, setShowSaveMessage] = useState<string | null>(null); // 저장 메시지 상태
-  const [showLoadMessage, setShowLoadMessage] = useState<string | null>(null);
+  const [forceRerender, setForceRerender] = useState(0); // 리렌더링을 위한 key 상태
+  
   // 활성 메모 id 상태 추가 (상위에서 관리)
   const [activeMemoId, setActiveMemoId] = useState<string>('1');
   const [isDoubleClick, setIsDoubleClick] = useState(false);
@@ -77,6 +78,9 @@ export default function CreateToastComponent() {
 
   const handleSave = (category: string) => {
     setShowSaveMessage(`${category}에 저장되었어요.`);
+
+    setForceRerender((prev) => prev + 1); // 강제 리렌더링
+
     // 2초 후 메시지 사라지게 설정
     setTimeout(() => {
       setShowSaveMessage(null);
@@ -97,6 +101,7 @@ export default function CreateToastComponent() {
   // 임사랑 - return 부분 수정.
   return (
     <div
+      key={forceRerender}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
       onMouseLeave={handleMouseUp}
