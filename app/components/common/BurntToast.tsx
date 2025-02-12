@@ -58,12 +58,12 @@ const ContentText = styled.div`
   font-style: normal;
   font-weight: 600;
   font-size: 11px;
-  line-height: 12px;
+  line-height: 120%;
   /* or 109% */
 
   /* mocha category */
   color: #501500;
-
+  text-shadow: 0px 0px 4px rgba(128, 105, 82, 0.4);
   mix-blend-mode: plus-darker;
   /* burnt_text */
 
