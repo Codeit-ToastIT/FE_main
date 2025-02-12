@@ -8,6 +8,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import iconKakao from './assets/icons/icon_kakao.svg';
 import TermsModal from './components/common/TermsModal';
+import { API_BASE_URL } from "./api/api";
 
 const Whole = styled.div`
   display: flex;
@@ -87,7 +88,7 @@ export default function Home() {
   useEffect(() => {
     const checkToken = async () => {
       try {
-        const response = await fetch('/api/auth/restore', {
+        const response = await fetch(`${API_BASE_URL}/api/auth/restore`, {
           method: 'GET',
           credentials: 'include', 
         });
@@ -98,11 +99,11 @@ export default function Home() {
             router.push('/pages/createToastPage');
           }
         } else if (response.status === 401) {
-          router.push('/pages/emailInputPage');
+          console.log('401 Unauthorized : 로그인 필요')
         }
       } catch (error) {
         console.error('Error checking token:', error);
-        router.push('/pages/emailInputPage');
+        
       }
     };
 

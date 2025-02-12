@@ -38,9 +38,7 @@ export default function CreateToastComponent() {
   const [pressTimeout, setPressTimeout] = useState<NodeJS.Timeout | null>(null);
   const [showSaveMessage, setShowSaveMessage] = useState<string | null>(null); // 저장 메시지 상태
   const [forceRerender, setForceRerender] = useState(0); // 리렌더링을 위한 key 상태
-
-  const [showLoadMessage, setShowLoadMessage] = useState<string | null>(null); // 저장 메시지 상태
-
+  
   // 활성 메모 id 상태 추가 (상위에서 관리)
   const [activeMemoId, setActiveMemoId] = useState<string>('1');
   const [isDoubleClick, setIsDoubleClick] = useState(false);
