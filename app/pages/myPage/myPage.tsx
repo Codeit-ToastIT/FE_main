@@ -244,12 +244,8 @@ const Overlay = styled.div`
 const MyPageContainer = styled.div<{ $isOpen: boolean }>`
   position: absolute;
   top: 0;
-  margin-top: 10px;
   width: 320px;
-  height: 100vh;
-  background-color: rgba(255, 255, 255, 0.6);
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
+  height: 100dvh;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;

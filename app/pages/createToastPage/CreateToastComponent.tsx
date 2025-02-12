@@ -1,5 +1,5 @@
 /**
- * 파일명: createToastPage.tsx
+ * 파일명: createToastComponent.tsx
  * 작성일: 2025-02-08
  * 작성자: 이서연
  * 설명: 회원가입 시 온보딩 1회 구현 완료
@@ -38,7 +38,7 @@ export default function CreateToastComponent() {
   const [pressTimeout, setPressTimeout] = useState<NodeJS.Timeout | null>(null);
   const [showSaveMessage, setShowSaveMessage] = useState<string | null>(null); // 저장 메시지 상태
   const [forceRerender, setForceRerender] = useState(0); // 리렌더링을 위한 key 상태
-  
+
   // 활성 메모 id 상태 추가 (상위에서 관리)
   const [activeMemoId, setActiveMemoId] = useState<string>('1');
   const [isDoubleClick, setIsDoubleClick] = useState(false);
