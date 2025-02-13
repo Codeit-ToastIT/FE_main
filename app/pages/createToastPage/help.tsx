@@ -125,7 +125,7 @@ const ModalContent = styled.div`
   text-align: center;
   align-items: center;
   justify-content: center;
-  font-family: SUIT;
+
   font-size: 18px;
   font-style: normal;
   font-weight: 600;
@@ -173,14 +173,19 @@ const Button = styled.button`
   width: 328px;
   height: 40px;
   text-align: center;
-  font-family: 'SUIT', sans-serif;
+
   margin-top: 70px;
   border: 1px solid #e5dcca;
   background: none;
   color: #e5dcca;
   border-radius: 40px;
   cursor: pointer;
-  font-size: 18px;
+
+  font-style: normal;
+  font-weight: 600;
+  line-height: normal;
+  font-size: 16px;
+  font-family: 'SUIT Variable';
 
   animation: fadein 3s cubic-bezier(0, 0, 0.58, 1);
   -webkit-animation: fadein 3s cubic-bezier(0, 0, 0.58, 1);
@@ -211,7 +216,7 @@ const CloseButton = styled.button`
   width: 328px;
   height: 40px;
   text-align: center;
-  font-family: 'SUIT', sans-serif;
+
   margin-top: 70px;
   border: 1px solid #e5dcca;
   background: var(--ivory, #e5dcca);
@@ -219,10 +224,11 @@ const CloseButton = styled.button`
   border-radius: 40px;
   cursor: pointer;
   text-align: center;
+
   font-size: 16px;
-  font-style: normal;
   font-weight: 800;
   line-height: normal;
+  font-family: 'SUIT Variable';
 
   animation: fadein 3s cubic-bezier(0, 0, 0.58, 1);
   -webkit-animation: fadein 3s cubic-bezier(0, 0, 0.58, 1);
@@ -253,7 +259,7 @@ const SlideRtoLGesture = styled(Image)``;
 
 const Strong = styled.strong`
   color: #ff7f00;
-  font-family: SUIT;
+
   font-size: 18px;
   font-style: normal;
   font-weight: 600;
@@ -263,7 +269,7 @@ const Strong = styled.strong`
 const P = styled.p`
   color: var(--ivory, #e5dcca);
   text-align: center;
-  font-family: SUIT;
+
   font-size: 16px;
   font-style: normal;
   font-weight: 400;

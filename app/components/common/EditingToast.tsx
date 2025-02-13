@@ -95,7 +95,8 @@ const StyledTextArea = styled.textarea<{ isBurnt: boolean }>`
   flex: 1 0 0;
   align-self: stretch;
   color: ${({ isBurnt }) => (!isBurnt ? 'var(--brown, #473728)' : '#E5DCCA')};
-  font-family: SUIT;
+
+  font-family: 'SUIT Variable';
   font-size: 16px;
   font-style: normal;
   font-weight: 600;

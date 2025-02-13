@@ -97,7 +97,7 @@ const Message = styled.div`
   color: var(--black, #171612);
   padding-top: 20px;
   text-align: center;
-  font-family: SUIT;
+
   font-size: 16px;
   font-style: normal;
   font-weight: 600;
@@ -108,7 +108,7 @@ const MessageSmall = styled.p`
   width: 240px;
   color: var(--black, #171612);
   text-align: center;
-  font-family: SUIT;
+
   font-size: 14px;
   font-style: normal;
   font-weight: 600;
@@ -128,7 +128,7 @@ const CancelButton = styled.button`
   border: none;
   cursor: pointer;
   display: flex;
-  width: 92px;
+  width: 100px;
   height: 40px;
   padding: 12px 32px;
   justify-content: center;
@@ -142,7 +142,7 @@ const CancelButton = styled.button`
   color: var(--black, #171612);
   text-align: center;
   text-overflow: ellipsis;
-  font-family: SUIT;
+  font-family: 'SUIT Variable';
   font-size: 16px;
   font-style: normal;
   font-weight: 800;
@@ -155,7 +155,7 @@ const DeleteButton = styled.button`
   cursor: pointer;
   border-radius: 40px;
   display: flex;
-  width: 92px;
+  width: 120px;
   height: 40px;
   padding: 12px 11px;
   justify-content: center;
@@ -168,7 +168,7 @@ const DeleteButton = styled.button`
   color: var(--caramel, #974b00);
   text-align: center;
   text-overflow: ellipsis;
-  font-family: SUIT;
+  font-family: 'SUIT Variable';
   font-size: 16px;
   font-style: normal;
   font-weight: 800;

@@ -612,7 +612,6 @@ const MenuContainer = styled.div`
 `;
 
 const MenuItem = styled.div`
-  font-family: 'SUIT';
   display: flex;
   align-items: center;
   font-size: 14px;
@@ -709,7 +708,6 @@ const ScrollableContent = styled.div`
 
 const TermsTitle = styled.h2`
   color: var(--ivory, #e5dcca);
-  font-family: 'SUIT';
   font-size: 20px;
   font-style: normal;
   font-weight: 800;
@@ -750,7 +748,6 @@ const ModalOverlay = styled.div`
 `;
 
 const ModalContent = styled.div`
-  font-family: 'SUIT';
   width: 280px;
   height: 160px;
   background: rgba(255, 255, 255, 0.6);

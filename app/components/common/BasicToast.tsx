@@ -30,9 +30,9 @@ export default function BasicToast({ toastid, title, content, toastnumber }: Toa
   const router = useRouter();
 
   // ✅ 안전한 toastnumber 인덱스 설정 (1~5 범위 유지)
-  const validToastNumber =
-    Number.isInteger(toastnumber) && toastnumber >= 1 && toastnumber <= 5 ? toastnumber : 1;
-  const toastNumber = toastImages[validToastNumber - 1]?.src ?? toastImages[0].src; // ✅ 안전한 접근
+  // const validToastNumber =
+  //   Number.isInteger(toastnumber) && toastnumber >= 1 && toastnumber <= 5 ? toastnumber : 1;
+  const toastNumber = toastImages[toastnumber - 1]?.src ?? toastImages[0].src; // ✅ 안전한 접근
 
   const handleToastClick = () => {
     router.push(`/pages/memoInput?id=${toastid}`); // ✅ ID 포함하여 이동
@@ -94,7 +94,6 @@ const MemoTitleDisplay = styled.div`
   color: var(--black, #171612);
   text-align: center;
 
-  font-family: SUIT;
   font-size: 16px;
   font-style: normal;
   font-weight: 800;
@@ -129,7 +128,7 @@ const MemoDisplay = styled.div`
   color: var(--caramel, #974b00);
   text-overflow: ellipsis;
   white-space: pre-wrap;
-  font-family: SUIT;
+
   font-size: 12px;
   font-style: normal;
   font-weight: 600;

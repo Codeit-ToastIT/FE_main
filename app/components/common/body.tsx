@@ -644,7 +644,6 @@ const ToastMessage = styled.div`
   background: rgba(23, 22, 18, 0.8);
   color: var(--ivory, #e5dcca);
   text-align: center;
-  font-family: SUIT;
   font-size: 14px;
   font-style: normal;
   font-weight: 400;

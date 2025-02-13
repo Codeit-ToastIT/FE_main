@@ -31,7 +31,7 @@ const Header = styled.div`
 const Title = styled.div`
   width: 20.5rem;
   color: var(--ivory, #e5dcca);
-  font-family: SUIT;
+
   font-size: 1rem;
   font-style: normal;
   font-weight: 600;
@@ -62,7 +62,7 @@ const Input = styled.input`
   text-overflow: ellipsis;
   white-space: nowrap;
   color: var(--ivory, #e5dcca);
-  font-family: SUIT;
+
   font-size: 1rem;
   font-style: normal;
   font-weight: 600;
@@ -77,7 +77,7 @@ const BackIcon = styled.svg`
 
 const ErrorMessage = styled.div`
   color: #ff5151;
-  font-family: SUIT;
+
   font-size: 0.75rem;
   font-weight: 400;
   line-height: 0.875rem;

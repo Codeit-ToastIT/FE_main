@@ -51,7 +51,7 @@ export default PlanPage;
 const Container = styled.div`
   width: 100%;
   height: 100vh;
-  background-color: var(--ivory, #E5DCCA);
+  background-color: var(--ivory, #e5dcca);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -84,7 +84,7 @@ const TitleWrapper = styled.div`
   flex: 1;
   display: flex;
   align-items: center;
-  color:  #E5DCCA;
+  color: #e5dcca;
 `;
 
 const TitleContainer = styled.div`
@@ -99,8 +99,7 @@ const TitleContainer = styled.div`
 
 const Title = styled.h1`
   font-size: 16px;
-  font-family: 'SUIT'
-  color: #E5DCCA;
+  color: #e5dcca;
   font-weight: bold;
   margin: 0;
 `;
@@ -122,11 +121,10 @@ const PlanText = styled.div`
   width: 288px;
   margin-left: 8px;
   justify-content: center;
-`
+`;
 
 const PlanTitle = styled.h2`
   color: var(--black, #171612);
-  font-family: 'SUIT';
   font-size: 16px;
   font-style: normal;
   font-weight: 800;
@@ -135,7 +133,6 @@ const PlanTitle = styled.h2`
 
 const PlanPrice = styled.p`
   color: var(--caramel, #974b00);
-  font-family: 'SUIT';
   font-size: 24px;
   font-style: normal;
   font-weight: 800;
@@ -145,7 +142,6 @@ const PlanPrice = styled.p`
 
 const PlanFeature = styled.p`
   color: var(--black, #171612);
-  font-family: 'SUIT';
   font-size: 16px;
   font-style: normal;
   font-weight: 400;
@@ -153,13 +149,12 @@ const PlanFeature = styled.p`
 `;
 
 const PlanButton = styled.button`
-  font-family: 'SUIT';
   font-size: 14px;
   width: 100%;
   margin-top: 20px;
   padding: 10px;
   background-color: ${(props) => (props.disabled ? 'transparent' : '#806952')};
-  color: #E5DCCA;
+  color: #e5dcca;
   border: ${(props) => (props.disabled ? '1px solid #E5DCCA' : 'none')};
   font-weight: ${(props) => (props.disabled ? 'none' : 'bold')};
   border-radius: 40px;

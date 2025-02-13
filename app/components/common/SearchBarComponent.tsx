@@ -52,7 +52,7 @@ const SearchBar = styled.input`
   color: var(--ivory, #e5dcca);
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-family: 'SUIT';
+
   font-size: 1rem;
   font-style: normal;
   font-weight: 600;

@@ -198,7 +198,8 @@ const TitleInput = styled.input`
   border: none;
   outline: none;
   color: var(--ivory, #e5dcca);
-  font-family: SUIT;
+
+  font-family: 'SUIT Variable';
   font-size: 16px;
   font-weight: 800;
   line-height: 20px; /* 125% */

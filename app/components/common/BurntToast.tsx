@@ -12,7 +12,9 @@ interface ToastProps {
 
 const BurntToast: React.FC<ToastProps> = ({ index, title, content, onClick }) => {
   return (
-    <ImageWrapper key={index} onClick={onClick}> {/* onClick 이벤트 핸들러 추가 */}
+    <ImageWrapper key={index} onClick={onClick}>
+      {' '}
+      {/* onClick 이벤트 핸들러 추가 */}
       <Image src={burnt1} alt="burnt" layout="fixed" width={145} height={145} objectFit="cover" />
       <TextOverlay>
         <ContentText>{content}</ContentText>
@@ -54,7 +56,6 @@ const ContentText = styled.div`
   width: 104px;
   height: 120px;
 
-  font-family: 'SUIT';
   font-style: normal;
   font-weight: 600;
   font-size: 11px;
@@ -75,7 +76,6 @@ const ContentText = styled.div`
 `;
 
 const TitleText = styled.div`
-  font-family: 'SUIT';
   font-style: normal;
   font-weight: 800;
   font-size: 16px;

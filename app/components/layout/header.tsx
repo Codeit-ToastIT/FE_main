@@ -46,7 +46,7 @@ const HeaderContainer = styled.header`
 
 const Logo = styled.div`
   color: #e5dcca;
-  font-family: SUIT;
+
   font-size: 24px;
   font-weight: 800;
 `;
