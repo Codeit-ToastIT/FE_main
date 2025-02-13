@@ -572,7 +572,7 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
       </Swiper>
 
       {showToastMessage && <ToastMessage>새 토스트를 추가했어요.</ToastMessage>}
-      {showDeleteMessage && <ToastMessage>토스트 하나를 버렸어요.</ToastMessage>}
+      {showDeleteMessage && <ToastMessage>토스트 하나를 먹었어요.</ToastMessage>}
       {showDeleteErrorMessage && <ErrorMessageBox>삭제를 실패하였습니다.</ErrorMessageBox>}
 
       <DeleteModal
