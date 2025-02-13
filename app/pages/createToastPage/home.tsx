@@ -117,7 +117,7 @@ const MyPageOverlay = styled.div<{ $isOpen: boolean }>`
   width: 100%;
   height: 100%;
 
-  display: ${({ $isOpen }) => ($isOpen ? 'flex' : 'none')};
+  display: ${({ $isOpen }) => ($isOpen ? 'block' : 'none')}; // ✅ 토글 기능 반영
   justify-content: center;
   align-items: center;
   z-index: 999;
@@ -134,7 +134,7 @@ const StyledMyPage = styled(MyPage)<{ $isOpen: boolean }>`
   width: 100%;
   max-width: 400px; /* 원하는 너비 설정 */
 
-  transform: ${({ $isOpen }) => ($isOpen ? 'translateX(0)' : 'translateX(100%)')};
+  transform: ${({ $isOpen }) => ($isOpen ? 'translateX(0)' : 'translateX(400px)')};
   transition:
     transform 0.3s cubic-bezier(0, 0, 0.58, 1),
     opacity 0.3s ease;
