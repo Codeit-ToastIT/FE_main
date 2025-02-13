@@ -29,7 +29,10 @@ interface ToastProps {
 export default function BasicToast({ toastid, title, content, toastnumber }: ToastProps) {
   const router = useRouter();
 
-  const toastNumber = toastImages[(toastnumber - 1) % toastImages.length].src; // ✅ 고정된 이미지 선택
+  // ✅ 안전한 toastnumber 인덱스 설정 (1~5 범위 유지)
+  const validToastNumber =
+    Number.isInteger(toastnumber) && toastnumber >= 1 && toastnumber <= 5 ? toastnumber : 1;
+  const toastNumber = toastImages[validToastNumber - 1]?.src ?? toastImages[0].src; // ✅ 안전한 접근
 
   const handleToastClick = () => {
     router.push(`/pages/memoInput?id=${toastid}`); // ✅ ID 포함하여 이동
