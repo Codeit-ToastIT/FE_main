@@ -32,7 +32,7 @@ const Title = styled.div`
   width: 20.5rem;
   color: var(--ivory, #e5dcca);
   margin-left: 35%;
-  font-family: SUIT;
+
   font-size: 1rem;
   font-style: normal;
   font-weight: 600;
@@ -58,7 +58,6 @@ const BackIcon = styled.svg`
 
 const ErrorMessage = styled.div`
   color: #ff5151;
-  font-family: SUIT;
   font-size: 0.75rem;
   font-weight: 400;
   line-height: 0.875rem;
@@ -66,13 +65,12 @@ const ErrorMessage = styled.div`
 `;
 
 const SuccessMessage = styled.div`
-  color: #51FFB9;
-  font-family: SUIT;
+  color: #51ffb9;
   font-size: 0.75rem;
   font-weight: 400;
   line-height: 0.875rem;
-  padding-left: 1rem;  
-`
+  padding-left: 1rem;
+`;
 
 const EyeIcon = styled(Image)`
   width: 1.5rem;

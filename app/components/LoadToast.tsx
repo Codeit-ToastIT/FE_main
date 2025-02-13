@@ -235,7 +235,6 @@ const Toast = styled.img<{ isdragging: boolean; selectedCategory: number | null 
 `;
 
 const CategoryText = styled.div<{ ispressing: string }>`
-  font-family: 'SUIT';
   font-style: normal;
   font-weight: 800;
   font-size: 12px;

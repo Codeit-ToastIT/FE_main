@@ -7,7 +7,6 @@ const iconString = encodeURIComponent(renderToStaticMarkup(<LuChevronsUpDown />)
 const iconDataUrl = `data:image/svg+xml,${iconString}`;
 
 const NoneText = styled.div`
-  font-family: 'SUIT';
   font-style: normal;
   font-weight: 800;
   font-size: 16px;

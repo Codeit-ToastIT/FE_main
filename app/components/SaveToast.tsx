@@ -512,7 +512,7 @@ export const Hint = styled.div`
   padding: 12px 16px;
   background: rgba(23, 22, 18, 0.8);
   border-radius: 40px;
-  font-family: 'SUIT';
+
   font-style: normal;
   font-size: 14px;
   line-height: 16px;
@@ -554,7 +554,7 @@ const CategoryLabel = styled.div`
   font-size: 12px;
   line-height: 14px;
   text-align: center;
-  font-family: 'SUIT-Variable';
+
   font-weight: 600;
   color: white;
 `;

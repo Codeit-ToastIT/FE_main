@@ -20,7 +20,7 @@ const Whole = styled.div`
 const Title = styled.div`
   width: 20.5rem;
   color: var(--ivory, #e5dcca);
-  font-family: SUIT;
+  font-family: 'SUIT Variable';
   font-size: 1.5rem;
   font-weight: 800;
   line-height: 1.5rem;
@@ -39,7 +39,7 @@ const Input = styled.input`
   color: var(--ivory, #e5dcca);
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-family: SUIT;
+  font-family: 'SUIT Variable';
   font-size: 1rem;
   font-style: normal;
   font-weight: 600;
@@ -48,7 +48,7 @@ const Input = styled.input`
 
 const ErrorMessage = styled.div`
   color: #ff5151;
-  font-family: SUIT;
+  font-family: 'SUIT Variable';
   font-size: 0.75rem;
   font-weight: 400;
   line-height: 0.875rem;
@@ -69,7 +69,6 @@ const EmailInputPage = () => {
   const isEmailNotEmpty = email.length > 0; // 이메일 입력 여부 확인
   const router = useRouter();
   const { setEmail: setEmailContext } = useEmail(); // EmailContext에서 setEmail 가져오기
-
 
   // 컴포넌트가 마운트될 때 입력 필드에 포커스
   useEffect(() => {

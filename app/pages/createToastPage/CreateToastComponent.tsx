@@ -166,7 +166,7 @@ const SaveMessage = styled.div`
   padding: 12px 16px;
   background: rgba(23, 22, 18, 0.8);
   border-radius: 40px;
-  font-family: 'SUIT';
+
   font-style: normal;
   font-size: 14px;
   line-height: 16px;

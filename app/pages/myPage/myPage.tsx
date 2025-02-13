@@ -276,7 +276,6 @@ const MyPageContainer = styled.div<{ $isOpen: boolean }>`
 
 const Email = styled.div`
   margin-top: 140px;
-  font-family: 'SUIT';
   font-size: 12px;
   font-weight: 400;
   text-align: center;
@@ -284,7 +283,6 @@ const Email = styled.div`
 
 const Plan = styled.div`
   margin: 5px 0 30px 0;
-  font-family: 'SUIT';
   font-size: 12px;
   font-weight: 800;
   text-align: center;
@@ -329,7 +327,6 @@ const MenuItem = styled.div<{ position: string }>`
 `;
 
 const DisplayText = styled.span`
-  font-family: 'SUIT';
   width: 80px;
   text-align: center;
   display: -webkit-box;
@@ -342,7 +339,6 @@ const DisplayText = styled.span`
 `;
 
 const EditingInput = styled.textarea`
-  font-family: 'SUIT-Regular';
   color: #edca85;
   font-size: 14px;
   font-weight: 600;
@@ -388,7 +384,6 @@ const IconButtons = styled.div`
 
 const IconButton = styled.div`
   display: flex;
-  font-family: 'SUIT';
   font-weight: 600;
   align-items: center;
   padding: 8px 16px;
@@ -418,7 +413,6 @@ const HiddenSpan = styled.span`
   position: absolute;
   visibility: hidden;
   white-space: nowrap;
-  font-family: 'SUIT';
   font-size: 14px;
   padding: 0;
   margin: 0;

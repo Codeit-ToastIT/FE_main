@@ -25,7 +25,6 @@ const Title = styled.div`
   width: 20.5rem;
   color: var(--ivory, #e5dcca);
   margin-left: 27%;
-  font-family: SUIT;
   font-size: 1rem;
   font-style: normal;
   font-weight: 600;
@@ -39,7 +38,6 @@ const Disc = styled.div`
   justify-content: center;
   flex-shrink: 0;
   color: var(--ivory, #e5dcca);
-  font-family: SUIT;
   font-size: 1.125rem;
   font-style: normal;
   font-weight: 600;
@@ -72,7 +70,6 @@ const Input = styled.input`
   color: var(--ivory, #e5dcca);
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-family: SUIT;
   font-size: 1rem;
   font-style: normal;
   font-weight: 600;
@@ -85,7 +82,6 @@ const Timer = styled.span`
   top: 20px;
   transform: translateY(-50%);
   color: #ff5151;
-  font-family: SUIT;
   font-size: 0.75rem;
   font-weight: 400;
 `;
@@ -93,7 +89,6 @@ const Timer = styled.span`
 const ResendLink = styled.div`
   color: var(--ivory, #e5dcca);
   text-align: center;
-  font-family: SUIT;
   font-size: 0.75rem;
   font-weight: 400;
   line-height: 0.875rem;
@@ -116,7 +111,6 @@ const ErrorMessage = styled.div`
   gap: 0.5rem;
   align-self: stretch;
   color: #ff5151;
-  font-family: SUIT;
   font-size: 0.75rem;
   font-style: normal;
   font-weight: 400;
@@ -133,11 +127,10 @@ const Toast = styled.div<{ visible: boolean }>`
   color: var(--ivory, #e5dcca);
   margin-top: 2.37rem;
   text-align: center;
-  font-family: SUIT;
   font-size: 0.875rem;
   font-style: normal;
   font-weight: 400;
-  line-height: 1rem; 
+  line-height: 1rem;
   opacity: ${({ visible }) => (visible ? 1 : 0)};
   transition: opacity 0.3s ease-in-out;
   z-index: 1000;
@@ -278,9 +271,7 @@ const EmailVerification: React.FC<EmailVerificationProps> = ({ onSuccess }) => {
         </InputContainer>
         <ResendLink onClick={handleResendClick}>인증번호를 재전송할까요?</ResendLink>
       </Container>
-      <Toast visible={toastVisible}>
-        {toastMessage}
-      </Toast>
+      <Toast visible={toastVisible}>{toastMessage}</Toast>
     </Whole>
   );
 };

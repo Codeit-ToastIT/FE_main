@@ -102,7 +102,7 @@ const LoadToastContent: React.FC = () => {
         ) : (
           <NoneBody>
             <Image src={BreadBox} alt="bread box" />
-            <NoneText>브레드 박스가 비었어요.</NoneText>
+            <NoneText>브래드 박스가 비었어요.</NoneText>
           </NoneBody>
         )}
       </Body>
@@ -122,7 +122,6 @@ const LoadToastPage: React.FC = () => {
 export default LoadToastPage;
 
 const Title = styled.div`
-  font-family: 'SUIT';
   font-style: normal;
   font-weight: 800;
   font-size: 32px;
@@ -153,7 +152,6 @@ const BackGround = styled.div`
 `;
 
 const NoneText = styled.div`
-  font-family: 'SUIT';
   font-style: normal;
   font-weight: 800;
   font-size: 16px;

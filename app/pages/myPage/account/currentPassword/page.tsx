@@ -1,14 +1,14 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from "react";
-import styled from "styled-components";
-import { useRouter } from "next/navigation";
-import Image from "next/image";
-import SubmitButton from "../../../../components/common/SubmitButton";
+import React, { useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
+import { useRouter } from 'next/navigation';
+import Image from 'next/image';
+import SubmitButton from '../../../../components/common/SubmitButton';
 
 import iconEyeOpen from '../../../../assets/icons/icon_eye_open.svg';
 import iconEyeClosed from '../../../../assets/icons/icon_eye_closed.svg';
-import { API_BASE_URL } from "../../../../api/api";
+import { API_BASE_URL } from '../../../../api/api';
 import { useEmail } from '../../../../context/EmailContext';
 
 const Whole = styled.div<{ fadeIn: boolean }>`
@@ -33,7 +33,7 @@ const Title = styled.div`
   color: var(--ivory, #e5dcca);
   margin-right: 7%;
   text-align: center;
-  font-family: SUIT;
+
   font-size: 1rem;
   font-style: normal;
   font-weight: 600;
@@ -62,8 +62,8 @@ const Input = styled.input`
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  color: var(--ivory, #E5DCCA);
-  font-family: SUIT;
+  color: var(--ivory, #e5dcca);
+
   font-size: 1rem;
   font-style: normal;
   font-weight: 600;
@@ -72,7 +72,7 @@ const Input = styled.input`
 const Link = styled.div`
   color: var(--ivory, #e5dcca);
   text-align: center;
-  font-family: SUIT;
+
   font-size: 0.75rem;
   font-weight: 400;
   line-height: 0.875rem;
@@ -102,11 +102,11 @@ const IconEye = styled(Image)`
 
 const CurrentPassword = () => {
   const inputRef = useRef<HTMLInputElement | null>(null);
-  const [pw, setPw] = useState("");
+  const [pw, setPw] = useState('');
   const isPwNotEmpty = pw.length > 0;
   const router = useRouter();
   const { email } = useEmail();
-  const [error, setErrorMessage] = useState("");
+  const [error, setErrorMessage] = useState('');
   const [showPw, setShowPw] = useState(false);
 
   // fadeIn 상태: 마운트 후 true로 설정하여 fade-in 효과 발생
@@ -147,18 +147,18 @@ const CurrentPassword = () => {
       });
       if (!response.ok) {
         const errorData = await response.json();
-        setErrorMessage(errorData.message || "현재 비밀번호가 올바르지 않습니다.");
+        setErrorMessage(errorData.message || '현재 비밀번호가 올바르지 않습니다.');
         return;
       }
       // 로그인 성공 -> 현재 비밀번호가 올바르다는 뜻
-      localStorage.setItem("currentPassword", pw);
-      router.push("../account/changePassword");
+      localStorage.setItem('currentPassword', pw);
+      router.push('../account/changePassword');
     } catch (error) {
-      setErrorMessage("현재 비밀번호 확인 중 오류가 발생했습니다.");
+      setErrorMessage('현재 비밀번호 확인 중 오류가 발생했습니다.');
       console.error(error);
     }
   };
-  
+
   const handleLinkClick = async () => {
     try {
       const response = await fetch(`${API_BASE_URL}/api/auth/password/reset/send-code`, {
@@ -168,7 +168,7 @@ const CurrentPassword = () => {
         },
         body: JSON.stringify({ email }),
       });
-  
+
       if (response.ok) {
         console.log('인증번호 전송 성공');
         router.push('/pages/resetPasswordPage');
@@ -192,12 +192,11 @@ const CurrentPassword = () => {
           inputRef.current.focus();
           inputRef.current.setSelectionRange(caretPos, caretPos);
         }
-    }, 0);
+      }, 0);
     } else {
       setShowPw((prev) => !prev);
     }
   };
-
 
   return (
     <Whole fadeIn={fadeIn} onMouseDown={handleMouseDown}>
@@ -220,9 +219,9 @@ const CurrentPassword = () => {
       </Header>
       <Container>
         <Form noValidate onSubmit={handleSubmit}>
-          <div style={{ position: "relative" }}>
+          <div style={{ position: 'relative' }}>
             <Input
-              type={showPw ? "text" : "password"}
+              type={showPw ? 'text' : 'password'}
               name="password"
               placeholder="비밀번호를 입력해주세요."
               ref={inputRef}
@@ -232,14 +231,14 @@ const CurrentPassword = () => {
             />
             <IconEye
               src={showPw ? iconEyeOpen : iconEyeClosed}
-              alt={showPw ? "비밀번호 보이기" : "비밀번호 숨기기"}
+              alt={showPw ? '비밀번호 보이기' : '비밀번호 숨기기'}
               onClick={handleToggleShowPw}
             />
           </div>
           {error && (
             <div style={{ color: 'red', fontSize: '0.875rem', marginTop: '0.5rem' }}>{error}</div>
           )}
-          <SubmitButton isActive={isPwNotEmpty}  />
+          <SubmitButton isActive={isPwNotEmpty} />
         </Form>
         <Link onClick={handleLinkClick}>비밀번호를 잊어버렸나요?</Link>
       </Container>

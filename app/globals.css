@@ -1,4 +1,6 @@
 /* app/globals.css */
+@import url('https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/variable/woff2/SUIT-Variable.css');
+
 html,
 body {
   margin: 0;
@@ -9,19 +11,8 @@ body {
   padding-top: env(safe-area-inset-top, 0px); /* 💡 iOS 안전 영역 대응 */
   overflow-x: hidden;
   overflow-y: hidden;
-  font-family:
-    'SUIT',
-    'Apple SD Gothic Neo',
-    -apple-system,
-    BlinkMacSystemFont,
-    'Segoe UI',
-    Roboto,
-    Oxygen,
-    Ubuntu,
-    Cantarell,
-    'Open Sans',
-    'Helvetica Neue',
-    sans-serif;
+  font-family: 'SUIT Variable', 'Apple SD Gothic Neo', sans-serif !important; /* ✅ 강제 적용 */
+
   background-color: #171612; /* 기본 배경색 */
   overscroll-behavior: none; /* ✅ iOS에서 스크롤로 인한 터치 이벤트 차단 */
   touch-action: none; /* ✅ 기본 터치 이벤트 방지 */
@@ -58,7 +49,7 @@ body {
     overflow-x: hidden;
     overflow-y: hidden;
     font-family:
-      'SUIT',
+      'SUIT Variable',
       'Apple SD Gothic Neo',
       -apple-system,
       BlinkMacSystemFont,
@@ -78,6 +69,6 @@ body {
 }
 
 @font-face {
-  font-family: 'SUIT';
+  font-family: 'SUIT Variable';
   src: url('./fonts/SUIT-Variable.woff2') format('woff2');
 }

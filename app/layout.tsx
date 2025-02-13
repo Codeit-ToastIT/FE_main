@@ -24,6 +24,13 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* ✅ SUIT 폰트 CDN을 head 태그에 추가 */}
+        <link
+          rel="stylesheet"
+          href="https://cdn.jsdelivr.net/gh/sun-typeface/SUIT@2/fonts/variable/woff2/SUIT-Variable.css"
+        />
+      </head>
       <body
         style={{
           position: 'absolute',
@@ -38,6 +45,7 @@ export default function RootLayout({
           alignItems: 'center', // 💡 중앙 정렬
           backgroundColor: '#E5DCCA',
           overflow: 'hidden',
+          fontFamily: `SUIT Variable, Apple SD Gothic Neo, sans-serif`, // ✅ 글로벌 폰트 적용
         }}
       >
         <StyledComponentsRegistry>
@@ -55,6 +63,7 @@ export default function RootLayout({
                 flexDirection: 'column',
                 backgroundColor: '#171612', // 💡 앱 배경색 추가
                 overflow: 'hidden',
+                fontFamily: `'SUIT Variable', sans-serif`, // ✅ 앱 전체에 폰트 적용
               }}
             >
               {children}
