@@ -23,17 +23,13 @@ interface ToastProps {
   toastid?: string;
   title: string; // ✅ title 추가
   content: string; // ✅ content 추가
+  toastnumber: number;
 }
 
-export default function BasicToast({ toastid, title, content }: ToastProps) {
+export default function BasicToast({ toastid, title, content, toastnumber }: ToastProps) {
   const router = useRouter();
-  const [toastNumber, setToastNumber] = useState<string>(toastImages[0].src);
 
-  useEffect(() => {
-    // 랜덤으로 토스트 이미지 선택
-    const randomToast = toastImages[Math.floor(Math.random() * toastImages.length)];
-    setToastNumber(randomToast.src);
-  }, []);
+  const toastNumber = toastImages[(toastnumber - 1) % toastImages.length].src; // ✅ 고정된 이미지 선택
 
   const handleToastClick = () => {
     router.push(`/pages/memoInput?id=${toastid}`); // ✅ ID 포함하여 이동

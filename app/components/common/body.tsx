@@ -36,6 +36,7 @@ interface Memo {
   content: string;
   createdAt: string;
   updatedAt: string;
+  toastNumber: number;
 }
 
 // 💖 onActiveMemoChange 추가
@@ -561,12 +562,18 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
         {memos.length > 0 ? (
           memos.map((memo) => (
             <StyledSwiperSlide key={memo.id}>
-              <StyledBasicToast toastid={memo.id} title={memo.title} content={memo.content} />
+              <StyledBasicToast
+                toastid={memo.id}
+                title={memo.title}
+                content={memo.content}
+                toastnumber={memo.toastNumber}
+              />
             </StyledSwiperSlide>
           ))
         ) : (
           <StyledSwiperSlide>
-            <StyledBasicToast title="" content="새로운 토스트를 작성해볼까요?" /> {/* 기본값 */}
+            <StyledBasicToast title="" content="새로운 토스트를 작성해볼까요?" toastnumber={1} />{' '}
+            {/* 기본값 */}
           </StyledSwiperSlide>
         )}
       </Swiper>
