@@ -542,7 +542,7 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
         slidesPerView={Math.min(3, memos.length || 1)} // ✅ 데이터가 없을 때에도 최소 1개를 보여줌
         coverflowEffect={{
           rotate: 0,
-          stretch: 240,
+          stretch: -30,
           depth: 20,
           modifier: 0.5,
           slideShadows: false,
