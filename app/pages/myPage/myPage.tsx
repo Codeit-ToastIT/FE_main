@@ -144,7 +144,7 @@ const MyPage: React.FC<MyPageProps> = ({ $isOpen, isPremiumUser }) => {
                     return (
                       <MenuItem
                         key={cat.id}
-                        position={position}
+                        $position={position}
                         onClick={() => {
                           if (isEditing) {
                             setEditingIndex(index);
@@ -183,7 +183,7 @@ const MyPage: React.FC<MyPageProps> = ({ $isOpen, isPremiumUser }) => {
                     );
                   })}
                 </MenuItems>
-                <CenterButton onClick={handleCenterButtonClick} isEditing={isEditing}>
+                <CenterButton onClick={handleCenterButtonClick} $isEditing={isEditing}>
                   <StyledIconEdit
                     src={isEditing ? check.src : edit.src}
                     alt="Edit Button"
@@ -313,17 +313,18 @@ const MenuItems = styled.div`
   align-items: center;
 `;
 
-const MenuItem = styled.div<{ position: string }>`
+const MenuItem = styled.div<{ $position: string }>`
   position: absolute;
   color: #fff;
   font-size: 14px;
   cursor: pointer;
 
-  ${({ position }) => position === 'top' && 'top: 20px; left: 50%; transform: translateX(-50%);'}
-  ${({ position }) => position === 'right' && 'right: 10px; top: 50%; transform: translateY(-50%);'}
-  ${({ position }) =>
-    position === 'bottom' && 'bottom: 20px; left: 50%; transform: translateX(-50%);'}
-  ${({ position }) => position === 'left' && 'left: 10px; top: 50%; transform: translateY(-50%);'}
+  ${({ $position }) => $position === 'top' && 'top: 20px; left: 50%; transform: translateX(-50%);'}
+  ${({ $position }) =>
+    $position === 'right' && 'right: 10px; top: 50%; transform: translateY(-50%);'}
+  ${({ $position }) =>
+    $position === 'bottom' && 'bottom: 20px; left: 50%; transform: translateX(-50%);'}
+  ${({ $position }) => $position === 'left' && 'left: 10px; top: 50%; transform: translateY(-50%);'}
 `;
 
 const DisplayText = styled.span`
@@ -362,12 +363,12 @@ const EditingInput = styled.textarea`
   max-height: 2rem;
 `;
 
-const CenterButton = styled.button<{ isEditing: boolean }>`
+const CenterButton = styled.button<{ $isEditing: boolean }>`
   position: absolute;
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: ${({ isEditing }) => (isEditing ? '#161712' : '#888')};
+  background: ${({ $isEditing }) => ($isEditing ? '#161712' : '#888')};
   border: none;
   display: flex;
   align-items: center;
