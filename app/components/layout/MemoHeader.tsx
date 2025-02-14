@@ -23,6 +23,7 @@ interface MemoHeaderProps {
   setTitle: (title: string) => void;
   content: string; // ✅ 본문도 함께 요청해야함
   isBurnt: boolean;
+  toastNumber: number; // ✅ toastNumber 추가
 }
 
 export default function MemoHeader({
@@ -31,6 +32,7 @@ export default function MemoHeader({
   setTitle,
   content,
   isBurnt,
+  toastNumber, // ✅ toastNumber props 추가
 }: MemoHeaderProps) {
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
@@ -129,6 +131,7 @@ export default function MemoHeader({
         // ✅ localStorage에 삭제된 메모 ID & 성공 여부 저장
         localStorage.setItem('deletedMemoId', toastId);
         localStorage.setItem('deleteSuccess', 'true');
+        localStorage.setItem('deletedToastNumber', String(toastNumber)); // ✅ 삭제된 toastNumber 저장
 
         setTimeout(() => {
           router.push('/pages/createToastPage');
@@ -164,6 +167,7 @@ export default function MemoHeader({
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         onClick={handleDeleteMemo}
+        toastNumber={toastNumber} // ✅ toastNumber 전달
       />
     </HeaderContainer>
   );
