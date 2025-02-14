@@ -37,7 +37,7 @@ const LoadToast: React.FC<LoadToastProps> = ({ onClose, onCategorySelect }) => {
           },
         });
         const data = await response.json();
-        console.log(`데이터!!!!!!!!!!!!!!🙀🙀🙀🙀: ${JSON.stringify(data)}`);
+
         if (data.categories && Array.isArray(data.categories)) {
           const ids = data.categories.map((category: { id: string }) => category.id);
           setCategoryIds(ids);
