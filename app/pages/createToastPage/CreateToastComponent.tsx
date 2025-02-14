@@ -99,7 +99,7 @@ export default function CreateToastComponent() {
 
   // 임사랑 - return 부분 수정.
   return (
-    <div
+    <Wrapper
       key={forceRerender}
       onMouseDown={handleMouseDown}
       onMouseUp={handleMouseUp}
@@ -136,9 +136,16 @@ export default function CreateToastComponent() {
           <SaveBold>{showSaveMessage.split('에 저장되었어요.')[0]}</SaveBold>에 저장되었어요.
         </SaveMessage>
       )}
-    </div>
+    </Wrapper>
   );
 }
+
+const Wrapper = styled.div`
+  user-select: none; /* 텍스트 선택 방지 */
+  -webkit-user-select: none; /* 사파리 브라우저 */
+  -moz-user-select: none; /* 파이어폭스 */
+  -ms-user-select: none; /* IE */
+`;
 
 const SaveToastWrapper = styled.div`
   position: fixed;
@@ -155,7 +162,7 @@ const SaveToastWrapper = styled.div`
 
 const SaveMessage = styled.div`
   position: absolute;
-  bottom: 120px;
+  bottom: z0px;
   left: calc(50% - 125.5px);
   width: 251px;
   height: 40px;
