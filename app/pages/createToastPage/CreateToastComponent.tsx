@@ -114,7 +114,7 @@ export default function CreateToastComponent() {
         onActiveMemoChange={handleActiveMemoChange} // 💖 추가
       />
       {showOnboarding && <Help onClose={() => setShowOnboarding(false)} />}
-      {isLongPress && !isDoubleClick && (
+      {isLongPress && (
         <SaveToastWrapper onClick={handleCloseSaveToast}>
           <SaveToast
             onClose={handleCloseSaveToast}
@@ -162,7 +162,7 @@ const SaveToastWrapper = styled.div`
 
 const SaveMessage = styled.div`
   position: absolute;
-  bottom: 70px;
+  bottom: z0px;
   left: calc(50% - 125.5px);
   width: 251px;
   height: 40px;
