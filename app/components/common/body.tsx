@@ -11,6 +11,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
+import axios from 'axios';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Swiper as SwiperClass } from 'swiper'; // Swiper 타입 가져오기
@@ -117,8 +118,14 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
   //-------------------------------🍞토스트 삭제 로직 구현 완료🍞-------------------------------
 
   // ✅ "휴지통 아이콘" 클릭 시 모달 열기
+  const [selectedToastNumber, setSelectedToastNumber] = useState(1);
+
   const handleModalToggle = (id: string) => {
     setSelectedSlide(id); // 현재 선택된 슬라이드 저장
+    const memoToDelete = memos.find((memo) => memo.id === id);
+    if (!memoToDelete) return;
+    setSelectedToastNumber(memoToDelete.toastNumber); // ✅ 선택된 토스트의 toastNumber 저장
+
     console.log('📝 선택된 슬라이드 ID:', id); // ✅ 선택된 ID 확인
     console.log('📜 현재 memos 상태:', memos);
     setShowModal(true);
@@ -187,116 +194,112 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
     }
   };
 
-  //-------------------------------🍞토스트 삭제 로직 구현 완료🍞-------------------------------
+  //----------------------------🍞토스트 삭제 로직🍞------------------------------
 
-  //-------------------------------🍞새로운 토스트 추가 로직 구현 완료🍞(터치 이벤트, 마우스 이벤트 순서)-------------------------------
+  //-------------------🍞새로운 토스트 추가 로직🍞(터치->마우스 이벤트 순)--------------
 
   const [lastCategoryId, setLastCategoryId] = useState('');
-  const fetchMemosRef = useRef<((categoryId: string) => Promise<void>) | null>(null); // 🔥 useRef 사용
+  const fetchMemosRef = useRef<((categoryId: string) => Promise<void>) | null>(null);
 
-  // ✅ 특정 카테고리에 기본 메모 생성
+  // 🐥 특정 카테고리(마지막 카테고리)에 기본 메모 생성
   const createDefaultMemo = useCallback(
     async (categoryId: string) => {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/memos`, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+        const url = `${API_BASE_URL}/api/memos`;
+        console.log(`🐥 특정 카테고리에 기본 메모 생성 URL: ${url}`);
+
+        const response = await axios.post(
+          url,
+          {
+            title: '',
+            content: '',
+            categoryId, // 🐥 특정 카테고리에 저장
           },
-          body: JSON.stringify({
-            title: '', // ✅ 오늘 날짜로 제목 설정
-            content: '', // ✅ 기본 내용 설정
-            categoryId, // ✅ 특정 카테고리에 저장
-          }),
-        });
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+          },
+        );
 
-        console.log(`📩 기본 메모 생성 응답 상태 코드: ${response.status}`);
+        console.log(`🐥 메모 생성 응답 상태: ${response.status}`);
+        if (response.status === 201 || response.status === 200) {
+          console.log('🐥 메모 생성 성공:', response.data);
+          setMemos((prevMemos) => [response.data.memo, ...prevMemos].slice(0, 3));
 
-        const data = await response.json();
-
-        if (response.ok) {
-          console.log('✅ 기본 메모 생성 성공(서연):', data);
-          setMemos((prevMemos) => [data.memo, ...prevMemos].slice(0, 3));
-          // ✅ fetchMemos를 ref에서 가져와 호출
+          // 🐥 fetchMemos를 ref에서 가져와 호출
           if (fetchMemosRef.current) {
             fetchMemosRef.current(categoryId);
           }
-        } else {
-          console.error('❌ 기본 메모 생성 실패(서연):', data.message);
         }
       } catch (error) {
-        console.error('❌ 기본 메모 생성 요청 오류(서연):', error);
+        if (axios.isAxiosError(error)) {
+          console.error('🐥 메모 생성 실패:', error.response?.data?.message || error.message);
+        } else {
+          console.error('🐥 메모 생성 요청 오류:', error);
+        }
       }
     },
     [token],
   );
 
-  // ✅ 특정 카테고리의 메모 가져오기
+  // 🐥 특정 카테고리(마지막 카테고리)의 메모 가져오기
   const fetchMemos = useCallback(
     async (categoryId: string) => {
       try {
-        console.log(`🔗 요청 URL: ${API_BASE_URL}/api/categories/${categoryId}/memos`);
+        const url = `${API_BASE_URL}/api/categories/${categoryId}/memos`;
+        console.log(`🐥 특정 카테고리의 메모 가져오기 요청 URL: ${url}`);
 
-        const response = await fetch(`${API_BASE_URL}/api/categories/${categoryId}/memos`, {
-          method: 'GET',
+        const response = await axios.get(url, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
 
-        console.log(`📩 응답 상태 코드: ${response.status}`);
+        console.log(`🐥 응답 상태 코드: ${response.status}`);
 
-        if (!response.ok) {
-          const errorData = await response.text();
-          console.error(`❌ 서버 응답 오류(서연): ${errorData}`);
-          throw new Error('❌ 메모 불러오기 실패(서연)');
-        }
-
-        const data = await response.json();
-        console.log('✅ 메모 가져오기 성공(서연):', data);
+        const data = response.data;
+        console.log('🐥 마지막 카테고리 메모 가져오기 성공:', data);
 
         if (data.notes.length === 0) {
-          console.log('⚠️ 불러온 메모가 없음 → 기본 메모 자동 생성(서연)');
-          createDefaultMemo(categoryId); // ✅ 기본 메모 생성
-          console.log('메모 생성 완료!!!!!!!');
+          console.log('⚠️ 불러온 메모가 없으므로 기본 메모 자동 생성 실행');
+          await createDefaultMemo(categoryId); // 🐥 기본 메모 생성 함수 호출
         } else {
           setMemos(data.notes.slice(0, 3));
         }
       } catch (error) {
-        console.error('❌ 메모 불러오기 오류(서연):', error);
+        if (axios.isAxiosError(error)) {
+          console.error(`🐥 서버 응답 오류: ${error.response?.data || error.message}`);
+        } else {
+          console.error('🐥 메모 불러오기 오류:', error);
+        }
       }
     },
     [token, createDefaultMemo],
-  ); // ✅ token이 바뀌면 다시 생성
+  );
 
-  // 🔥 useEffect에서 fetchMemosRef에 fetchMemos 할당
+  // 🐥 useEffect에서 fetchMemosRef에 fetchMemos 할당
   useEffect(() => {
     fetchMemosRef.current = fetchMemos;
   }, [fetchMemos]);
 
-  // ✅ 카테고리 목록 가져오기
+  // 🐥 카테고리 목록 가져오기
   const fetchCategories = useCallback(async () => {
     try {
-      console.log(`🔗 요청 URL: ${API_BASE_URL}/api/categories/${userId}`);
+      const url = `${API_BASE_URL}/api/categories/${userId}`;
+      console.log(`🐥 카테고리 목록 가져오기 요청 URL: ${url}`);
 
-      const response = await fetch(`${API_BASE_URL}/api/categories/${userId}`, {
-        method: 'GET',
+      const response = await axios.get(url, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
 
-      console.log(`📩 응답 상태 코드: ${response.status}`);
+      console.log(`🐥 응답 상태 코드: ${response.status}`);
 
-      if (!response.ok) {
-        const errorData = await response.text();
-        console.error(`❌ 서버 응답 오류(서연): ${errorData}`);
-        throw new Error('❌ 메모 카테고리 목록 불러오기 실패(서연)');
-      }
-
-      const data = await response.json();
-      console.log('✅ 메모 카테고리 목록 가져오기 성공(서연):', data);
+      const data = response.data;
+      console.log('🐥 메모 카테고리 목록 가져오기 성공:', data);
 
       const lastCategoryId = data.categories[4]?.id;
       if (lastCategoryId) {
@@ -304,16 +307,20 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
         fetchMemos(lastCategoryId); // ✅ 4번 인덱스 카테고리 ID로 메모 가져오기 실행
       }
     } catch (error) {
-      console.error('❌ 메모 카테고리 목록 불러오기 오류(서연):', error);
+      if (axios.isAxiosError(error)) {
+        console.error(`🐥 서버 응답 오류: ${error.response?.data || error.message}`);
+      } else {
+        console.error('🐥 메모 카테고리 목록 불러오기 오류:', error);
+      }
     }
-  }, [userId, token, fetchMemos]); // ✅ useCallback을 사용하여 userId와 token이 변경될 때만 새로운 함수 생성
+  }, [userId, token, fetchMemos]);
 
-  // ✅ useEffect에서 카테고리 가져오기 실행
+  // 🐥 useEffect에서 카테고리 가져오기 실행
   useEffect(() => {
     fetchCategories();
   }, [fetchCategories]);
 
-  // ✅ 새로운 토스트 추가 모션 로직
+  // 🐥 새로운 토스트 추가 모션 로직
   const handleTouchStart = (e: React.TouchEvent) => {
     setDragging(true);
     offsetXRef.current = e.touches[0].clientX;
@@ -321,7 +328,7 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!dragging) return;
-    e.stopPropagation(); // ✅ Swiper에서 발생한 터치 이벤트 방지
+    e.stopPropagation(); // 🐥 Swiper에서 발생한 터치 이벤트 방지
 
     const deltaX = e.touches[0].clientX - offsetXRef.current;
 
@@ -335,8 +342,8 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
     setShowPlus(deltaX > 200);
 
     if (bodyRef.current) {
-      // ✅ 최대 드래그 거리 240px 제한
-      bodyRef.current.style.transform = `translateX(${Math.min(240, Math.max(0, deltaX))}px)`;
+      // ✅ 최대 드래그 거리 230px 제한
+      bodyRef.current.style.transform = `translateX(${Math.min(230, Math.max(0, deltaX))}px)`;
     }
   };
 
@@ -345,49 +352,58 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
     if (!showPlus || isSwiperActive || !dragging) return;
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/memos`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
+      const url = `${API_BASE_URL}/api/memos`;
+      console.log(`🐥 새로운 메모 추가 (터치 이벤트) 요청 URL: ${url}`);
+
+      const response = await axios.post(
+        url,
+        {
           title: '',
           content: '',
-          categoryId: lastCategoryId, // ✅ 현재 카테고리에 저장
-        }),
-      });
+          categoryId: lastCategoryId, // ✅ 가장 마지막 카테고리에 저장
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
-      console.log(`📩 응답 상태 코드: ${response.status}`);
+      console.log(`🐥 응답 상태 코드: ${response.status}`);
 
-      const data = await response.json();
-
-      if (response.ok) {
-        console.log('✅ 새 메모 생성 성공(서연):', data);
-        setMemos((prevMemos) => [data.memo, ...prevMemos].slice(0, 3));
-        fetchMemos(lastCategoryId); // ✅ 최신 메모 다시 가져오기
+      if (response.status === 201 || response.status === 200) {
+        console.log('🐥 새 메모 생성 성공:', response.data);
+        setMemos((prevMemos) => [response.data.memo, ...prevMemos].slice(0, 3));
+        fetchMemos(lastCategoryId); // 🐥 최신 메모(마지막 카테고리의) 다시 가져오기
         setShowToastMessage(true);
-      } else {
-        console.error('❌ 메모 생성 실패(서연):', data.message);
       }
     } catch (error) {
-      console.error('❌ 메모 생성 요청 오류(서연):', error);
+      if (axios.isAxiosError(error)) {
+        console.error('🐥 메모 생성 실패:', error.response?.data?.message || error.message);
+      } else {
+        console.error('🐥 메모 생성 요청 오류:', error);
+      }
     } finally {
       setDragging(false);
       setShowPlus(false);
       if (bodyRef.current) {
-        bodyRef.current.style.transition = 'transform 0.3s ease-out';
+        bodyRef.current.style.transition = 'transform 0.5s ease-out';
         bodyRef.current.style.transform = 'translateX(0px)';
       }
-      setTimeout(() => bodyRef.current && (bodyRef.current.style.transition = ''), 300);
+      setTimeout(() => {
+        if (bodyRef.current) {
+          bodyRef.current.style.transition = '';
+        }
+      }, 250);
     }
   };
 
-  // ✅ 새로운 토스트 추가 모션 로직 (마우스 이벤트)
+  // 🐥 새로운 토스트 추가 모션 로직 (마우스 이벤트)
   const isClickRef = useRef(false);
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    // ✅ 휴지통 버튼을 클릭했을 때는 드래그 방지
+    // 🐥 휴지통 버튼을 클릭했을 때 드래그 방지
     if ((e.target as HTMLElement).closest('.no-drag')) {
       setDragging(false);
       return;
@@ -407,12 +423,12 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
 
     if (isSwiperActive) return;
 
-    // ✅ 드래그 거리가 100px 이상이면 클릭이 아닌 드래그로 간주
+    // 🐥 드래그 거리가 100px 이상이면 클릭이 아닌 드래그로 간주
     if (Math.abs(deltaX) > 100) {
       isClickRef.current = false;
     }
 
-    // ✅ 드래그 거리가 100px 이상이어야 실제로 "드래그 중" 상태로 인식
+    // 🐥 드래그 거리가 100px 이상이어야 실제로 "드래그 중" 상태로 인식
     if (Math.abs(deltaX) > 100) {
       setDragging(true);
     } else {
@@ -422,16 +438,16 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
 
     if (bodyRef.current) {
       requestAnimationFrame(() => {
-        // ✅ 최대 드래그 거리 240px 제한
-        bodyRef.current!.style.transform = `translateX(${Math.min(240, Math.max(0, deltaX))}px)`;
+        // 🐥 최대 드래그 거리 230px 제한
+        bodyRef.current!.style.transform = `translateX(${Math.min(230, Math.max(0, deltaX))}px)`;
       });
     }
   };
 
-  // ✅ "오른쪽으로 드래그" 시 새로운 메모 생성 (마우스 이벤트)
+  // 🐥 "오른쪽으로 드래그" 시 새로운 메모 생성 (마우스 이벤트)
   const handleMouseUp = async () => {
     if (isClickRef.current) {
-      // ✅ 클릭이라면 드래그 처리하지 않음
+      // 🐥 클릭이라면 드래그 처리하지 않음
       setDragging(false);
       return;
     }
@@ -439,53 +455,56 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
     if (!showPlus || isSwiperActive || !dragging) return;
 
     try {
-      // ✅ 카테고리 ID가 설정되지 않았다면 fetchCategories()를 실행
-      if (!lastCategoryId) {
-        console.warn('⚠️ lastCategoryId가 없음 → 카테고리 다시 불러오기');
-        await fetchCategories();
-      }
+      const url = `${API_BASE_URL}/api/memos`;
+      console.log(`🐥 새로운 메모 추가 (마우스 이벤트) 요청 URL: ${url}`);
 
-      const response = await fetch(`${API_BASE_URL}/api/memos`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
+      const response = await axios.post(
+        url,
+        {
           title: '',
           content: '',
-          categoryId: lastCategoryId, // ✅ 마지막 카테고리에 저장
-        }),
-      });
+          categoryId: lastCategoryId, // 🐥 마지막 카테고리에 저장
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
 
-      console.log(`📩 응답 상태 코드: ${response.status}`);
+      console.log(`🐥 응답 상태 코드: ${response.status}`);
 
-      const data = await response.json();
+      if (response.status === 201 || response.status === 200) {
+        console.log('🐥 새 메모 생성 성공:', response.data);
 
-      if (response.ok) {
-        console.log('✅ 새 메모 생성 성공:', data);
+        if (response.data.memo) {
+          // 🐥 상태 업데이트를 먼저 수행한 후 fetchMemos 실행
+          setMemos((prevMemos) => [response.data.memo, ...prevMemos].slice(0, 3));
+          setSlides((prevSlides) => [response.data.memo.id, ...prevSlides].slice(0, 3));
 
-        if (data.memo) {
-          // ✅ 상태 업데이트를 먼저 수행한 후 fetchMemos 실행
-          setMemos((prevMemos) => [data.memo, ...prevMemos].slice(0, 3));
-          setSlides((prevSlides) => [data.memo.id, ...prevSlides].slice(0, 3));
-
-          fetchMemos(lastCategoryId); // ✅ 최신 메모 다시 가져오기
+          fetchMemos(lastCategoryId); // 🐥 최신 메모(마지막 카테고리의) 다시 가져오기
           setShowToastMessage(true);
         }
-      } else {
-        console.error('❌ 메모 생성 실패:', data.message);
       }
     } catch (error) {
-      console.error('❌ 메모 생성 요청 오류:', error);
+      if (axios.isAxiosError(error)) {
+        console.error('🐥 메모 생성 실패:', error.response?.data?.message || error.message);
+      } else {
+        console.error('🐥 메모 생성 요청 오류:', error);
+      }
     } finally {
       setDragging(false);
       setShowPlus(false);
       if (bodyRef.current) {
-        bodyRef.current.style.transition = 'transform 0.3s ease-out';
+        bodyRef.current.style.transition = 'transform 0.5s ease-out';
         bodyRef.current.style.transform = 'translateX(0px)';
       }
-      setTimeout(() => bodyRef.current && (bodyRef.current.style.transition = ''), 300);
+      setTimeout(() => {
+        if (bodyRef.current) {
+          bodyRef.current.style.transition = '';
+        }
+      }, 250);
     }
   };
 
@@ -507,7 +526,7 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
   // 초기 렌더링 시에도 활성 메모 ID 전달
   useEffect(() => {
     if (memos.length > 0) {
-      console.log('📌 초기 렌더링 활성화된 메모:', memos[0]);
+      console.log('📌 초기 렌더링 시 활성화된 메모:', memos[0]);
       setSelectedSlide(memos[0].id); // 첫 번째 메모를 활성화
       if (onActiveMemoChange) {
         onActiveMemoChange(memos[0].id);
@@ -586,6 +605,7 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         onClick={handleDeleteToast}
+        toastNumber={selectedToastNumber}
       />
     </Container>
   );

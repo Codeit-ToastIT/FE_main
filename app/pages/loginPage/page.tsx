@@ -31,7 +31,7 @@ const Title = styled.div`
   width: 20.5rem;
   color: var(--ivory, #e5dcca);
   margin-left: 35%;
-
+  font-family: 'SUIT Variable';
   font-size: 1rem;
   font-style: normal;
   font-weight: 600;
@@ -52,7 +52,7 @@ const Form = styled.form`
 const Link = styled.div`
   color: var(--ivory, #e5dcca);
   text-align: center;
-
+  font-family: 'SUIT Variable';
   font-size: 0.75rem;
   font-weight: 400;
   line-height: 0.875rem;
@@ -82,7 +82,7 @@ const IconEye = styled(Image)`
 
 const ErrorMessage = styled.div`
   color: #ff5151;
-
+  font-family: 'SUIT Variable';
   font-size: 0.875rem;
   font-weight: 400;
   margin-top: 0.5rem;

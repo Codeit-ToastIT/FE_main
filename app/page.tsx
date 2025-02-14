@@ -1,14 +1,14 @@
-"use client";
+'use client';
 
-import styled from "styled-components";
+import styled from 'styled-components';
 import Splash from './components/ui/splash';
 import { useState, useEffect } from 'react';
-import { motion  } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import iconKakao from './assets/icons/icon_kakao.svg';
 import TermsModal from './components/common/TermsModal';
-import { API_BASE_URL } from "./api/api";
+import { API_BASE_URL } from './api/api';
 
 const Whole = styled.div`
   display: flex;
@@ -20,7 +20,7 @@ const Whole = styled.div`
 `;
 
 const Discription = styled.div`
-  color: var(--ivory, #E5DCCA);
+  color: var(--ivory, #e5dcca);
   text-align: center;
   font-family: SUIT;
   font-size: 0.75rem;
@@ -50,20 +50,20 @@ const Button = styled.button`
   justify-content: center;
   align-items: center;
   flex-shrink: 0;
-
+  font-family: 'SUIT Variable';
   border-radius: 2.5rem;
-  background: var(--ivory, #E5DCCA);
+  background: var(--ivory, #e5dcca);
   margin-bottom: 0.5rem;
 `;
 
 const KakaoButton = styled(Button)`
-  background: #FAE100;
+  background: #fae100;
 `;
 
 const Title = styled.span`
   color: var(--black, #171612);
   text-align: center;
-  font-family: SUIT;
+  font-family: 'SUIT Variable';
   font-size: 16px;
   font-style: normal;
   font-weight: 800;
@@ -84,13 +84,13 @@ export default function Home() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const router = useRouter();
 
-  // 로그인 유지 API 
+  // 로그인 유지 API
   useEffect(() => {
     const checkToken = async () => {
       try {
         const response = await fetch(`${API_BASE_URL}/api/auth/restore`, {
           method: 'GET',
-          credentials: 'include', 
+          credentials: 'include',
         });
 
         if (response.ok) {
@@ -99,11 +99,10 @@ export default function Home() {
             router.push('/pages/createToastPage');
           }
         } else if (response.status === 401) {
-          console.log('401 Unauthorized : 로그인 필요')
+          console.log('401 Unauthorized : 로그인 필요');
         }
       } catch (error) {
         console.error('Error checking token:', error);
-        
       }
     };
 
@@ -128,20 +127,36 @@ export default function Home() {
           transition={{ duration: 0.5, delay: 0.5, ease: 'easeOut' }}
         >
           <Discription onClick={handleDiscriptionClick}>가입과 함께 약관에 동의합니다.</Discription>
-          <Button onClick={() => { router.push('/pages/emailInputPage') }}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
-              <path d="M4.1999 6.5998L11.3169 11.5269C11.7278 11.8114 12.272 11.8114 12.683 11.5269L19.7999 6.5998M4.7999 19.1998H19.1999C20.5254 19.1998 21.5999 18.1253 21.5999 16.7998V7.1998C21.5999 5.87432 20.5254 4.7998 19.1999 4.7998H4.7999C3.47442 4.7998 2.3999 5.87432 2.3999 7.19981V16.7998C2.3999 18.1253 3.47442 19.1998 4.7999 19.1998Z" stroke="#171612" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+          <Button
+            onClick={() => {
+              router.push('/pages/emailInputPage');
+            }}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path
+                d="M4.1999 6.5998L11.3169 11.5269C11.7278 11.8114 12.272 11.8114 12.683 11.5269L19.7999 6.5998M4.7999 19.1998H19.1999C20.5254 19.1998 21.5999 18.1253 21.5999 16.7998V7.1998C21.5999 5.87432 20.5254 4.7998 19.1999 4.7998H4.7999C3.47442 4.7998 2.3999 5.87432 2.3999 7.19981V16.7998C2.3999 18.1253 3.47442 19.1998 4.7999 19.1998Z"
+                stroke="#171612"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
             <Title>이메일로 시작하기</Title>
           </Button>
           <KakaoButton>
-            <KakaoIcon src={iconKakao} alt="kakao"/>
+            <KakaoIcon src={iconKakao} alt="kakao" />
             <Title>카카오 계정으로 시작하기</Title>
           </KakaoButton>
         </Container>
       )}
 
-      <TermsModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}/>  
+      <TermsModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </Whole>
   );
 }

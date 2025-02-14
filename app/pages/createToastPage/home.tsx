@@ -8,7 +8,7 @@
 // 💖 표시된 부분 SaveToast로 활성화된 메모 id 전달을 위해 수정한 부분
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import styled from 'styled-components';
 import Image from 'next/image';
 
@@ -26,24 +26,29 @@ interface HomeProps {
 
 // 💖 onActiveMemoChange 추가
 export default function Home({ onHelpClick, onActiveMemoChange }: HomeProps) {
-  // ✅ myPage를 열고 닫는 상태 추가
-  const [isMyPageOpen, setIsMyPageOpen] = useState(false);
-
-  // ✅ 프로필 버튼 클릭 시 myPage 표시
-  const onProfileClick = () => {
-    setIsMyPageOpen((prev) => !prev);
-  };
-
-  // ✅ myPage 닫기 함수
-  const onCloseMyPage = () => {
-    setIsMyPageOpen(false);
-  };
-
   const [showDeletedMessage, _setShowDeletedMessage] = useState(false);
 
   const handleParentTouchMove = (e: React.TouchEvent) => {
     e.preventDefault(); // ✅ 부모 요소가 `touchmove`를 막지 않도록 방지
     e.stopPropagation();
+  };
+
+  // ✅ myPage를 열고 닫는 상태 추가
+  const [isMyPageOpen, setIsMyPageOpen] = useState(false);
+  const myPageRef = useRef<HTMLDivElement>(null);
+
+  // ✅ 프로필 버튼 클릭 시 myPage 표시
+  const onProfileClick = () => {
+    setIsMyPageOpen((prev) => !prev);
+    if (myPageRef.current) {
+      myPageRef.current.style.transition = 'transform 0.5s ease-in-out';
+      myPageRef.current.style.transform = 'translateX(0px)';
+    }
+  };
+
+  // ✅ myPage 닫기 함수
+  const onCloseMyPage = () => {
+    setIsMyPageOpen(false);
   };
 
   return (
@@ -58,7 +63,9 @@ export default function Home({ onHelpClick, onActiveMemoChange }: HomeProps) {
 
       {/* ✅ MyPage 컴포넌트가 오른쪽에서 왼쪽으로 슬라이드되며 나타남 */}
       <MyPageOverlay $isOpen={isMyPageOpen} onClick={onCloseMyPage}>
-        <StyledMyPage onClick={(e) => e.stopPropagation()} $isOpen={isMyPageOpen} />
+        <div ref={myPageRef}>
+          <StyledMyPage onClick={(e) => e.stopPropagation()} $isOpen={isMyPageOpen} />
+        </div>
       </MyPageOverlay>
     </Container>
   );

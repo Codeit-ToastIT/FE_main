@@ -21,11 +21,16 @@ import toast5yumyum from '../../../public/toasts/toast_large_5_yumyum.png';
 interface DeleteMotionModalProps {
   isOpen: boolean;
   onClose: () => void;
+  toastNumber: number; // ✅ toastNumber 추가
 }
 
-export default function DeleteMotionModal({ isOpen, onClose }: DeleteMotionModalProps) {
+export default function DeleteMotionModal({
+  isOpen,
+  onClose,
+  toastNumber,
+}: DeleteMotionModalProps) {
   const [currentStep, setCurrentStep] = useState(0); // ✅ 현재 보여줄 이미지 단계
-  const [selectedSet, setSelectedSet] = useState(0); // ✅ 선택된 세트 인덱스
+  // const [selectedSet, setSelectedSet] = useState(0); // ✅ 선택된 세트 인덱스
 
   // ✅ 5개의 세트 정의
   const toastSets = [
@@ -38,9 +43,10 @@ export default function DeleteMotionModal({ isOpen, onClose }: DeleteMotionModal
 
   useEffect(() => {
     if (isOpen) {
-      // ✅ 모달이 열릴 때 랜덤한 세트 선택
-      const randomSet = Math.floor(Math.random() * toastSets.length);
-      setSelectedSet(randomSet);
+      // // ✅ 모달이 열릴 때 랜덤한 세트 선택
+      // const randomSet = Math.floor(Math.random() * toastSets.length);
+      // setSelectedSet(randomSet);
+      setCurrentStep(0); // 애니메이션 초기화
 
       // ✅ 0.2초마다 다음 이미지로 변경 (0 → 1 → 2)
       const timer1 = setTimeout(() => setCurrentStep(1), 300);
@@ -59,7 +65,7 @@ export default function DeleteMotionModal({ isOpen, onClose }: DeleteMotionModal
 
   return (
     <Overlay>
-      <StyledImage src={toastSets[selectedSet][currentStep]} alt="toast_animation" />
+      <StyledImage src={toastSets[toastNumber - 1][currentStep]} alt="toast_animation" />
     </Overlay>
   );
 }
