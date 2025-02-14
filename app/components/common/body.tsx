@@ -119,6 +119,7 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
 
   // ✅ "휴지통 아이콘" 클릭 시 모달 열기
   const [selectedToastNumber, setSelectedToastNumber] = useState(1);
+  const [deletingSlide, setDeletingSlide] = useState<string | null>(null);
 
   const handleModalToggle = (id: string) => {
     setSelectedSlide(id); // 현재 선택된 슬라이드 저장
@@ -162,16 +163,23 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
         console.log('✅ 토스트 삭제 성공:', data.message);
 
         // ✅ 상태에서 삭제된 메모 제거
-        setMemos((prevMemos) => prevMemos.filter((memo) => memo.id !== memoToDelete.id));
+        // setMemos((prevMemos) => prevMemos.filter((memo) => memo.id !== memoToDelete.id));
 
-        // ✅ 슬라이드 상태 업데이트
-        setSlides((prevSlides) => {
-          const newSlides = prevSlides.filter((slide) => slide !== selectedSlide);
-          setSwiperKey((prev) => prev + 1); // ✅ Swiper 강제 리렌더링
+        // // ✅ 슬라이드 상태 업데이트
+        // setSlides((prevSlides) => {
+        //   const newSlides = prevSlides.filter((slide) => slide !== selectedSlide);
+        //   setSwiperKey((prev) => prev + 1); // ✅ Swiper 강제 리렌더링
 
-          // ✅ 삭제 후 슬라이드가 비어 있다면 새로운 슬라이드 추가
-          return newSlides.length > 0 ? newSlides : [selectedSlide + 1];
-        });
+        //   // ✅ 삭제 후 슬라이드가 비어 있다면 새로운 슬라이드 추가
+        //   return newSlides.length > 0 ? newSlides : [selectedSlide + 1];
+        // });
+        // ✅ 삭제 애니메이션 적용을 위한 상태 업데이트
+        setDeletingSlide(selectedSlide); // 🔹 삭제할 슬라이드 ID 저장
+        setTimeout(() => {
+          setMemos((prevMemos) => prevMemos.filter((memo) => memo.id !== memoToDelete.id));
+          setSlides((prevSlides) => prevSlides.filter((slide) => slide !== selectedSlide));
+          setDeletingSlide(null); // 🔹 애니메이션 종료 후 초기화
+        }, 100); // ✅ 0.1초 후 실제 삭제 처리 (애니메이션 실행 시간과 맞춤)
 
         setShowDeleteMessage(true);
 
@@ -342,8 +350,8 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
     setShowPlus(deltaX > 200);
 
     if (bodyRef.current) {
-      // ✅ 최대 드래그 거리 230px 제한
-      bodyRef.current.style.transform = `translateX(${Math.min(230, Math.max(0, deltaX))}px)`;
+      // ✅ 최대 드래그 거리 210px 제한
+      bodyRef.current.style.transform = `translateX(${Math.min(210, Math.max(0, deltaX))}px)`;
     }
   };
 
@@ -438,8 +446,8 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
 
     if (bodyRef.current) {
       requestAnimationFrame(() => {
-        // 🐥 최대 드래그 거리 230px 제한
-        bodyRef.current!.style.transform = `translateX(${Math.min(230, Math.max(0, deltaX))}px)`;
+        // 🐥 최대 드래그 거리 210px 제한
+        bodyRef.current!.style.transform = `translateX(${Math.min(210, Math.max(0, deltaX))}px)`;
       });
     }
   };
@@ -504,7 +512,7 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
         if (bodyRef.current) {
           bodyRef.current.style.transition = '';
         }
-      }, 250);
+      }, 200);
     }
   };
 
@@ -580,8 +588,12 @@ export default function Body({ onActiveMemoChange }: BodyProps) {
       >
         {memos.length > 0 ? (
           memos.map((memo) => (
-            <StyledSwiperSlide key={memo.id}>
+            <StyledSwiperSlide
+              key={memo.id}
+              className={deletingSlide === memo.id ? 'deleting' : ''} // ✅ 삭제 중인 슬라이드에 애니메이션 추가
+            >
               <StyledBasicToast
+                className={deletingSlide === memo.id ? 'disappearing' : ''} // ✅ 삭제 애니메이션 적용
                 toastid={memo.id}
                 title={memo.title}
                 content={memo.content}
@@ -637,18 +649,37 @@ const IconTrash = styled(Image)`
 `;
 
 const StyledSwiperSlide = styled(SwiperSlide)`
+  height: 360px;
   display: flex;
   justify-content: center;
   align-items: center;
   height: 360px;
   user-select: none; /* ✅ 텍스트 선택 방지 */
+
+  transition:
+    transform 10s ease-out,
+    opacity 10s ease-in-out; // ✅ 애니메이션 추가
+
+  &.deleting {
+    opacity: 0; // ✅ 점점 사라지는 효과
+    transform: scale(0.7); // ✅ 크기가 줄어드는 효과
+  }
 `;
 
 const StyledBasicToast = styled(BasicToast)`
   cursor: pointer;
   width: 296px;
-  height: 320px;
+  height: 360px;
   user-select: none; /* ✅ 텍스트 선택 방지 */
+
+  transition:
+    transform 0.5s ease-out,
+    opacity 0.5s ease-in-out; /* ✅ 부드러운 애니메이션 */
+
+  &.disappearing {
+    opacity: 0; /* ✅ 점점 사라지는 효과 */
+    transform: scale(0.7); /* ✅ 크기가 줄어드는 효과 */
+  }
 `;
 
 const ToastMessage = styled.div`
