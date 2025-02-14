@@ -20,13 +20,20 @@ import Toast5 from '../../../public/toasts/toast5.png';
 const toastImages = [Toast1, Toast2, Toast3, Toast4, Toast5];
 
 interface ToastProps {
+  className?: string; // ✅ className 추가
   toastid?: string;
   title: string; // ✅ title 추가
   content: string; // ✅ content 추가
   toastnumber: number;
 }
 
-export default function BasicToast({ toastid, title, content, toastnumber }: ToastProps) {
+export default function BasicToast({
+  className,
+  toastid,
+  title,
+  content,
+  toastnumber,
+}: ToastProps) {
   const router = useRouter();
 
   // ✅ 안전한 toastnumber 인덱스 설정 (1~5 범위 유지)
@@ -48,7 +55,7 @@ export default function BasicToast({ toastid, title, content, toastnumber }: Toa
   const formattedTitle = hasTimestamp(title) ? '' : title;
 
   return (
-    <ToastContainer onClick={handleToastClick}>
+    <ToastContainer className={className} onClick={handleToastClick}>
       {formattedTitle && <MemoTitleDisplay>{formattedTitle}</MemoTitleDisplay>}
       <StyledToastImage src={toastNumber} alt="RandomToast" width={296} height={320} priority />
       <MemoDisplay>{content.trim() === '' ? '새로운 토스트를 작성해볼까요?' : content}</MemoDisplay>
