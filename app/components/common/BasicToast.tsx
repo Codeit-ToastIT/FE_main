@@ -68,7 +68,6 @@ const ToastContainer = styled.div`
   width: 296px;
   height: 360px;
   cursor: pointer;
-  z-index: 1;
 `;
 
 const StyledToastImage = styled(Image)`
@@ -80,7 +79,7 @@ const StyledToastImage = styled(Image)`
   width: 296px;
   height: 320px;
   flex-shrink: 0;
-  z-index: 1;
+  z-index: -1;
 `;
 
 const MemoTitleDisplay = styled.div`
