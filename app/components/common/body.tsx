@@ -664,6 +664,7 @@ const StyledSwiperSlide = styled(SwiperSlide)`
     opacity: 0; // ✅ 점점 사라지는 효과
     transform: scale(0.7); // ✅ 크기가 줄어드는 효과
   }
+  z-index: 0;
 `;
 
 const StyledBasicToast = styled(BasicToast)`
@@ -671,7 +672,7 @@ const StyledBasicToast = styled(BasicToast)`
   width: 296px;
   height: 360px;
   user-select: none; /* ✅ 텍스트 선택 방지 */
-
+  z-index: 0;
   transition:
     transform 0.5s ease-out,
     opacity 0.5s ease-in-out; /* ✅ 부드러운 애니메이션 */
