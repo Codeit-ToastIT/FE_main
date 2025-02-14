@@ -82,36 +82,52 @@ const KakaoIcon = styled(Image)`
 export default function Home() {
   const [show, setShow] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isSplashComplete, setIsSplashComplete] = useState(false); // 스플래시 완료 상태
   const router = useRouter();
 
-  // 로그인 유지 API 
+  // 스플래시 애니메이션 완료 후 토큰 검증
   useEffect(() => {
+    if (!isSplashComplete) return; // 스플래시가 완료되지 않았다면 종료
+
     const checkToken = async () => {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        console.log('No token found');
+        return;
+      }
+
       try {
         const response = await fetch(`${API_BASE_URL}/api/auth/restore`, {
           method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          },
           credentials: 'include', 
         });
 
         if (response.ok) {
           const data = await response.json();
           if (data.accessToken) {
-            router.push('/pages/createToastPage');
+            localStorage.setItem('token', data.accessToken); // 토큰 갱신
+            router.push('/pages/createToastPage'); // 홈 화면으로 리디렉션
           }
         } else if (response.status === 401) {
-          console.log('401 Unauthorized : 로그인 필요')
+          console.log('401 Unauthorized : 로그인 필요');
+          localStorage.removeItem('token'); // 토큰 삭제
         }
       } catch (error) {
         console.error('Error checking token:', error);
-        
+        localStorage.removeItem('token'); // 토큰 삭제
       }
     };
 
     checkToken();
-  }, [router]);
+  }, [isSplashComplete, router]);
 
+  // 스플래시 애니메이션 완료 시 호출
   const handleAnimationComplete = () => {
-    setShow(true);
+    setIsSplashComplete(true); // 스플래시 완료 상태로 변경
+    setShow(true); // UI 표시
   };
 
   const handleDiscriptionClick = () => {
@@ -120,7 +136,10 @@ export default function Home() {
 
   return (
     <Whole>
+      {/* 스플래시 애니메이션 */}
       <Splash onAnimationComplete={handleAnimationComplete} />
+
+      {/* 스플래시 완료 후 표시될 UI */}
       {show && (
         <Container
           initial={{ opacity: 0 }}
@@ -141,6 +160,7 @@ export default function Home() {
         </Container>
       )}
 
+      {/* 약관 모달 */}
       <TermsModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)}/>  
     </Whole>
   );
