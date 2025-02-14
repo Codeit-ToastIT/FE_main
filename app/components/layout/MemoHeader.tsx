@@ -167,7 +167,7 @@ export default function MemoHeader({
         isOpen={showModal}
         onClose={() => setShowModal(false)}
         onClick={handleDeleteMemo}
-        toastNumber={toastNumber} // ✅ toastNumber 전달
+        toastNumber={toastNumber ?? 1} // ✅ toastNumber 전달
       />
     </HeaderContainer>
   );

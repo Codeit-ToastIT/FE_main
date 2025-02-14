@@ -6,7 +6,7 @@ interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
   onClick: () => Promise<boolean>; // ✅ 삭제 성공 여부를 반환하는 비동기 함수로 변경
-  toastNumber: number; // ✅ toastNumber 추가
+  toastNumber?: number; // ✅ toastNumber 추가
 }
 
 export default function DeleteModal({ isOpen, onClose, onClick, toastNumber }: ModalProps) {
@@ -61,7 +61,7 @@ export default function DeleteModal({ isOpen, onClose, onClick, toastNumber }: M
             setShowMotion(false);
             onClose(); // ✅ 애니메이션 종료 후 기본 모달 닫기
           }}
-          toastNumber={toastNumber} // ✅ 선택된 toastNumber 전달
+          toastNumber={toastNumber ?? 1} // ✅ 선택된 toastNumber 전달
         />
       )}
     </>
