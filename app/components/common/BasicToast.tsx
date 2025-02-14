@@ -79,7 +79,7 @@ const StyledToastImage = styled(Image)`
   width: 296px;
   height: 320px;
   flex-shrink: 0;
-  z-index: -10;
+  z-index: 0;
 `;
 
 const MemoTitleDisplay = styled.div`
