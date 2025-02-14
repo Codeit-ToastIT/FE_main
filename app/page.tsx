@@ -99,7 +99,7 @@ export default function Home() {
         const response = await fetch(`${API_BASE_URL}/api/auth/restore`, {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${token}`,
+            Authorization: `Bearer ${token}`,
           },
           credentials: 'include', 
         });
