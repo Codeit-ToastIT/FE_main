@@ -86,8 +86,10 @@ export default function Home() {
 
   // 로그인 유지 API 
   useEffect(() => {
+    console.log("useEffect 실행");
     const checkToken = async () => {
       const token = localStorage.getItem('token');
+      console.log('token: ', token)
       if (!token) {
         console.log('No token found');
         return;
@@ -105,18 +107,17 @@ export default function Home() {
         if (response.ok) {
           const data = await response.json();
           if (data.accessToken) {
+            console.log('토큰 확인, 홈화면으로 이동');
             localStorage.setItem('token', data.accessToken); // 토큰 갱신
             router.push('/pages/createToastPage');
           }
         } else if (response.status === 401) {
           console.log('401 Unauthorized : 로그인 필요');
           localStorage.removeItem('token'); // 토큰 삭제
-          // 현재 페이지가 '/' 이므로 리디렉션 불필요
         }
       } catch (error) {
         console.error('Error checking token:', error);
         localStorage.removeItem('token'); // 토큰 삭제
-        // 현재 페이지가 '/' 이므로 리디렉션 불필요
       }
     };
 
