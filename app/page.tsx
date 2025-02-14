@@ -106,11 +106,10 @@ export default function Home() {
 
         if (response.ok) {
           const data = await response.json();
-          if (data.accessToken) {
-            console.log('토큰 확인, 홈화면으로 이동');
-            localStorage.setItem('token', data.accessToken); // 토큰 갱신
-            router.push('/pages/createToastPage');
-          }
+          console.log('data: ', data);
+          console.log('토큰 확인, 홈화면으로 이동');
+          localStorage.setItem('token', data.accessToken); // 토큰 갱신
+          router.push('/pages/createToastPage');
         } else if (response.status === 401) {
           console.log('401 Unauthorized : 로그인 필요');
           localStorage.removeItem('token'); // 토큰 삭제
