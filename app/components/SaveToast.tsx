@@ -214,7 +214,7 @@ const SaveToast: React.FC<SaveToastProps> = ({ onClose, onSave, memoId, title, c
 
   // 효과음 재생 함수 추가
   const playSaveSound = () => {
-    const audio = new Audio('/sounds/toaster_save.wav'); // 효과음 경로
+    const audio = new Audio('/sounds/toaster_save_2.wav'); // 효과음 경로
     audio
       .play()
       .then(() => console.log('✅ 효과음 재생 성공'))
