@@ -6,7 +6,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import iconKakao from './assets/icons/icon_kakao.svg';
+import iconKakao from './assets/icons/Group 8.svg';
 import TermsModal from './components/common/TermsModal';
 import { API_BASE_URL } from './api/api';
 
@@ -86,23 +86,37 @@ export default function Home() {
 
   // 로그인 유지 API
   useEffect(() => {
+    console.log("useEffect 실행");
     const checkToken = async () => {
+      const token = localStorage.getItem('token');
+      console.log('token: ', token)
+      if (!token) {
+        console.log('No token found');
+        return;
+      }
+
       try {
         const response = await fetch(`${API_BASE_URL}/api/auth/restore`, {
           method: 'GET',
-          credentials: 'include',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          credentials: 'include', 
         });
 
         if (response.ok) {
           const data = await response.json();
-          if (data.accessToken) {
-            router.push('/pages/createToastPage');
-          }
+          console.log('data: ', data);
+          console.log('토큰 확인, 홈화면으로 이동');
+          localStorage.setItem('token', data.accessToken); // 토큰 갱신
+          router.push('/pages/createToastPage');
         } else if (response.status === 401) {
           console.log('401 Unauthorized : 로그인 필요');
+          localStorage.removeItem('token'); // 토큰 삭제
         }
       } catch (error) {
         console.error('Error checking token:', error);
+        localStorage.removeItem('token'); // 토큰 삭제
       }
     };
 
