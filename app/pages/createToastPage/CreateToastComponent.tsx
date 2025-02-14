@@ -157,29 +157,27 @@ const SaveToastWrapper = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-  z-index: 9999;
 `;
 
 const SaveMessage = styled.div`
   position: absolute;
-  bottom: z0px;
-  left: calc(50% - 125.5px);
-  width: 251px;
-  height: 40px;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   justify-content: center;
   align-items: center;
   padding: 12px 16px;
   background: rgba(23, 22, 18, 0.8);
   border-radius: 40px;
-
-  font-style: normal;
   font-size: 14px;
   line-height: 16px;
   color: #e5dcca;
   text-align: center;
   white-space: nowrap;
-  z-index: 10000;
+
+  z-index: 1000;
+  animation: fadeInOut 2s ease-in-out;
 `;
 
 const SaveBold = styled.span`
