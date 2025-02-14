@@ -104,19 +104,17 @@ export default function Home() {
           credentials: 'include', 
         });
 
-        if (response.ok) {
-          const data = await response.json();
-          console.log('data: ', data);
+        const data = await response.json();
+        console.log('data: ', data);
+
+        if (response.ok) {  
           console.log('토큰 확인, 홈화면으로 이동');
-          localStorage.setItem('token', data.accessToken); // 토큰 갱신
           router.push('/pages/createToastPage');
         } else if (response.status === 401) {
           console.log('401 Unauthorized : 로그인 필요');
-          localStorage.removeItem('token'); // 토큰 삭제
         }
       } catch (error) {
         console.error('Error checking token:', error);
-        localStorage.removeItem('token'); // 토큰 삭제
       }
     };
 
