@@ -13,6 +13,7 @@ interface Memo {
   content: string;
   createdAt: string;
   updatedAt: string;
+  toastNumber: number;
 }
 
 interface ApiResponse {

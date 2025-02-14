@@ -32,18 +32,19 @@ function MemoInputContent() {
   // ✅ 제목과 본문을 부모에서 상태로 관리
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
+  const [toastNumber, setToastNumber] = useState(1); // ✅ 기본값 1로 설정
 
   // ✅ memos가 업데이트될 때, title과 content도 갱신
   useEffect(() => {
     if (memo) {
       setTitle(memo.title);
       setContent(memo.content);
+      setToastNumber(memo.toastNumber || 1); // ✅ toastNumber가 없을 경우 기본값 1
     }
   }, [memo]);
 
   useEffect(() => {
     fetchCategories();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // ✅ fetchMemos에 원하는 카테고리를 전달하기 위해 작성한 코드
@@ -90,6 +91,7 @@ function MemoInputContent() {
         setTitle={setTitle}
         content={content}
         isBurnt={false}
+        toastNumber={toastNumber}
       />
       <HeaderBottomStyle />
       <StyledMemoBody
