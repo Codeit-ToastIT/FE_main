@@ -9,6 +9,7 @@ import Image from 'next/image';
 import iconKakao from './assets/icons/Group 8.svg';
 import TermsModal from './components/common/TermsModal';
 import { API_BASE_URL } from './api/api';
+import Swal from 'sweetalert2';
 
 const Whole = styled.div`
   display: flex;
@@ -60,6 +61,21 @@ const KakaoButton = styled(Button)`
   background: #fae100;
 `;
 
+const HomeButton = styled(Button)`
+  background: transparent;
+  border: 1px solid var(--ivory, #e5dcca);
+`;
+
+const HomeTitle = styled.span`
+  color: var(--ivory, #e5dcca);
+  text-align: center;
+  font-family: 'SUIT Variable';
+  font-size: 16px;
+  font-style: normal;
+  font-weight: 800;
+  line-height: normal;
+`;
+
 const Title = styled.span`
   color: var(--black, #171612);
   text-align: center;
@@ -86,10 +102,10 @@ export default function Home() {
 
   // 로그인 유지 API
   useEffect(() => {
-    console.log("useEffect 실행");
+    console.log('useEffect 실행');
     const checkToken = async () => {
       const token = localStorage.getItem('token');
-      console.log('token: ', token)
+      console.log('token: ', token);
       if (!token) {
         console.log('No token found');
         return;
@@ -101,13 +117,13 @@ export default function Home() {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-          credentials: 'include', 
+          credentials: 'include',
         });
 
         const data = await response.json();
         console.log('data: ', data);
 
-        if (response.ok) {  
+        if (response.ok) {
           console.log('토큰 확인, 홈화면으로 이동');
           router.push('/pages/createToastPage');
         } else if (response.status === 401) {
@@ -123,6 +139,15 @@ export default function Home() {
 
   const handleAnimationComplete = () => {
     setShow(true);
+    Swal.fire({
+      title: '서비스 운영 종료 안내',
+      html: `그동안 Toast IT에 관심을 가져주셔서 감사합니다.<br/><br/>
+        현재 서버 호스팅 만료로 <b>프론트엔드 UI 포트폴리오용</b>으로만 제공되고 있습니다.<br/>
+        로그인은 불가하지만, <b>'홈 화면으로 이동하기'</b> 버튼을 누르시면 서비스 디자인을 둘러보실 수 있습니다.`,
+      icon: 'info',
+      confirmButtonText: '확인',
+      confirmButtonColor: '#171612',
+    });
   };
 
   const handleDiscriptionClick = () => {
@@ -165,6 +190,9 @@ export default function Home() {
             <KakaoIcon src={iconKakao} alt="kakao" />
             <Title>카카오 계정으로 시작하기</Title>
           </KakaoButton>
+          <HomeButton onClick={() => router.push('/pages/createToastPage')}>
+            <HomeTitle>홈 화면으로 이동하기</HomeTitle>
+          </HomeButton>
         </Container>
       )}
 
